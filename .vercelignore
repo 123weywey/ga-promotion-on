@@ -2,11 +2,18 @@ supabase/
 tests/
 skills/
 ml/
+data/
 imported/
 tmp_pptx_extract/
 tmp_pptx_inspect/
 지점장 프로모션 파일/
+월별 프로모션 정리(3가지 파일)/
+*.xlsx
+*.pptx
 *.docx
+*.jpg
+*.jpeg
+*.png
 ~$*
 attach(1).txt
 (삼성생명)2605월 상품별 예상 해약환급률표.xlsx
