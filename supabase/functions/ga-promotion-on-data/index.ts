@@ -77,8 +77,31 @@ Deno.serve(async (request) => {
 
     const url = new URL(request.url);
     const month = Number(url.searchParams.get("month") || "6");
+    const downloadKind = url.searchParams.get("kind");
 
     if (request.method === "GET") {
+      if (downloadKind) {
+        const fileResponse = await supabaseFetch(
+          `/rest/v1/ga_promotion_month_files?month=eq.${month}&kind=eq.${encodeURIComponent(downloadKind)}&select=*`
+        );
+        const [fileRow] = await fileResponse.json();
+        if (!fileRow?.storage_path) {
+          return jsonResponse({ error: "Uploaded file not found." }, { status: 404 });
+        }
+        const objectResponse = await supabaseFetch(
+          `/storage/v1/object/${bucketName}/${encodeURIComponent(fileRow.storage_path).replaceAll("%2F", "/")}`
+        );
+        const bytes = await objectResponse.arrayBuffer();
+        return new Response(bytes, {
+          headers: {
+            ...corsHeaders,
+            "Content-Type": fileRow.mime_type || "application/octet-stream",
+            "Content-Disposition": `attachment; filename="${encodeURIComponent(fileRow.file_name || "download")}"`,
+            "Cache-Control": "no-store",
+          },
+        });
+      }
+
       const bundleResponse = await supabaseFetch(`/rest/v1/ga_promotion_month_bundles?month=eq.${month}&select=*`);
       const filesResponse = await supabaseFetch(`/rest/v1/ga_promotion_month_files?month=eq.${month}&select=*`);
       const bundleRows = await bundleResponse.json();

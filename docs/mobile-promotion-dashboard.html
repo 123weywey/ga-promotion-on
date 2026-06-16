@@ -465,11 +465,19 @@
   <script src="./xlsx-lite.js"></script>
   <script src="../data/branch-promotion-data.js?v=20260616-june-default"></script>
   <script>
-    const STORAGE_PREFIX = "gaPromotionOn_20260616_june_latest3";
+    const STORAGE_PREFIX = "gaPromotionOn_20260616_office_allopen_v2";
     const SUPABASE_DATA_ENDPOINT = "https://iqqstuftvlehgqtmtjug.supabase.co/functions/v1/ga-promotion-on-data";
 
     function storageKey(name) {
       return `${STORAGE_PREFIX}_${name}`;
+    }
+
+    function safeLocalStorageSetItem(key, value) {
+      try {
+        localStorage.setItem(key, value);
+      } catch (error) {
+        console.warn("Local cache skipped:", error);
+      }
     }
 
     function loadSavedJson(key) {
@@ -538,6 +546,40 @@
       });
     }
 
+    async function fetchRemoteFile(url, name, type = "") {
+      if (!url) return null;
+      const response = await fetch(url, { cache: "no-store" });
+      if (!response.ok) throw new Error(`원격 파일 다운로드 실패(${response.status})`);
+      const blob = await response.blob();
+      return new File([blob], name || "remote-file", {
+        type: type || blob.type || "",
+        lastModified: Date.now()
+      });
+    }
+
+    async function fetchSupabaseStoredFile(month, file) {
+      if (!file) return null;
+      const fileName = file.file_name || `${month}월 업로드 파일`;
+      const mimeType = file.mime_type || "application/octet-stream";
+      const proxyUrl = `${SUPABASE_DATA_ENDPOINT}?month=${encodeURIComponent(month)}&kind=${encodeURIComponent(file.kind)}&download=1`;
+      try {
+        const proxyResponse = await fetch(proxyUrl, { cache: "no-store" });
+        if (!proxyResponse.ok) throw new Error(`Supabase file proxy failed (${proxyResponse.status})`);
+        const contentType = proxyResponse.headers.get("content-type") || "";
+        if (contentType.includes("json")) {
+          throw new Error("Supabase file proxy returned JSON instead of the uploaded file.");
+        }
+        const blob = await proxyResponse.blob();
+        return new File([blob], fileName, {
+          type: mimeType || blob.type || "",
+          lastModified: Date.now()
+        });
+      } catch (error) {
+        console.warn("Supabase file proxy skipped:", error);
+        return await fetchRemoteFile(file.public_url, fileName, mimeType);
+      }
+    }
+
     function applySupabaseFiles(month, files = []) {
       const workbook = files.find((file) => file.kind === "workbook");
       if (workbook?.public_url) {
@@ -547,7 +589,7 @@
       const template = files.find((file) => file.kind === "template");
       if (template?.public_url) {
         templateFiles[month] = template.public_url;
-        localStorage.setItem(storageKey(`template:${month}`), JSON.stringify({
+        safeLocalStorageSetItem(storageKey(`template:${month}`), JSON.stringify({
           name: template.file_name || `${month}월 PPT 템플릿`,
           href: template.public_url,
           updatedAt: template.updated_at || ""
@@ -579,7 +621,15 @@
           const payload = await response.json();
           const officeFile = (payload.files || []).find((file) => file.kind === "office" && file.public_url);
           if (!officeFile) continue;
-          const candidateOfficeMap = payload.bundle?.office_map;
+          let candidateOfficeMap = null;
+          try {
+            const remoteOffice = await fetchSupabaseStoredFile(candidateMonth, officeFile);
+            const sheets = await window.XlsxLite.readWorkbook(remoteOffice);
+            candidateOfficeMap = buildOfficeMapFromWorkbook(sheets);
+          } catch (error) {
+            console.warn("Latest office raw rebuild skipped:", error);
+            candidateOfficeMap = payload.bundle?.office_map;
+          }
           if (!hasOfficeMapData(candidateOfficeMap)) continue;
           applySupabaseFiles(candidateMonth, payload.files || []);
           return {
@@ -630,29 +680,38 @@
         if (!response.ok) throw new Error(`Supabase 불러오기 실패(${response.status})`);
         const payload = await response.json();
         const uploadedFiles = payload.files || [];
-        const hasUploadedOfficeFile = uploadedFiles.some((file) => file.kind === "office" && file.public_url);
+        const uploadedOfficeFile = uploadedFiles.find((file) => file.kind === "office" && file.public_url);
+        const hasUploadedOfficeFile = Boolean(uploadedOfficeFile);
+        const uploadedWorkbookFile = uploadedFiles.find((file) => file.kind === "workbook" && file.public_url);
         applySupabaseFiles(month, uploadedFiles);
         const bundle = payload.bundle;
         let monthHasOfficeMap = false;
         let monthHasTemplate = hasTemplateReference(month);
         let usedFallbackOffice = null;
         let usedFallbackTemplate = null;
-        if (bundle) {
-          if (hasUploadedOfficeFile && hasOfficeMapData(bundle.office_map)) {
-            officeMap = JSON.parse(JSON.stringify(bundle.office_map));
-            localStorage.setItem(storageKey("officeMap"), JSON.stringify(officeMap));
+        if (uploadedOfficeFile?.public_url) {
+          try {
+            const remoteOffice = await fetchSupabaseStoredFile(month, uploadedOfficeFile);
+            const sheets = await window.XlsxLite.readWorkbook(remoteOffice);
+            officeMap = buildOfficeMapFromWorkbook(sheets);
+            safeLocalStorageSetItem(storageKey("officeMap"), JSON.stringify(officeMap));
             monthHasOfficeMap = true;
+          } catch (error) {
+            console.warn("Supabase office workbook rebuild skipped:", error);
           }
-          if (Array.isArray(bundle.promotion_rows)) {
-            promotionRowsData = JSON.parse(JSON.stringify(bundle.promotion_rows));
-            localStorage.setItem(storageKey("promotionRows"), JSON.stringify(promotionRowsData));
+        }
+        if (bundle) {
+          if (!monthHasOfficeMap && hasUploadedOfficeFile && hasOfficeMapData(bundle.office_map)) {
+            officeMap = JSON.parse(JSON.stringify(bundle.office_map));
+            safeLocalStorageSetItem(storageKey("officeMap"), JSON.stringify(officeMap));
+            monthHasOfficeMap = true;
           }
         }
         if (!monthHasTemplate) {
           usedFallbackTemplate = await loadLatestTemplateFromSupabase(month);
           if (usedFallbackTemplate) {
             templateFallbackMeta[month] = usedFallbackTemplate;
-            localStorage.setItem(storageKey(`template:${month}:fallback`), JSON.stringify(usedFallbackTemplate));
+            safeLocalStorageSetItem(storageKey(`template:${month}:fallback`), JSON.stringify(usedFallbackTemplate));
             monthHasTemplate = true;
           }
         } else {
@@ -662,8 +721,25 @@
           usedFallbackOffice = await loadLatestOfficeMapFromSupabase(month);
           if (usedFallbackOffice) {
             officeMap = JSON.parse(JSON.stringify(usedFallbackOffice.officeMap));
-            localStorage.setItem(storageKey("officeMap"), JSON.stringify(officeMap));
+            safeLocalStorageSetItem(storageKey("officeMap"), JSON.stringify(officeMap));
           }
+        }
+        let rebuiltFromWorkbook = false;
+        if (uploadedWorkbookFile?.public_url) {
+          try {
+            const remoteWorkbook = await fetchSupabaseStoredFile(month, uploadedWorkbookFile);
+            const sheets = await window.XlsxLite.readWorkbook(remoteWorkbook);
+            const parsed = buildBranchDataFromWorkbook(sheets);
+            promotionRowsData = parsed.promotionRows.map(({ _matchIndex, ...row }) => row);
+            safeLocalStorageSetItem(storageKey("promotionRows"), JSON.stringify(promotionRowsData));
+            rebuiltFromWorkbook = true;
+          } catch (error) {
+            console.warn("Supabase workbook rebuild skipped:", error);
+          }
+        }
+        if (!rebuiltFromWorkbook && Array.isArray(bundle?.promotion_rows)) {
+          promotionRowsData = JSON.parse(JSON.stringify(bundle.promotion_rows));
+          safeLocalStorageSetItem(storageKey("promotionRows"), JSON.stringify(promotionRowsData));
         }
         const canRebuildStats = Array.isArray(promotionRowsData) && promotionRowsData.length && hasOfficeMapData(officeMap);
         if (canRebuildStats) {
@@ -673,7 +749,7 @@
         } else {
           data = {};
         }
-        localStorage.setItem(storageKey("branchData"), JSON.stringify(data));
+        safeLocalStorageSetItem(storageKey("branchData"), JSON.stringify(data));
         return Boolean(bundle);
       } catch (error) {
         console.warn("Supabase month load skipped:", error);
@@ -774,6 +850,12 @@
       return text === "O" || text === "○" || text === "◯" || text === "OK" || text.includes("확정") || text.includes("완료");
     }
 
+    function isSelectedBranchFlag(value) {
+      const text = compactText(value).toUpperCase();
+      if (!text) return false;
+      return text === "O" || text === "○" || text === "◯";
+    }
+
     function hasPromotionContent(rateValues = []) {
       return rateValues.some((value) => {
         const text = cellText(value);
@@ -817,7 +899,7 @@
         });
         const used = new Set();
         map.offices.forEach((office) => {
-          const matches = promosByKey[office.key] || promosByName[office.nameKey] || [];
+          const matches = promosByKey[office.promotionKey || office.key] || promosByName[office.nameKey] || [];
           if (matches.length) {
             matches.forEach((promo) => used.add(promo._matchIndex));
             const promo = pickBestPromotionMatch(matches);
@@ -833,7 +915,7 @@
               branchCode: office.branchCode,
               promoBranch: office.branchName,
               promoBranchCode: office.branchCode,
-              matchSource: officeKey(promo.agencyCode, promo.officeCode) === office.key ? "조직번호 매칭" : "대리점명 매칭"
+              matchSource: officeKey(promo.agencyCode, promo.officeCode) === (office.promotionKey || office.key) ? "대리점등록번호+본점코드 매칭" : "대리점명 매칭"
             });
           } else {
             (grouped[office.branchName] ||= []).push({
@@ -1029,11 +1111,24 @@
       return sheets.find((sheet) => sheet.rows.some((row) => row.some((cell) => compactText(cell).includes("GA명")))) || sheets[0];
     }
 
+    function findSelectedBranchName(rows, maxRows = 6) {
+      const marker = findColumn(rows, (text) => text === "지점명" || text.includes("지점명"), maxRows);
+      if (!marker) return "";
+      const row = rows[marker.rowIndex] || [];
+      for (let colIndex = marker.colIndex + 1; colIndex < Math.min(row.length, marker.colIndex + 5); colIndex += 1) {
+        const branchName = normalizeBranchName(row[colIndex]);
+        if (branchName && !branchName.includes("입력") && !branchName.includes("변경")) return branchName;
+      }
+      return "";
+    }
+
     function buildPromotionRowsFromWorkbook(sheets) {
       const sheet = choosePromotionSheet(sheets);
       const rows = sheet.rows || [];
+      const selectedBranchName = findSelectedBranchName(rows);
       const agency = findColumn(rows, (text) => text === "GA명" || text.includes("GA명"));
       const code = findColumn(rows, (text) => text === "코드");
+      const branchFlag = findColumn(rows, (text) => text.includes("지점별") && text.includes("담당여부"));
       const branch = findColumn(rows, (text) => text.includes("담당지점") && !text.includes("담당지점수"));
       const finalConfirm = findColumn(rows, (text) => text.includes("최종확정") && text.includes("여부"));
       const type = findColumn(rows, (text) => text.includes("순수3종") && text.includes("유형"));
@@ -1042,6 +1137,7 @@
       const agencyCol = agency.colIndex;
       const codeCol = code?.colIndex ?? agencyCol - 2;
       const officeCodeCol = codeCol + 1;
+      const branchFlagCol = branchFlag?.colIndex ?? -1;
       const branchCol = branch.colIndex;
       const finalConfirmCol = finalConfirm?.colIndex ?? -1;
       const typeCol = type?.colIndex ?? agencyCol + 1;
@@ -1058,6 +1154,7 @@
         if (!name || !promoBranch || compactText(name).includes("GA명")) return;
         const rateValues = row.slice(rateStartCol, rateEndCol + 1);
         const hasContent = hasPromotionContent(rateValues);
+        const branchFlagValue = branchFlagCol >= 0 ? cellText(row[branchFlagCol]) : "";
         const finalFlag = finalConfirmCol >= 0 ? cellText(row[finalConfirmCol]) : "";
         const status = resolvePromotionStatus(finalFlag, rateValues);
         promotionRows.push({
@@ -1072,6 +1169,8 @@
           officeCode: cellText(row[officeCodeCol]),
           promoBranch,
           promoBranchCode: getBranchCodeFromMap(promoBranch),
+          branchFlag: branchFlagValue,
+          selectedBranchMatched: selectedBranchName ? isSelectedBranchFlag(branchFlagValue) : false,
           finalFlag,
           hasPromoContent: hasContent
         });
@@ -1125,8 +1224,7 @@
         return regions;
       }
 
-      const officeSheet = sheets.find((sheet) => sheet.rows?.some((row) => row.some((cell) => compactText(cell) === "대리점등록번호") && row.some((cell) => compactText(cell) === "본점코드") && row.some((cell) => compactText(cell) === "지점명")));
-      if (!officeSheet) throw new Error("점포현황에서 대리점 시트를 찾지 못했습니다.");
+      const agencySheet = sheets.find((sheet) => sheet.rows?.some((row) => row.some((cell) => compactText(cell) === "대리점등록번호") && row.some((cell) => compactText(cell) === "본점코드") && row.some((cell) => compactText(cell) === "지점명")));
       const regions = parseStatusRegions();
       const branchMeta = {};
       regions.forEach((region) => {
@@ -1152,6 +1250,15 @@
           branchCodes[branchName] = { regionCode: cellText(row[colIndex("지역단조직번호")]), branchCode: cellText(row[colIndex("지점조직번호")]) };
         });
       }
+      const useAllOpenSheet = Boolean(allOpenSheet?.rows?.some((row) =>
+        row.some((cell) => compactText(cell) === "지역단조직번호") &&
+        row.some((cell) => compactText(cell) === "지점조직번호") &&
+        row.some((cell) => compactText(cell) === "조직번호") &&
+        row.some((cell) => compactText(cell) === "대리점등록번호") &&
+        row.some((cell) => compactText(cell) === "본점코드")
+      ));
+      const officeSheet = useAllOpenSheet ? allOpenSheet : agencySheet;
+      if (!officeSheet) throw new Error("점포현황에서 전체개설 또는 대리점 시트를 찾지 못했습니다.");
       const rows = officeSheet.rows || [];
       const headerRowIndex = rows.findIndex((row) => row.some((cell) => compactText(cell) === "대리점등록번호"));
       const header = rows[headerRowIndex] || [];
@@ -1161,28 +1268,41 @@
       rows.slice(headerRowIndex + 1).forEach((row) => {
         const registrationNo = cellText(row[colIndex("대리점등록번호")]);
         const hqCode = cellText(row[colIndex("본점코드")]);
-        const name = cellText(row[colIndex("GA명")]);
-        const branchOrgName = cellText(row[colIndex("지점명")]);
+        const name = cellText(row[useAllOpenSheet ? colIndex("조직명") : colIndex("GA명")]);
+        const branchOrgName = cellText(row[useAllOpenSheet ? colIndex("지점조직명") : colIndex("지점명")]);
         const branchName = normalizeBranchName(branchOrgName);
+        const agencyOrgCode = cellText(row[useAllOpenSheet ? colIndex("조직번호") : colIndex("지사코드")]);
         const meta = branchMeta[branchName] || {};
-        const key = officeKey(registrationNo, hqCode);
-        if (!key || !name || !branchName || seen.has(key)) return;
+        const promotionKey = officeKey(registrationNo, hqCode);
+        const key = [promotionKey, agencyOrgCode || normalizeAgencyName(name)].filter(Boolean).join("|");
+        if (!promotionKey || !name || !branchName || seen.has(key)) return;
         seen.add(key);
         offices.push({
           key,
+          promotionKey,
           registrationNo,
           hqCode,
-          regionName: meta.regionName || cellText(row[colIndex("지역단")]),
+          regionName: meta.regionName || cellText(row[useAllOpenSheet ? colIndex("지역단조직명") : colIndex("지역단")]),
           regionCode: meta.regionCode || branchCodes[branchName]?.regionCode || "",
           branchName,
           branchOrgName: meta.branchOrgName || branchOrgName,
           branchCode: meta.branchCode || branchCodes[branchName]?.branchCode || "",
-          agencyOrgCode: cellText(row[colIndex("지사코드")]),
+          agencyOrgCode,
           name,
           nameKey: normalizeAgencyName(name)
         });
       });
       if (!offices.length) throw new Error("점포현황에서 반영할 대리점 행을 찾지 못했습니다.");
+      const branchCounts = offices.reduce((acc, office) => {
+        acc[office.branchName] = (acc[office.branchName] || 0) + 1;
+        return acc;
+      }, {});
+      regions.forEach((region) => {
+        (region.branches || []).forEach((branch) => {
+          branch.count = branchCounts[branch.name] || 0;
+        });
+        region.count = (region.branches || []).reduce((sum, branch) => sum + (branch.count || 0), 0);
+      });
       return { source: officeSheet.name, regions, offices, byKey: Object.fromEntries(offices.map((office) => [office.key, office])), byName: Object.fromEntries(offices.map((office) => [office.nameKey, office])), branchCount: new Set(offices.map((office) => office.branchName)).size, agencyCount: offices.length };
     }
 
@@ -1313,8 +1433,8 @@
         const sheets = await window.XlsxLite.readWorkbook(file);
         promotionRowsData = buildPromotionRowsFromWorkbook(sheets).map(({ _matchIndex, ...row }) => row);
         data = buildBranchStatsFromPromotionRows(promotionRowsData, officeMap);
-        localStorage.setItem(storageKey("promotionRows"), JSON.stringify(promotionRowsData));
-        localStorage.setItem(storageKey("branchData"), JSON.stringify(data));
+        safeLocalStorageSetItem(storageKey("promotionRows"), JSON.stringify(promotionRowsData));
+        safeLocalStorageSetItem(storageKey("branchData"), JSON.stringify(data));
         populateBranches(branchSelect.value);
         render();
         const agencyCount = Object.values(data).reduce((sum, item) => sum + item.total, 0);
@@ -1339,14 +1459,14 @@
       try {
         const sheets = await window.XlsxLite.readWorkbook(file);
         officeMap = buildOfficeMapFromWorkbook(sheets);
-        localStorage.setItem(storageKey("officeMap"), JSON.stringify(officeMap));
+        safeLocalStorageSetItem(storageKey("officeMap"), JSON.stringify(officeMap));
         if (!promotionRowsData.length) {
           promotionRowsData = Object.entries(data).flatMap(([promoBranch, stats]) =>
             (stats.agencies || []).map((agency) => ({ ...agency, promoBranch }))
           );
         }
         data = buildBranchStatsFromPromotionRows(promotionRowsData, officeMap);
-        localStorage.setItem(storageKey("branchData"), JSON.stringify(data));
+        safeLocalStorageSetItem(storageKey("branchData"), JSON.stringify(data));
         populateBranches(branchSelect.value);
         render();
         const agencyCount = Object.values(data).reduce((sum, item) => sum + item.total, 0);
