@@ -8,5 +8,8 @@ data/
 *.xlsx
 *.pptx
 *.docx
+*.jpg
+*.jpeg
+*.png
 ~$*
 attach(1).txt
