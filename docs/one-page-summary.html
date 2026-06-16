@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GA 프로모션ON 1페이지 요약</title>
+  <style>
+    :root {
+      --ink: #111827;
+      --muted: #526172;
+      --blue: #075ed8;
+      --line: #dbe5f2;
+      --paper: #fffdf8;
+      --soft: #f1f6ff;
+      --green: #0f9f67;
+      --yellow: #fff38a;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: #e9eef5;
+      color: var(--ink);
+      font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+      line-height: 1.42;
+    }
+
+    .page {
+      width: min(100% - 32px, 1120px);
+      min-height: 794px;
+      margin: 24px auto;
+      padding: 34px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at top right, rgba(7, 94, 216, .12), transparent 36%),
+        linear-gradient(135deg, #ffffff 0%, var(--paper) 100%);
+      box-shadow: 0 24px 70px rgba(17, 24, 39, .14);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.45fr .85fr;
+      gap: 22px;
+      align-items: stretch;
+      margin-bottom: 18px;
+    }
+
+    .title {
+      padding: 24px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #0647a8, #0b7cff);
+      color: #fff;
+    }
+
+    .title .eyebrow {
+      display: inline-flex;
+      margin-bottom: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .16);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 34px;
+      letter-spacing: -.05em;
+    }
+
+    .title p {
+      margin: 0;
+      max-width: 720px;
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .goal {
+      padding: 22px;
+      border-radius: 20px;
+      background: #fff;
+      border: 1px solid var(--line);
+    }
+
+    .goal strong {
+      display: block;
+      margin-bottom: 10px;
+      color: var(--blue);
+      font-size: 15px;
+    }
+
+    .goal p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 14px;
+    }
+
+    .card {
+      padding: 17px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, .88);
+    }
+
+    .wide { grid-column: span 2; }
+    .full { grid-column: 1 / -1; }
+
+    h2 {
+      margin: 0 0 10px;
+      color: #0f2444;
+      font-size: 18px;
+      letter-spacing: -.04em;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    li {
+      margin: 5px 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .step {
+      padding: 14px;
+      border-radius: 16px;
+      background: var(--soft);
+      border: 1px solid #cfe0fa;
+    }
+
+    .step span {
+      display: inline-block;
+      margin-bottom: 7px;
+      color: var(--blue);
+      font-weight: 900;
+      font-size: 13px;
+    }
+
+    .step p {
+      margin: 0;
+      font-size: 14px;
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .pill {
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: #ecfdf5;
+      color: #06724b;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .done {
+      border-left: 5px solid var(--green);
+      background: linear-gradient(90deg, rgba(15, 159, 103, .08), #fff);
+    }
+
+    .hold {
+      border-left: 5px solid #f59e0b;
+      background: linear-gradient(90deg, rgba(245, 158, 11, .1), #fff);
+    }
+
+    .complete {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: #0f2444;
+      color: #fff;
+    }
+
+    .complete p {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .complete strong {
+      color: var(--yellow);
+    }
+
+    @media print {
+      body { background: #fff; }
+      .page { width: 100%; margin: 0; box-shadow: none; border: 0; border-radius: 0; }
+    }
+
+    @media (max-width: 860px) {
+      .hero, .grid, .flow { grid-template-columns: 1fr; }
+      .wide { grid-column: auto; }
+      .page { padding: 20px; }
+      h1 { font-size: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="title">
+        <div class="eyebrow">PRD · Customer · Architecture · AGENT 통합</div>
+        <h1>GA 프로모션ON 1페이지 요약</h1>
+        <p>월별 프로모션 총괄판 엑셀을 업로드하면 지점별 현황과 대리점별 최종 시책안내장 JPG를 하나의 공유 URL에서 확인·다운로드하는 업무 효율화 PoC.</p>
+      </div>
+      <div class="goal">
+        <strong>핵심 목표</strong>
+        <p>카톡 파일 반복 첨부와 수작업 장표 재가공을 줄이고, RM·영업추진P·GA사업부 프로모션 담당자가 확정값을 한 번만 올리면 현장은 같은 URL에서 최신 확정본을 확인하게 한다.</p>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <h2>문제 정의</h2>
+        <ul>
+          <li>GA별 조건 차이로 프로모션 재가공 업무가 반복된다.</li>
+          <li>카톡 파일 공유는 최신본·대상자·확정 여부 혼선을 만든다.</li>
+          <li>현장 문의와 지점장 추가 업무가 반복 발생한다.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>주요 사용자</h2>
+        <ul>
+          <li>Primary: RM, 영업추진P, GA사업부 프로모션 담당자.</li>
+          <li>Secondary: 지점장, GA영업관리자.</li>
+          <li>운영 검토자: 승인·노출·다운로드 기준 관리.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>운영 기준</h2>
+        <ul>
+          <li>한 화면은 그 달의 최종 장표 1장 기준.</li>
+          <li>협의중은 숫자·JPG 제한, 확정은 미리보기·다운로드 허용.</li>
+          <li>일반 사용자는 승인권한 없이 확정본만 확인.</li>
+        </ul>
+      </div>
+
+      <div class="card full">
+        <h2>입력 → 처리 → 출력</h2>
+        <div class="flow">
+          <div class="step">
+            <span>Input</span>
+            <p>월별 엑셀 총괄판, 대리점명/코드, 담당 지점, 기준월, 상품군별 지급률, 기존 포스터 배경</p>
+          </div>
+          <div class="step">
+            <span>Process</span>
+            <p>엑셀 업로드 → 컬럼·숫자 검증 → 지점/대리점별 정규화 → 협의중/확정 판정 → 장표 렌더링</p>
+          </div>
+          <div class="step">
+            <span>Output</span>
+            <p>단일 공유 URL, 지점별 대시보드, 대리점별 포스터형 화면, 최종 JPG 다운로드</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card wide done">
+        <h2>핵심 기능</h2>
+        <div class="pill-row">
+          <span class="pill">엑셀 총괄판 업로드</span>
+          <span class="pill">지점별 현황 자동 반영</span>
+          <span class="pill">월/대리점/상태 필터</span>
+          <span class="pill">최종 JPG 미리보기</span>
+          <span class="pill">JPG 다운로드</span>
+          <span class="pill">PC/모바일 자동 전환</span>
+        </div>
+      </div>
+
+      <div class="card hold">
+        <h2>보류 범위</h2>
+        <ul>
+          <li>협상 판단 자동화.</li>
+          <li>상품전략·지점장 취향 커스터마이징.</li>
+          <li>외부 사용자 무제한 조회.</li>
+        </ul>
+      </div>
+
+      <div class="card full">
+        <div class="complete">
+          <p><strong>완료 정의</strong> 더미 또는 월별 총괄판 엑셀로 지점별 현황이 자동 반영되고, 대리점별 JPG 미리보기·다운로드가 가능하며, 업로드·생성·다운로드 테스트 10회가 오류 없이 수행되면 v1 완료.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

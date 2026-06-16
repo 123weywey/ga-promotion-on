@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GA 프로모션ON 월별 자료 구조 참고본</title>
+  <style>
+    :root {
+      --bg: #f4efe7;
+      --surface: rgba(255, 251, 245, 0.9);
+      --surface-2: #fffdf8;
+      --line: rgba(58, 44, 31, 0.12);
+      --ink: #1f1a16;
+      --muted: #6d6358;
+      --brand: #b85f17;
+      --brand-2: #7a3d10;
+      --ok: #1b7b45;
+      --warn: #b17a00;
+      --todo: #8c3f2f;
+      --shadow: 0 18px 48px rgba(71, 49, 26, 0.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Malgun Gothic", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 0% 0%, rgba(236, 175, 97, 0.24), transparent 28%),
+        radial-gradient(circle at 100% 0%, rgba(142, 92, 38, 0.16), transparent 24%),
+        linear-gradient(180deg, #fbf6ee 0%, #efe7dc 100%);
+    }
+    .page {
+      width: min(1280px, calc(100% - 28px));
+      margin: 20px auto 48px;
+    }
+    .hero, .card {
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+    .hero {
+      padding: 28px;
+      overflow: hidden;
+      position: relative;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.94), rgba(250, 239, 223, 0.9)),
+        linear-gradient(180deg, #fff 0%, #f7efe5 100%);
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -50px;
+      bottom: -60px;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(184,95,23,0.18), transparent 64%);
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(184,95,23,0.1);
+      color: var(--brand-2);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+    }
+    h1 {
+      margin: 14px 0 8px;
+      font-size: clamp(34px, 5vw, 58px);
+      line-height: 1.03;
+      letter-spacing: -0.05em;
+    }
+    .hero p {
+      margin: 0;
+      max-width: 860px;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .grid { display: grid; gap: 18px; margin-top: 18px; }
+    .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .two { grid-template-columns: 1.25fr 0.75fr; }
+    .three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .card .inner { padding: 22px; }
+    h2 { margin: 0 0 12px; font-size: 22px; letter-spacing: -0.03em; }
+    .sub {
+      margin: -2px 0 16px;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+    .kpi {
+      min-height: 148px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .kpi .label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .kpi .value {
+      margin-top: 10px;
+      font-size: clamp(30px, 4vw, 46px);
+      font-weight: 800;
+      letter-spacing: -0.05em;
+    }
+    .kpi .note {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    .month-tabs {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .tab {
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: var(--surface-2);
+      text-align: left;
+    }
+    .tab strong {
+      display: block;
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+    .tab span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .badge {
+      display: inline-flex;
+      margin-top: 10px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .ok { background: rgba(27,123,69,0.12); color: var(--ok); }
+    .warn { background: rgba(177,122,0,0.14); color: var(--warn); }
+    .todo { background: rgba(140,63,47,0.14); color: var(--todo); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .list { display: grid; gap: 12px; }
+    .item {
+      padding: 16px 18px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(248, 239, 228, 0.92));
+    }
+    .item strong { display: block; margin-bottom: 6px; }
+    .item p { margin: 0; color: var(--muted); line-height: 1.65; font-size: 14px; }
+    .link-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .link-card {
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: var(--surface-2);
+    }
+    .link-card strong { display: block; margin-bottom: 6px; font-size: 15px; }
+    .link-card a {
+      color: var(--brand-2);
+      text-decoration: none;
+      word-break: break-all;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    .alert {
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: rgba(31, 26, 22, 0.94);
+      color: #f7efe2;
+    }
+    .alert strong { display: block; margin-bottom: 8px; }
+    .alert p { margin: 0; line-height: 1.7; font-size: 14px; color: rgba(247,239,226,0.84); }
+    .footer {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+      text-align: right;
+    }
+    @media (max-width: 1100px) {
+      .kpis, .two, .three, .month-tabs, .link-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="hero">
+      <div class="eyebrow">Standard Dashboard Draft</div>
+      <h1>GA 프로모션ON<br />월별 자료 구조 참고본</h1>
+      <p>
+        `지점장 프로모션 파일` 안의 26.1월부터 26.6월까지 자료 구조를 기준으로 정리한 참고본입니다.
+        최종 구현은 월별 비교판이 아니라, 엑셀 총판 업로드 후 대리점별 최종 JPG를 생성하는 방향입니다.
+      </p>
+      <div class="hero-meta">
+        <span>분석 기준: 26.1월~26.5월 실제 장표 구조 + 26.6월 번들 zip</span>
+        <span>핵심 산출물: 엑셀 총판, 포스터 배경, 대리점별 JPG</span>
+        <span>작성일: 2026-06-15</span>
+      </div>
+    </section>
+
+    <section class="grid kpis">
+      <article class="card"><div class="inner kpi">
+        <div><div class="label">분석 월 수</div><div class="value">6</div></div>
+        <div class="note">26.1월부터 26.6월까지 파일 기준으로 표준 구조를 도출했습니다.</div>
+      </div></article>
+      <article class="card"><div class="inner kpi">
+        <div><div class="label">공통 장표 축</div><div class="value">5</div></div>
+        <div class="note">공문, 13회차, 총괄판, 환급률표, 포스터를 월별 핵심 축으로 고정할 수 있습니다.</div>
+      </div></article>
+      <article class="card"><div class="inner kpi">
+        <div><div class="label">지점장 핵심 확인</div><div class="value">4</div></div>
+        <div class="note">대상 여부, 프로모션 유형, 익월/13회 지급률, 공유 장표 유무를 우선 노출합니다.</div>
+      </div></article>
+      <article class="card"><div class="inner kpi">
+        <div><div class="label">예외 월</div><div class="value">1</div></div>
+        <div class="note">26.6월은 상세 장표보다 월별 zip 묶음 보관본으로 확인되어 별도 표시가 필요합니다.</div>
+      </div></article>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <div class="inner">
+          <h2>월별 자료 구성 현황</h2>
+          <p class="sub">지점장이 월을 바꿔도 대시보드 구조는 그대로 유지하고, 아래 장표 유무만 월별로 바뀌게 설계하면 됩니다.</p>
+          <div class="month-tabs">
+            <div class="tab">
+              <strong>26.1월</strong>
+              <span>공문, FC용, 대리점용, 건강상해 13회차 4종, 표준형 JPG, 총괄판</span>
+              <div class="badge ok">장표 구조 확인</div>
+            </div>
+            <div class="tab">
+              <strong>26.2월</strong>
+              <span>공문, FC용/대리점용 2안, 건강상해 13회차, 총괄판</span>
+              <div class="badge ok">장표 구조 확인</div>
+            </div>
+            <div class="tab">
+              <strong>26.3월</strong>
+              <span>공문, FC용/대리점용 2안, 13회차, 환급률자료, 총괄판</span>
+              <div class="badge ok">장표 구조 확인</div>
+            </div>
+            <div class="tab">
+              <strong>26.4월</strong>
+              <span>공문, FC용/대리점용 2안, 13회차, 환급률표, 총괄판, 포스터</span>
+              <div class="badge ok">장표 구조 확인</div>
+            </div>
+            <div class="tab">
+              <strong>26.5월</strong>
+              <span>공문, FC용/대리점용 2안, 13회차, 환급률표, 총괄판, 포스터</span>
+              <div class="badge ok">장표 구조 확인</div>
+            </div>
+            <div class="tab">
+              <strong>26.6월</strong>
+              <span>이전 월 zip을 모아둔 번들 보관본 확인. 상세 장표는 별도 확보 필요</span>
+              <div class="badge warn">상세 장표 미확인</div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="grid two">
+      <article class="card">
+        <div class="inner">
+          <h2>표준 대시보드 핵심 표</h2>
+          <p class="sub">5월 총괄판에서 지점장이 바로 보는 데 유용한 컬럼을 중심으로 표준화한 예시입니다.</p>
+          <table>
+            <thead>
+              <tr>
+                <th>영역</th>
+                <th>표준 컬럼</th>
+                <th>설명</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>기본 식별</td>
+                <td>월, 지점명, 코드, GA명</td>
+                <td>월별 전개 기준과 조회 대상을 명확히 구분</td>
+              </tr>
+              <tr>
+                <td>대상 여부</td>
+                <td>지점별 대상여부, 담당 지점</td>
+                <td>해당 지점이 실제 전개 대상인지 즉시 판단</td>
+              </tr>
+              <tr>
+                <td>프로모션 유형</td>
+                <td>순수3종 유형, 행복종신 유형</td>
+                <td>대리점별 적용 타입을 한 줄로 확인</td>
+              </tr>
+              <tr>
+                <td>핵심 지급률</td>
+                <td>5년 익월, 7년 익월, 플러스원 익월, 13회 지급률</td>
+                <td>지점장이 가장 자주 묻는 핵심 숫자를 압축 노출</td>
+              </tr>
+              <tr>
+                <td>부가 운영값</td>
+                <td>기본, 자체 선지급, 지사장, 블루멤버스, 브릿지</td>
+                <td>부가 시상과 지점 운영 포인트를 함께 확인</td>
+              </tr>
+              <tr>
+                <td>실행 지원</td>
+                <td>프로모션 담당, 마케팅 연계, 포스터/JPG 링크</td>
+                <td>조회 후 바로 전개 가능한 연결 지점</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="inner">
+          <h2>월 선택 후 상단 카드</h2>
+          <div class="list">
+            <div class="item">
+              <strong>1. 월 기본 정보</strong>
+              <p>`26.5월 프로모션 안내`처럼 월 기준 제목과 최신 업데이트일을 상단에 고정합니다.</p>
+            </div>
+            <div class="item">
+              <strong>2. 장표 준비 상태</strong>
+              <p>공문, 13회차, 총괄판, 환급률표, 포스터가 준비되었는지 배지로 표시합니다.</p>
+            </div>
+            <div class="item">
+              <strong>3. 핵심 지급률 요약</strong>
+              <p>익월 지원, 13회차 지원, 대표 상품군, 순수형 안(400/100, 300/200)을 카드로 요약합니다.</p>
+            </div>
+            <div class="item">
+              <strong>4. 지점별 대상 바로 검색</strong>
+              <p>지점명 입력 시 총괄판 기준으로 대상여부와 GA별 전개 유형을 바로 볼 수 있게 설계합니다.</p>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="grid three">
+      <article class="card">
+        <div class="inner">
+          <h2>공문 요약 카드</h2>
+          <div class="list">
+            <div class="item">
+              <strong>표준 제목</strong>
+              <p>`삼성생명 26.X월 프로모션 안내`를 그대로 사용해 월 기준 혼선을 줄입니다.</p>
+            </div>
+            <div class="item">
+              <strong>핵심 필드</strong>
+              <p>상품 구분, 상품 상세, 주보험 납기, 익월 지원, 13회차 지원, 비고를 고정 표시합니다.</p>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="inner">
+          <h2>건강상해 13회차 카드</h2>
+          <div class="list">
+            <div class="item">
+              <strong>표준 제목</strong>
+              <p>`건강상해 13회차 프로모션`을 별도 카드로 분리해 메인 공문과 구분합니다.</p>
+            </div>
+            <div class="item">
+              <strong>핵심 필드</strong>
+              <p>상품 상세, 주보험 납기, 13회차, GA지급률, 출시 예정/비고를 보여줍니다.</p>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="inner">
+          <h2>지점장 실행 카드</h2>
+          <div class="list">
+            <div class="item">
+              <strong>바로 전개</strong>
+              <p>대리점용 공문, FC용 공문, 포스터, 총괄판 링크를 한 구역에 모아 클릭 동선을 줄입니다.</p>
+            </div>
+            <div class="item">
+              <strong>운영 메모</strong>
+              <p>해당 월의 특이사항, 출시 예정 상품, 예외 지급률, 추가 전개 메모를 별도 박스로 둡니다.</p>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="grid two">
+      <article class="card">
+        <div class="inner">
+          <h2>월별 표준 링크 영역 예시</h2>
+          <p class="sub">장표를 찾는 시간을 줄이기 위해, 지점장에게 필요한 파일만 아래 순서대로 고정하는 것을 추천합니다.</p>
+          <div class="link-grid">
+            <div class="link-card">
+              <strong>메인 공문</strong>
+              <a href="[삼성생명] _26.5月 프로모션 공문.docx">26.5월 프로모션 공문</a>
+            </div>
+            <div class="link-card">
+              <strong>대리점용 공문</strong>
+              <a href="[삼성생명] _26.5月 프로모션 공문_대리점용(순수형 300,200).docx">26.5월 대리점용 300/200</a>
+            </div>
+            <div class="link-card">
+              <strong>FC용 공문</strong>
+              <a href="[삼성생명] _26.5月 프로모션 공문_FC용(순수형 300,200).docx">26.5월 FC용 300/200</a>
+            </div>
+            <div class="link-card">
+              <strong>건강상해 13회차</strong>
+              <a href="[삼성생명] _26.5月 건강상해 13회차 프로모션_200.docx">26.5월 건강상해 13회차 200</a>
+            </div>
+            <div class="link-card">
+              <strong>총괄판</strong>
+              <a href="5월 프로모션 총괄판(260430)_공지.xlsx">5월 프로모션 총괄판</a>
+            </div>
+            <div class="link-card">
+              <strong>포스터</strong>
+              <a href="26.5월 프로모션 포스터_1P용-1.pptx">26.5월 포스터 1P</a>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="inner">
+          <h2>운영상 최종 권장 구조</h2>
+          <div class="list">
+            <div class="item">
+              <strong>상단</strong>
+              <p>`월 선택 + 준비 상태 + 핵심 지급률`만 먼저 보여줘서 지점장이 10초 안에 상황을 파악하게 합니다.</p>
+            </div>
+            <div class="item">
+              <strong>중단</strong>
+              <p>`지점별 대상 현황 표`를 두고, 검색 또는 필터로 자기 지점 대상만 좁혀서 보게 합니다.</p>
+            </div>
+            <div class="item">
+              <strong>하단</strong>
+              <p>`공문/포스터/JPG/총괄판` 바로가기를 두어 조회 후 바로 실행 단계로 넘어가게 합니다.</p>
+            </div>
+            <div class="alert">
+              <strong>26.6월 처리 원칙</strong>
+              <p>현재 확보된 26.6월 파일은 이전 월 zip을 담은 번들 보관본으로 확인되었습니다. 표준 대시보드는 26.1~26.5월 공통 구조로 먼저 만들고, 26.6월 상세 장표 확보 후 같은 틀에 추가하는 것이 안전합니다.</p>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <div class="footer">
+      표준 시안 파일: docs/monthly-dashboard-standard.html<br />
+      분석 근거: 지점장 프로모션 파일 내 26.1월~26.5월 공문/13회차/총괄판/포스터 구조, 26.6월 번들 zip
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <title>GA 프로모션ON 업로드 흐름 검증</title>
+  <style>
+    body { font-family: "Malgun Gothic", sans-serif; margin: 24px; color: #111827; }
+    pre { padding: 16px; border: 1px solid #dbe5f2; border-radius: 12px; background: #f8fafc; white-space: pre-wrap; }
+    iframe { width: 1200px; height: 900px; border: 1px solid #dbe5f2; border-radius: 12px; }
+  </style>
+</head>
+<body>
+  <h1>GA 프로모션ON 업로드 흐름 검증</h1>
+  <pre id="result">테스트 준비 중...</pre>
+  <iframe id="dashboard" src="../docs/final-monthly-promotion-dashboard.html?v=upload-flow-check-2"></iframe>
+  <script>
+    const result = document.getElementById("result");
+    const iframe = document.getElementById("dashboard");
+
+    function wait(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    function readText(win, selector) {
+      return win.document.querySelector(selector)?.textContent?.trim() || "";
+    }
+
+    async function runCheck() {
+      const win = iframe.contentWindow;
+      await wait(500);
+      const response = await fetch("../지점장 프로모션 파일/5월 프로모션 총괄판(260430)_공지.xlsx");
+      const blob = await response.blob();
+      const file = new File([blob], "5월 프로모션 총괄판(260430)_공지.xlsx", { type: blob.type });
+      await win.handlePromotionWorkbookUpload(file, "자동 검증");
+      await wait(800);
+
+      const summary = {
+        uploadStatus: readText(win, "#uploadStatus"),
+        branch: readText(win, "#totalLabel"),
+        total: readText(win, "#totalCount"),
+        confirmed: readText(win, "#confirmedCount"),
+        pending: readText(win, "#pendingCount"),
+        previewAgency: readText(win, "#previewAgencyTag"),
+        previewMainRate: readText(win, "#previewMainRate"),
+        previewSubRate: readText(win, "#previewSubRate"),
+        previewExtraRate: readText(win, "#previewExtraRate"),
+        jpgButton: !!win.document.querySelector("#downloadPreviewJpg"),
+        pptButton: !!win.document.querySelector("#downloadPreviewPpt"),
+        rowJpgButtonTag: win.document.querySelector(".row-jpg-btn")?.tagName || "",
+        rowPptButtonTag: win.document.querySelector(".row-ppt-btn")?.tagName || "",
+        firstRows: [...win.document.querySelectorAll("#promotionRows tr")].slice(0, 3).map((row) => row.innerText.trim())
+      };
+
+      const passed = [
+        summary.uploadStatus.includes("반영 완료"),
+        summary.branch.includes("금천"),
+        summary.total === "5",
+        summary.confirmed === "5",
+        summary.pending === "0",
+        summary.previewAgency.length > 0,
+        summary.previewMainRate.includes("%"),
+        summary.previewSubRate.includes("%"),
+        summary.previewExtraRate.includes("%"),
+        summary.jpgButton,
+        summary.pptButton,
+        summary.rowJpgButtonTag === "BUTTON",
+        summary.rowPptButtonTag === "BUTTON",
+        summary.firstRows.some((row) => row.includes("미리보기")),
+        summary.firstRows.some((row) => row.includes("PPT 받기"))
+      ];
+
+      result.textContent = JSON.stringify({
+        ok: passed.every(Boolean),
+        checks: passed,
+        summary
+      }, null, 2);
+    }
+
+    iframe.addEventListener("load", () => {
+      runCheck().catch((error) => {
+        result.textContent = JSON.stringify({ ok: false, error: error.message }, null, 2);
+      });
+    });
+  </script>
+</body>
+</html>

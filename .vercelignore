@@ -1,0 +1,15 @@
+supabase/
+tests/
+skills/
+ml/
+imported/
+tmp_pptx_extract/
+tmp_pptx_inspect/
+지점장 프로모션 파일/
+*.docx
+~$*
+attach(1).txt
+(삼성생명)2605월 상품별 예상 해약환급률표.xlsx
+5월 프로모션 총괄판(260430)_공지.xlsx
+docs/monthly-dashboard-standard.html
+docs/monthly-dashboard-preview.svg

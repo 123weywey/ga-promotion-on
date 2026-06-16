@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GA 프로모션ON 대시보드</title>
+  <style>
+    :root {
+      --bg: #f6f3ee;
+      --surface: rgba(255, 251, 245, 0.88);
+      --surface-strong: #fffdf8;
+      --ink: #1d1a17;
+      --muted: #6a6258;
+      --line: rgba(60, 44, 29, 0.12);
+      --brand: #c96a16;
+      --brand-deep: #8e4310;
+      --green: #1f7a45;
+      --amber: #ad7a00;
+      --shadow: 0 20px 50px rgba(78, 52, 20, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Malgun Gothic", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(230, 167, 92, 0.3), transparent 34%),
+        radial-gradient(circle at top right, rgba(124, 78, 31, 0.18), transparent 28%),
+        linear-gradient(180deg, #fbf5ed 0%, #f2ece3 100%);
+    }
+
+    .shell {
+      width: min(1240px, calc(100% - 32px));
+      margin: 24px auto 48px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 32px;
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.92), rgba(251, 240, 224, 0.88)),
+        linear-gradient(135deg, #fff 0%, #f7efe4 100%);
+      box-shadow: var(--shadow);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -60px -90px auto;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(201, 106, 22, 0.2), transparent 65%);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(201, 106, 22, 0.1);
+      color: var(--brand-deep);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    h1 {
+      margin: 16px 0 10px;
+      font-size: clamp(32px, 5vw, 58px);
+      line-height: 1.04;
+      letter-spacing: -0.04em;
+    }
+
+    .hero p {
+      width: min(760px, 100%);
+      margin: 0;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.7;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .kpi-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .two-col {
+      grid-template-columns: 1.2fr 0.8fr;
+    }
+
+    .three-col {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: var(--surface);
+      backdrop-filter: blur(14px);
+      box-shadow: var(--shadow);
+    }
+
+    .card-inner {
+      padding: 24px;
+    }
+
+    .card h2 {
+      margin: 0 0 14px;
+      font-size: 22px;
+      letter-spacing: -0.03em;
+    }
+
+    .sub {
+      margin: -4px 0 18px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .kpi {
+      min-height: 160px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .kpi-label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .kpi-value {
+      margin: 10px 0 0;
+      font-size: clamp(32px, 4vw, 48px);
+      font-weight: 800;
+      letter-spacing: -0.05em;
+    }
+
+    .kpi-note {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .agency-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .agency {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--surface-strong);
+    }
+
+    .agency-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .agency-name {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .badge.confirmed {
+      color: var(--green);
+      background: rgba(31, 122, 69, 0.12);
+    }
+
+    .badge.negotiating {
+      color: var(--amber);
+      background: rgba(173, 122, 0, 0.14);
+    }
+
+    .agency-meta {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .meta-box {
+      padding: 12px;
+      border-radius: 14px;
+      background: #faf5ee;
+    }
+
+    .meta-box strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+    }
+
+    .meta-box span {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .product-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .product-table th,
+    .product-table td {
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+    }
+
+    .product-table th {
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .flow {
+      display: grid;
+      gap: 12px;
+    }
+
+    .flow-step {
+      padding: 16px 18px;
+      border-left: 4px solid var(--brand);
+      border-radius: 16px;
+      background: rgba(255, 247, 235, 0.9);
+    }
+
+    .flow-step strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 15px;
+    }
+
+    .flow-step span {
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .point-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .point {
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(249, 240, 229, 0.95));
+      border: 1px solid var(--line);
+    }
+
+    .point strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .point p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .notice {
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(29, 26, 23, 0.94);
+      color: #f7efe4;
+    }
+
+    .notice strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 15px;
+    }
+
+    .notice p {
+      margin: 0;
+      color: rgba(247, 239, 228, 0.8);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .image-card img {
+      width: 100%;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      display: block;
+    }
+
+    .footer {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+      text-align: right;
+    }
+
+    @media (max-width: 980px) {
+      .kpi-grid,
+      .two-col,
+      .three-col,
+      .agency-meta {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="hero">
+      <div class="eyebrow">GA Agent Dashboard</div>
+      <h1>지점장이 기다리지 않는<br />프로모션ON 현황판</h1>
+      <p>
+        현재 확보된 기획서와 더미 데이터만으로 만든 시안입니다. 핵심은
+        `협의 상태 조회`, `확정 시 숫자 반영`, `현장 즉시 활용 가능성`을
+        한 화면에서 보이게 하는 것입니다.
+      </p>
+      <div class="hero-meta">
+        <span>기준월: 26.6월</span>
+        <span>기준 데이터: 3개 대리점</span>
+        <span>최종 업데이트 기준: 2026-06-11</span>
+      </div>
+    </section>
+
+    <section class="grid kpi-grid">
+      <article class="card"><div class="card-inner kpi">
+        <div>
+          <div class="kpi-label">대리점 수</div>
+          <div class="kpi-value">3</div>
+        </div>
+        <div class="kpi-note">현재 더미 데이터에 등록된 조회 대상 대리점 수</div>
+      </div></article>
+      <article class="card"><div class="card-inner kpi">
+        <div>
+          <div class="kpi-label">확정 상태</div>
+          <div class="kpi-value">2</div>
+        </div>
+        <div class="kpi-note">즉시 숫자 공개와 JPG 연계가 가능한 상태</div>
+      </div></article>
+      <article class="card"><div class="card-inner kpi">
+        <div>
+          <div class="kpi-label">협의중 상태</div>
+          <div class="kpi-value">1</div>
+        </div>
+        <div class="kpi-note">상태만 공개하고 프로모션 수치는 비공개 처리</div>
+      </div></article>
+      <article class="card"><div class="card-inner kpi">
+        <div>
+          <div class="kpi-label">핵심 효율 포인트</div>
+          <div class="kpi-value">3</div>
+        </div>
+        <div class="kpi-note">문의 감소, 장표 자동화, 지점장 재작성 최소화</div>
+      </div></article>
+    </section>
+
+    <section class="grid two-col">
+      <article class="card">
+        <div class="card-inner">
+          <h2>대리점별 상태 요약</h2>
+          <p class="sub">지점장 관점에서 바로 확인해야 하는 정보만 앞에 배치했습니다.</p>
+          <div class="agency-list">
+            <div class="agency">
+              <div class="agency-top">
+                <div class="agency-name">더금융서비스</div>
+                <div class="badge confirmed">확정</div>
+              </div>
+              <div class="agency-meta">
+                <div class="meta-box"><strong>익월 시상</strong><span>400%</span></div>
+                <div class="meta-box"><strong>자체 시상</strong><span>400%</span></div>
+                <div class="meta-box"><strong>업데이트</strong><span style="font-size:16px;">06-11 16:00</span></div>
+              </div>
+              <table class="product-table">
+                <thead>
+                  <tr><th>상품</th><th>지급률</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>행복한간편사랑 5년납</td><td>500%</td></tr>
+                  <tr><td>더블보장 13차월</td><td>500%</td></tr>
+                  <tr><td>New 플러스원 20세초과 13차월</td><td>700%</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="agency">
+              <div class="agency-top">
+                <div class="agency-name">인카금융서비스</div>
+                <div class="badge negotiating">협의중</div>
+              </div>
+              <div class="agency-meta">
+                <div class="meta-box"><strong>익월 시상</strong><span>비공개</span></div>
+                <div class="meta-box"><strong>자체 시상</strong><span>비공개</span></div>
+                <div class="meta-box"><strong>업데이트</strong><span style="font-size:16px;">06-11 15:20</span></div>
+              </div>
+              <div class="notice">
+                <strong>협의중 표시 원칙</strong>
+                <p>숫자는 노출하지 않고 상태만 명확히 보여줍니다. 지점장은 문의 대신 상태를 직접 조회하고, RM은 확정 이후에만 수치를 반영합니다.</p>
+              </div>
+            </div>
+
+            <div class="agency">
+              <div class="agency-top">
+                <div class="agency-name">A+에셋</div>
+                <div class="badge confirmed">확정</div>
+              </div>
+              <div class="agency-meta">
+                <div class="meta-box"><strong>익월 시상</strong><span>350%</span></div>
+                <div class="meta-box"><strong>자체 시상</strong><span>300%</span></div>
+                <div class="meta-box"><strong>업데이트</strong><span style="font-size:16px;">06-11 14:40</span></div>
+              </div>
+              <table class="product-table">
+                <thead>
+                  <tr><th>상품</th><th>지급률</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>행복한간편사랑 5년납</td><td>450%</td></tr>
+                  <tr><td>더블보장 13차월</td><td>420%</td></tr>
+                  <tr><td>New 플러스원 20세초과 13차월</td><td>650%</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-inner">
+          <h2>운영 흐름</h2>
+          <p class="sub">문서에 있는 TO-BE 흐름을 지점장 확인 중심으로 재배열했습니다.</p>
+          <div class="flow">
+            <div class="flow-step">
+              <strong>1. RM 상태 업데이트</strong>
+              <span>대리점별 상태를 `협의중` 또는 `확정`으로 단순하게 관리합니다.</span>
+            </div>
+            <div class="flow-step">
+              <strong>2. 지점장 검색 조회</strong>
+              <span>지점장은 대리점명 검색만으로 최신 상태를 바로 확인합니다.</span>
+            </div>
+            <div class="flow-step">
+              <strong>3. 확정 시 숫자 자동 반영</strong>
+              <span>상단 시상값과 상품별 퍼센트가 포스터 템플릿에 자동 주입됩니다.</span>
+            </div>
+            <div class="flow-step">
+              <strong>4. JPG 자동 생성</strong>
+              <span>같은 데이터로 발표·공유용 이미지 산출물을 즉시 내려받을 수 있게 설계합니다.</span>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="grid three-col">
+      <article class="card">
+        <div class="card-inner">
+          <h2>입력</h2>
+          <div class="point-list">
+            <div class="point">
+              <strong>RM 입력값</strong>
+              <p>진행상태, 기준월, 익월 시상, 자체 시상, 상품별 지급률 값을 관리합니다.</p>
+            </div>
+            <div class="point">
+              <strong>기준정보</strong>
+              <p>대리점 코드와 한글 대리점명은 내부 기준정보로 유지하고, 화면에는 한글명만 노출합니다.</p>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-inner">
+          <h2>처리</h2>
+          <div class="point-list">
+            <div class="point">
+              <strong>상태 판정</strong>
+              <p>`협의중`이면 숫자를 숨기고, `확정`이면 숫자를 공개하는 간단한 규칙으로 동작합니다.</p>
+            </div>
+            <div class="point">
+              <strong>템플릿 주입</strong>
+              <p>고정 포스터 레이아웃에 변동값만 채워 넣어 일관된 결과물을 만듭니다.</p>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-inner">
+          <h2>출력</h2>
+          <div class="point-list">
+            <div class="point">
+              <strong>지점장 조회 화면</strong>
+              <p>별도 학습 없이 검색 중심으로 최신 상태와 확정 수치를 확인할 수 있습니다.</p>
+            </div>
+            <div class="point">
+              <strong>공유용 산출물</strong>
+              <p>포스터와 JPG를 같은 데이터로 생성해 최신본 기준을 하나로 맞춥니다.</p>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="grid two-col">
+      <article class="card image-card">
+        <div class="card-inner">
+          <h2>AS-IS / TO-BE 비교 이미지</h2>
+          <p class="sub">이전 작업에서 만든 비교 차트를 그대로 연결했습니다.</p>
+          <img src="../imported/submission_copy/GA_프로모션공유_ASIS_TOBE_비교차트.png" alt="GA 프로모션ON 비교 차트" />
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-inner">
+          <h2>안전 및 운영 규칙</h2>
+          <div class="point-list">
+            <div class="point">
+              <strong>내부 사용자 중심</strong>
+              <p>외부 경쟁사나 타 원수사 직원은 조회할 수 없도록 접근 통제가 필요합니다.</p>
+            </div>
+            <div class="point">
+              <strong>상태 우선 공개</strong>
+              <p>협의중 단계에서는 확정되지 않은 숫자를 노출하지 않고, 대기와 오해를 줄이는 방향으로 운영합니다.</p>
+            </div>
+            <div class="point">
+              <strong>운영 단순성</strong>
+              <p>상태값 2개와 고정 템플릿 중심으로 유지해 일반 직원도 수정·재사용할 수 있게 설계합니다.</p>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <div class="footer">
+      시안 위치: docs/dashboard.html<br />
+      데이터 출처: imported/codex_day3_source/data/promotion-store.json, ga-promotion-on-report.md
+    </div>
+  </div>
+</body>
+</html>
+

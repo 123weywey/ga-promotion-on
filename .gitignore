@@ -1,0 +1,12 @@
+.vercel/
+tmp_pptx_extract/
+tmp_pptx_inspect/
+imported/
+data/
+지점장 프로모션 파일/
+월별 프로모션 정리(3가지 파일)/
+*.xlsx
+*.pptx
+*.docx
+~$*
+attach(1).txt

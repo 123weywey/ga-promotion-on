@@ -1,0 +1,214 @@
+<svg width="1440" height="2200" viewBox="0 0 1440 2200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="720" y1="0" x2="720" y2="2200" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FBF6EE"/>
+      <stop offset="1" stop-color="#EFE7DC"/>
+    </linearGradient>
+    <linearGradient id="hero" x1="132" y1="40" x2="1308" y2="320" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFDF9"/>
+      <stop offset="1" stop-color="#F7EBDD"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#FFFCF7"/>
+      <stop offset="1" stop-color="#F7EFE4"/>
+    </linearGradient>
+    <filter id="shadow" x="0" y="0" width="1440" height="2200" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="18" stdDeviation="24" flood-color="#47311A" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <rect width="1440" height="2200" fill="url(#bg)"/>
+  <circle cx="120" cy="90" r="220" fill="#ECB066" fill-opacity="0.18"/>
+  <circle cx="1320" cy="100" r="180" fill="#8E5C26" fill-opacity="0.12"/>
+
+  <g filter="url(#shadow)">
+    <rect x="72" y="36" width="1296" height="260" rx="28" fill="url(#hero)" stroke="#D8CCBE"/>
+    <rect x="112" y="72" width="230" height="34" rx="17" fill="#F4E2D0"/>
+    <text x="131" y="94" fill="#7A3D10" font-size="16" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="700">Standard Dashboard Draft</text>
+    <text x="112" y="158" fill="#1F1A16" font-size="54" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="800">GA 프로모션ON</text>
+    <text x="112" y="220" fill="#1F1A16" font-size="54" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="800">월별 자료 구조 참고본</text>
+    <text x="112" y="262" fill="#6D6358" font-size="20" font-family="Segoe UI, Malgun Gothic, sans-serif">공문, 13회차, 총괄판, 환급률표, 포스터를 지점장 기준으로 한 화면에 모은 표준형 시안</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="72" y="332" width="300" height="150" rx="24" fill="#FFFBF5" stroke="#D8CCBE"/>
+    <rect x="390" y="332" width="300" height="150" rx="24" fill="#FFFBF5" stroke="#D8CCBE"/>
+    <rect x="708" y="332" width="300" height="150" rx="24" fill="#FFFBF5" stroke="#D8CCBE"/>
+    <rect x="1026" y="332" width="342" height="150" rx="24" fill="#FFFBF5" stroke="#D8CCBE"/>
+    <text x="98" y="372" fill="#6D6358" font-size="15" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="700">분석 월 수</text>
+    <text x="98" y="438" fill="#1F1A16" font-size="54" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="800">6</text>
+    <text x="98" y="465" fill="#6D6358" font-size="16" font-family="Segoe UI, Malgun Gothic, sans-serif">26.1월~26.6월 기준</text>
+    <text x="416" y="372" fill="#6D6358" font-size="15" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="700">공통 장표 축</text>
+    <text x="416" y="438" fill="#1F1A16" font-size="54" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="800">5</text>
+    <text x="416" y="465" fill="#6D6358" font-size="16" font-family="Segoe UI, Malgun Gothic, sans-serif">공문, 13회차, 총괄판, 환급률표, 포스터</text>
+    <text x="734" y="372" fill="#6D6358" font-size="15" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="700">지점장 핵심 확인</text>
+    <text x="734" y="438" fill="#1F1A16" font-size="54" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="800">4</text>
+    <text x="734" y="465" fill="#6D6358" font-size="16" font-family="Segoe UI, Malgun Gothic, sans-serif">대상 여부, 지급률, 유형, 바로가기</text>
+    <text x="1052" y="372" fill="#6D6358" font-size="15" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="700">예외 월</text>
+    <text x="1052" y="438" fill="#1F1A16" font-size="54" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="800">26.6</text>
+    <text x="1052" y="465" fill="#6D6358" font-size="16" font-family="Segoe UI, Malgun Gothic, sans-serif">상세 장표 미확인, 번들 zip 우선 표시</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="72" y="516" width="1296" height="330" rx="24" fill="#FFFBF5" stroke="#D8CCBE"/>
+    <text x="98" y="560" fill="#1F1A16" font-size="30" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="800">월별 자료 구성 현황</text>
+    <text x="98" y="592" fill="#6D6358" font-size="16" font-family="Segoe UI, Malgun Gothic, sans-serif">월이 바뀌어도 대시보드 구조는 유지하고, 아래 준비 상태만 바뀌게 설계</text>
+
+    <g>
+      <rect x="98" y="628" width="190" height="170" rx="18" fill="#FFFDFA" stroke="#D8CCBE"/>
+      <rect x="98" y="764" width="86" height="26" rx="13" fill="#DFF2E7"/><text x="122" y="782" fill="#1B7B45" font-size="13" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="700">확인</text>
+      <text x="120" y="668" fill="#1F1A16" font-size="28" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="800">26.1월</text>
+      <text x="120" y="706" fill="#6D6358" font-size="14" font-family="Segoe UI, Malgun Gothic, sans-serif">공문, 13회차 4종,</text>
+      <text x="120" y="728" fill="#6D6358" font-size="14" font-family="Segoe UI, Malgun Gothic, sans-serif">표준형 JPG, 총괄판</text>
+    </g>
+    <g>
+      <rect x="306" y="628" width="190" height="170" rx="18" fill="#FFFDFA" stroke="#D8CCBE"/>
+      <rect x="306" y="764" width="86" height="26" rx="13" fill="#DFF2E7"/><text x="330" y="782" fill="#1B7B45" font-size="13" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="700">확인</text>
+      <text x="328" y="668" fill="#1F1A16" font-size="28" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="800">26.2월</text>
+      <text x="328" y="706" fill="#6D6358" font-size="14" font-family="Segoe UI, Malgun Gothic, sans-serif">FC/대리점용 2안,</text>
+      <text x="328" y="728" fill="#6D6358" font-size="14" font-family="Segoe UI, Malgun Gothic, sans-serif">13회차, 총괄판</text>
+    </g>
+    <g>
+      <rect x="514" y="628" width="190" height="170" rx="18" fill="#FFFDFA" stroke="#D8CCBE"/>
+      <rect x="514" y="764" width="86" height="26" rx="13" fill="#DFF2E7"/><text x="538" y="782" fill="#1B7B45" font-size="13" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="700">확인</text>
+      <text x="536" y="668" fill="#1F1A16" font-size="28" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="800">26.3월</text>
+      <text x="536" y="706" fill="#6D6358" font-size="14" font-family="Segoe UI, Malgun Gothic, sans-serif">환급률자료 추가,</text>
+      <text x="536" y="728" fill="#6D6358" font-size="14" font-family="Segoe UI, Malgun Gothic, sans-serif">총괄판 공지형</text>
+    </g>
+    <g>
+      <rect x="722" y="628" width="190" height="170" rx="18" fill="#FFFDFA" stroke="#D8CCBE"/>
+      <rect x="722" y="764" width="86" height="26" rx="13" fill="#DFF2E7"/><text x="746" y="782" fill="#1B7B45" font-size="13" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="700">확인</text>
+      <text x="744" y="668" fill="#1F1A16" font-size="28" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="800">26.4월</text>
+      <text x="744" y="706" fill="#6D6358" font-size="14" font-family="Segoe UI, Malgun Gothic, sans-serif">환급률표, 포스터,</text>
+      <text x="744" y="728" fill="#6D6358" font-size="14" font-family="Segoe UI, Malgun Gothic, sans-serif">총괄판</text>
+    </g>
+    <g>
+      <rect x="930" y="628" width="190" height="170" rx="18" fill="#FFFDFA" stroke="#D8CCBE"/>
+      <rect x="930" y="764" width="86" height="26" rx="13" fill="#DFF2E7"/><text x="954" y="782" fill="#1B7B45" font-size="13" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="700">확인</text>
+      <text x="952" y="668" fill="#1F1A16" font-size="28" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="800">26.5월</text>
+      <text x="952" y="706" fill="#6D6358" font-size="14" font-family="Segoe UI, Malgun Gothic, sans-serif">환급률표, 포스터,</text>
+      <text x="952" y="728" fill="#6D6358" font-size="14" font-family="Segoe UI, Malgun Gothic, sans-serif">총괄판</text>
+    </g>
+    <g>
+      <rect x="1138" y="628" width="190" height="170" rx="18" fill="#FFFDFA" stroke="#D8CCBE"/>
+      <rect x="1138" y="764" width="100" height="26" rx="13" fill="#F7E8D0"/><text x="1162" y="782" fill="#B17A00" font-size="13" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="700">미확인</text>
+      <text x="1160" y="668" fill="#1F1A16" font-size="28" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="800">26.6월</text>
+      <text x="1160" y="706" fill="#6D6358" font-size="14" font-family="Segoe UI, Malgun Gothic, sans-serif">번들 zip 보관본</text>
+      <text x="1160" y="728" fill="#6D6358" font-size="14" font-family="Segoe UI, Malgun Gothic, sans-serif">상세 장표 확보 필요</text>
+    </g>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="72" y="882" width="800" height="530" rx="24" fill="#FFFBF5" stroke="#D8CCBE"/>
+    <text x="98" y="926" fill="#1F1A16" font-size="30" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="800">표준 대시보드 핵심 표</text>
+    <text x="98" y="958" fill="#6D6358" font-size="16" font-family="Segoe UI, Malgun Gothic, sans-serif">5월 총괄판 기준으로 지점장이 실제로 많이 보는 컬럼을 압축</text>
+    <rect x="98" y="986" width="748" height="54" rx="12" fill="#F8F1E6"/>
+    <text x="116" y="1020" fill="#6D6358" font-size="13" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="700">영역</text>
+    <text x="296" y="1020" fill="#6D6358" font-size="13" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="700">표준 컬럼</text>
+    <text x="560" y="1020" fill="#6D6358" font-size="13" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="700">설명</text>
+    <g font-family="Segoe UI, Malgun Gothic, sans-serif">
+      <line x1="98" y1="1058" x2="846" y2="1058" stroke="#E5DACB"/>
+      <text x="116" y="1094" fill="#1F1A16" font-size="16" font-weight="700">기본 식별</text>
+      <text x="296" y="1094" fill="#1F1A16" font-size="15">월, 지점명, 코드, GA명</text>
+      <text x="560" y="1094" fill="#6D6358" font-size="14">월별 전개 기준과 조회 대상 구분</text>
+      <line x1="98" y1="1120" x2="846" y2="1120" stroke="#E5DACB"/>
+      <text x="116" y="1156" fill="#1F1A16" font-size="16" font-weight="700">대상 여부</text>
+      <text x="296" y="1156" fill="#1F1A16" font-size="15">지점별 대상여부, 담당 지점</text>
+      <text x="560" y="1156" fill="#6D6358" font-size="14">실제 전개 대상인지 즉시 판단</text>
+      <line x1="98" y1="1182" x2="846" y2="1182" stroke="#E5DACB"/>
+      <text x="116" y="1218" fill="#1F1A16" font-size="16" font-weight="700">프로모션 유형</text>
+      <text x="296" y="1218" fill="#1F1A16" font-size="15">순수3종 유형, 행복종신 유형</text>
+      <text x="560" y="1218" fill="#6D6358" font-size="14">대리점별 적용 타입 한 줄 확인</text>
+      <line x1="98" y1="1244" x2="846" y2="1244" stroke="#E5DACB"/>
+      <text x="116" y="1280" fill="#1F1A16" font-size="16" font-weight="700">핵심 지급률</text>
+      <text x="296" y="1280" fill="#1F1A16" font-size="15">5년/7년 익월, 플러스원, 13회</text>
+      <text x="560" y="1280" fill="#6D6358" font-size="14">가장 자주 묻는 숫자 압축</text>
+      <line x1="98" y1="1306" x2="846" y2="1306" stroke="#E5DACB"/>
+      <text x="116" y="1342" fill="#1F1A16" font-size="16" font-weight="700">부가 운영값</text>
+      <text x="296" y="1342" fill="#1F1A16" font-size="15">기본, 자체 선지급, 지사장, 브릿지</text>
+      <text x="560" y="1342" fill="#6D6358" font-size="14">지점 운영 포인트 함께 확인</text>
+    </g>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="890" y="882" width="478" height="530" rx="24" fill="#FFFBF5" stroke="#D8CCBE"/>
+    <text x="916" y="926" fill="#1F1A16" font-size="30" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="800">월 선택 후 상단 카드</text>
+    <g>
+      <rect x="916" y="968" width="426" height="88" rx="18" fill="url(#card)" stroke="#E5DACB"/>
+      <text x="938" y="1000" fill="#1F1A16" font-size="18" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="800">1. 월 기본 정보</text>
+      <text x="938" y="1030" fill="#6D6358" font-size="14" font-family="Segoe UI, Malgun Gothic, sans-serif">26.5월 프로모션 안내, 최신 업데이트일, 월별 메모</text>
+    </g>
+    <g>
+      <rect x="916" y="1072" width="426" height="88" rx="18" fill="url(#card)" stroke="#E5DACB"/>
+      <text x="938" y="1104" fill="#1F1A16" font-size="18" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="800">2. 장표 준비 상태</text>
+      <text x="938" y="1134" fill="#6D6358" font-size="14" font-family="Segoe UI, Malgun Gothic, sans-serif">공문, 13회차, 총괄판, 환급률표, 포스터 준비 배지</text>
+    </g>
+    <g>
+      <rect x="916" y="1176" width="426" height="88" rx="18" fill="url(#card)" stroke="#E5DACB"/>
+      <text x="938" y="1208" fill="#1F1A16" font-size="18" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="800">3. 핵심 지급률 요약</text>
+      <text x="938" y="1238" fill="#6D6358" font-size="14" font-family="Segoe UI, Malgun Gothic, sans-serif">익월 지원, 13회차, 대표 상품군, 400/100·300/200 안</text>
+    </g>
+    <g>
+      <rect x="916" y="1280" width="426" height="88" rx="18" fill="url(#card)" stroke="#E5DACB"/>
+      <text x="938" y="1312" fill="#1F1A16" font-size="18" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="800">4. 지점별 대상 바로 검색</text>
+      <text x="938" y="1342" fill="#6D6358" font-size="14" font-family="Segoe UI, Malgun Gothic, sans-serif">지점명 입력 시 대상여부와 GA별 전개 유형 즉시 확인</text>
+    </g>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="72" y="1448" width="410" height="324" rx="24" fill="#FFFBF5" stroke="#D8CCBE"/>
+    <rect x="515" y="1448" width="410" height="324" rx="24" fill="#FFFBF5" stroke="#D8CCBE"/>
+    <rect x="958" y="1448" width="410" height="324" rx="24" fill="#FFFBF5" stroke="#D8CCBE"/>
+    <text x="98" y="1492" fill="#1F1A16" font-size="28" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="800">공문 요약 카드</text>
+    <text x="98" y="1532" fill="#1F1A16" font-size="18" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="800">표준 제목</text>
+    <text x="98" y="1560" fill="#6D6358" font-size="14" font-family="Segoe UI, Malgun Gothic, sans-serif">삼성생명 26.X월 프로모션 안내</text>
+    <text x="98" y="1604" fill="#1F1A16" font-size="18" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="800">핵심 필드</text>
+    <text x="98" y="1632" fill="#6D6358" font-size="14" font-family="Segoe UI, Malgun Gothic, sans-serif">상품 구분, 상세, 납기, 익월 지원, 13회차, 비고</text>
+
+    <text x="541" y="1492" fill="#1F1A16" font-size="28" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="800">건강상해 13회차</text>
+    <text x="541" y="1532" fill="#1F1A16" font-size="18" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="800">표준 제목</text>
+    <text x="541" y="1560" fill="#6D6358" font-size="14" font-family="Segoe UI, Malgun Gothic, sans-serif">건강상해 13회차 프로모션</text>
+    <text x="541" y="1604" fill="#1F1A16" font-size="18" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="800">핵심 필드</text>
+    <text x="541" y="1632" fill="#6D6358" font-size="14" font-family="Segoe UI, Malgun Gothic, sans-serif">상품 상세, 납기, 13회차, GA지급률, 출시 메모</text>
+
+    <text x="984" y="1492" fill="#1F1A16" font-size="28" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="800">지점장 실행 카드</text>
+    <text x="984" y="1532" fill="#1F1A16" font-size="18" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="800">바로 전개</text>
+    <text x="984" y="1560" fill="#6D6358" font-size="14" font-family="Segoe UI, Malgun Gothic, sans-serif">대리점용 공문, FC용 공문, 포스터, 총괄판 링크</text>
+    <text x="984" y="1604" fill="#1F1A16" font-size="18" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="800">운영 메모</text>
+    <text x="984" y="1632" fill="#6D6358" font-size="14" font-family="Segoe UI, Malgun Gothic, sans-serif">출시 예정 상품, 예외 지급률, 월별 특이사항</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="72" y="1808" width="790" height="280" rx="24" fill="#FFFBF5" stroke="#D8CCBE"/>
+    <rect x="890" y="1808" width="478" height="280" rx="24" fill="#FFFBF5" stroke="#D8CCBE"/>
+    <text x="98" y="1852" fill="#1F1A16" font-size="28" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="800">월별 표준 링크 영역</text>
+    <rect x="98" y="1882" width="220" height="70" rx="16" fill="#FFFDFA" stroke="#E5DACB"/>
+    <rect x="336" y="1882" width="220" height="70" rx="16" fill="#FFFDFA" stroke="#E5DACB"/>
+    <rect x="574" y="1882" width="220" height="70" rx="16" fill="#FFFDFA" stroke="#E5DACB"/>
+    <rect x="98" y="1966" width="220" height="70" rx="16" fill="#FFFDFA" stroke="#E5DACB"/>
+    <rect x="336" y="1966" width="220" height="70" rx="16" fill="#FFFDFA" stroke="#E5DACB"/>
+    <rect x="574" y="1966" width="220" height="70" rx="16" fill="#FFFDFA" stroke="#E5DACB"/>
+    <g font-family="Segoe UI, Malgun Gothic, sans-serif">
+      <text x="116" y="1912" fill="#1F1A16" font-size="16" font-weight="800">메인 공문</text>
+      <text x="116" y="1936" fill="#6D6358" font-size="13">26.5월 프로모션 공문</text>
+      <text x="354" y="1912" fill="#1F1A16" font-size="16" font-weight="800">대리점용 공문</text>
+      <text x="354" y="1936" fill="#6D6358" font-size="13">300/200, 400/100</text>
+      <text x="592" y="1912" fill="#1F1A16" font-size="16" font-weight="800">FC용 공문</text>
+      <text x="592" y="1936" fill="#6D6358" font-size="13">300/200, 400/100</text>
+      <text x="116" y="1996" fill="#1F1A16" font-size="16" font-weight="800">건강상해 13회차</text>
+      <text x="116" y="2020" fill="#6D6358" font-size="13">200/300 등 분기형</text>
+      <text x="354" y="1996" fill="#1F1A16" font-size="16" font-weight="800">총괄판</text>
+      <text x="354" y="2020" fill="#6D6358" font-size="13">지점별 대상 현황</text>
+      <text x="592" y="1996" fill="#1F1A16" font-size="16" font-weight="800">포스터/JPG</text>
+      <text x="592" y="2020" fill="#6D6358" font-size="13">즉시 전개용</text>
+    </g>
+
+    <text x="916" y="1852" fill="#1F1A16" font-size="28" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="800">운영상 권장 구조</text>
+    <text x="916" y="1900" fill="#1F1A16" font-size="18" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="800">상단</text>
+    <text x="916" y="1926" fill="#6D6358" font-size="14" font-family="Segoe UI, Malgun Gothic, sans-serif">월 선택 + 준비 상태 + 핵심 지급률</text>
+    <text x="916" y="1966" fill="#1F1A16" font-size="18" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="800">중단</text>
+    <text x="916" y="1992" fill="#6D6358" font-size="14" font-family="Segoe UI, Malgun Gothic, sans-serif">지점별 대상 현황 표 + 검색/필터</text>
+    <text x="916" y="2032" fill="#1F1A16" font-size="18" font-family="Segoe UI, Malgun Gothic, sans-serif" font-weight="800">하단</text>
+    <text x="916" y="2058" fill="#6D6358" font-size="14" font-family="Segoe UI, Malgun Gothic, sans-serif">공문/포스터/JPG/총괄판 바로가기</text>
+  </g>
+</svg>

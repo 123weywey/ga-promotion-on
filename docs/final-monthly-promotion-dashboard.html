@@ -1,0 +1,4162 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>프로모션 ON 최종 JPG 생성 대시보드</title>
+  <script>
+    (() => {
+      const isMobileDevice = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+      const isNarrowScreen = window.matchMedia("(max-width: 760px)").matches;
+      if (isMobileDevice || isNarrowScreen) {
+        window.location.replace("mobile-promotion-dashboard.html");
+      }
+    })();
+  </script>
+  <style>
+    :root {
+      --bg: #f7f9fc;
+      --panel: #ffffff;
+      --panel-soft: #fbfcfe;
+      --mint: #e5f6ef;
+      --mint-soft: #f3fbf7;
+      --ink: #172033;
+      --muted: #6c7789;
+      --line: #e5eaf2;
+      --line-strong: #d8e1ee;
+      --blue: #1f62e6;
+      --blue-dark: #1b3f96;
+      --green: #15803d;
+      --orange: #b45309;
+      --red: #b42318;
+      --paper: #fff7ea;
+      --paper-line: #e8cda2;
+      --shadow: 0 14px 34px rgba(23, 32, 51, .08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(180deg, #fbfcfe 0%, #f5f8fb 58%, #edf2f8 100%);
+      color: var(--ink);
+      font-family: "Pretendard Variable", "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", "Segoe UI", sans-serif;
+    }
+
+    .shell {
+      width: min(1480px, calc(100% - 40px));
+      margin: 24px auto 44px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+      padding: 18px 22px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background:
+        linear-gradient(120deg, rgba(229, 246, 239, .72) 0%, rgba(255, 255, 255, .95) 32%, rgba(255, 255, 255, .98) 100%);
+      box-shadow: var(--shadow);
+    }
+
+    h1 {
+      margin: 0;
+      display: inline-flex;
+      align-items: baseline;
+      gap: 10px;
+      font-size: clamp(28px, 4vw, 42px);
+      line-height: 1;
+      letter-spacing: -.06em;
+      font-weight: 800;
+      color: var(--blue-dark);
+    }
+
+    .brand-main {
+      color: var(--blue);
+    }
+
+    .brand-on {
+      color: var(--blue-dark);
+    }
+
+    .top-actions {
+      position: relative;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .button {
+      border: 1px solid var(--line-strong);
+      border-radius: 12px;
+      background: var(--panel);
+      color: var(--ink);
+      padding: 11px 15px;
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: 0 4px 10px rgba(23, 32, 51, .04);
+      cursor: pointer;
+      font: inherit;
+    }
+
+    .button.primary {
+      border-color: var(--blue);
+      background: var(--blue);
+      color: white;
+      box-shadow: 0 8px 18px rgba(31, 98, 230, .18);
+    }
+
+    .button.small {
+      padding: 8px 12px;
+      font-size: 12px;
+      box-shadow: none;
+    }
+
+    .button.is-disabled {
+      opacity: .45;
+      pointer-events: none;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 18px;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, .96);
+      box-shadow: var(--shadow);
+    }
+
+    .panel.pad { padding: 20px; }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .title-actions {
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -.03em;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 6px 11px;
+      font-size: 12px;
+      font-weight: 700;
+      background: #f7fbff;
+      border: 1px solid #dbe7ff;
+      color: var(--blue-dark);
+      white-space: nowrap;
+    }
+
+    .upload-box {
+      border: 2px dashed #a9bdd6;
+      border-radius: 12px;
+      background: #f8fbff;
+      padding: 18px;
+      text-align: center;
+    }
+
+    .upload-box strong {
+      font-size: 17px;
+    }
+
+    .control-hub {
+      display: grid;
+      gap: 14px;
+      margin-top: 14px;
+      background:
+        linear-gradient(135deg, rgba(229, 246, 239, .5) 0%, rgba(255, 255, 255, .95) 42%, rgba(246, 249, 252, .98) 100%);
+    }
+
+    .control-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(280px, .9fr);
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .control-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .control-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .control-card-head strong {
+      font-size: 16px;
+      line-height: 1.2;
+      letter-spacing: -.03em;
+    }
+
+    .control-label {
+      color: var(--blue-dark);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .01em;
+    }
+
+    .control-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .month-switcher {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .month-select {
+      min-width: 140px;
+      border: 1px solid #dce6f7;
+      border-radius: 14px;
+      background: #f7fbff;
+      color: var(--blue-dark);
+      padding: 10px 36px 10px 14px;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.1;
+      box-shadow: 0 4px 10px rgba(23, 32, 51, .04);
+      cursor: pointer;
+      appearance: auto;
+    }
+
+    .reference-note {
+      margin: 0;
+      font-size: 13px;
+      color: #5f6f94;
+    }
+
+    .control-card.admin-mode {
+      display: none;
+    }
+
+    .control-card.admin-mode.active {
+      display: grid;
+    }
+
+    .upload-title {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 7px;
+    }
+
+    .admin-upload {
+      display: none;
+      margin-top: 12px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--panel-soft);
+      padding: 12px;
+      text-align: left;
+    }
+
+    .admin-upload.active {
+      display: block;
+    }
+
+    .admin-upload label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .admin-upload input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 9px;
+      background: #fff;
+      font: inherit;
+      font-size: 12px;
+    }
+
+    .admin-upload-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .admin-upload-top {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .admin-upload-top label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .admin-bundle-status {
+      padding: 10px 12px;
+      border: 1px solid #d9e3f4;
+      border-radius: 12px;
+      background: #f7fbff;
+      color: var(--blue-dark);
+      font-weight: 700;
+    }
+
+    .admin-db-note {
+      color: #5f6f94;
+    }
+
+    .admin-save-row {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .admin-save-note {
+      color: #5f6f94;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .upload-badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 4px 8px;
+      margin: 2px 4px 2px 0;
+      background: #edf5ff;
+      color: var(--blue-dark);
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .upload-badge.missing {
+      background: #ffeceb;
+      color: var(--red);
+    }
+
+    .upload-badge.pending {
+      background: #fff4df;
+      color: var(--orange);
+    }
+
+    .admin-upload-field {
+      display: grid;
+      gap: 7px;
+    }
+
+    .month-picker {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+      margin-top: 8px;
+      max-width: 220px;
+    }
+
+    .month-btn {
+      border: 1px solid #c8d8ec;
+      border-radius: 999px;
+      background: #fff;
+      color: var(--blue-dark);
+      padding: 6px 10px;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .month-btn.active {
+      border-color: var(--blue);
+      background: var(--blue);
+      color: #fff;
+    }
+
+    .admin-only {
+      display: none;
+    }
+
+    body.admin-mode .admin-only {
+      display: inline-flex;
+    }
+
+    body.admin-mode input.admin-only {
+      display: none !important;
+    }
+
+    .admin-login {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      z-index: 10;
+      width: 260px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fff;
+      padding: 12px;
+      box-shadow: 0 18px 38px rgba(23, 32, 51, .12);
+    }
+
+    .admin-login.active {
+      display: block;
+    }
+
+    .admin-login label {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .admin-login input {
+      width: 100%;
+      border: 1px solid #d7e0ee;
+      border-radius: 12px;
+      padding: 9px 10px;
+      font: inherit;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .admin-login input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(15, 95, 189, .12);
+    }
+
+    .admin-login-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px;
+      margin-top: 9px;
+    }
+
+    .admin-error {
+      display: none;
+      margin-top: 7px;
+      color: var(--red);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .admin-error.active {
+      display: block;
+    }
+
+    .upload-box p,
+    .hint,
+    .small {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .steps {
+      display: grid;
+      gap: 10px;
+      margin: 16px 0 0;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 30px minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 11px;
+      background: white;
+    }
+
+    .step > div {
+      min-width: 0;
+    }
+
+    .step-actions {
+      grid-column: 2;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      align-items: center;
+      margin-top: 2px;
+      min-width: 0;
+    }
+
+    .step-actions .button {
+      flex: 0 0 auto;
+    }
+
+    .num {
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #e8f1ff;
+      color: var(--blue-dark);
+      font-weight: 900;
+      font-size: 13px;
+    }
+
+    .step strong {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 2px;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      min-width: 62px;
+      padding: 6px 10px;
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .done { background: #eaf7ee; color: var(--green); }
+    .wait { background: #fff4df; color: var(--orange); }
+    .error { background: #ffeceb; color: var(--red); }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
+      padding: 18px 18px 16px;
+      cursor: pointer;
+      text-align: left;
+      font: inherit;
+      box-shadow: 0 8px 20px rgba(23, 32, 51, .05);
+    }
+
+    .metric.active {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(31, 98, 230, .10), 0 10px 22px rgba(23, 32, 51, .06);
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .metric strong {
+      display: block;
+      margin-top: 8px;
+      font-size: 30px;
+      color: var(--blue-dark);
+      letter-spacing: -.04em;
+    }
+
+    .workbench {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    table {
+      width: 100%;
+      table-layout: fixed;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 16px;
+      background: white;
+      font-size: 14px;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 12px 11px;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      color: var(--muted);
+      background: #f8fbfe;
+      font-size: 12px;
+      letter-spacing: -.02em;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+
+    th:first-child,
+    td:first-child {
+      width: 44%;
+    }
+
+    td:first-child {
+      line-height: 1.48;
+      word-break: keep-all;
+      overflow-wrap: anywhere;
+    }
+
+    th:nth-child(2),
+    td:nth-child(2) {
+      width: 9%;
+      min-width: 72px;
+      text-align: center;
+    }
+
+    th:nth-child(3),
+    td:nth-child(3) {
+      width: 9%;
+      min-width: 72px;
+      text-align: center;
+    }
+
+    th:nth-child(4),
+    td:nth-child(4) {
+      width: 11%;
+      min-width: 84px;
+      text-align: center;
+    }
+
+    th:nth-child(5),
+    td:nth-child(5) {
+      width: 10%;
+      min-width: 92px;
+      text-align: center;
+    }
+
+    th:nth-child(6),
+    td:nth-child(6) {
+      width: 18%;
+      min-width: 118px;
+      text-align: center;
+    }
+
+    th:nth-child(4),
+    th:nth-child(5),
+    th:nth-child(6),
+    td:nth-child(4),
+    td:nth-child(5),
+    td:nth-child(6) {
+      white-space: nowrap;
+    }
+
+    .download,
+    .preview-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 72px;
+      border: 0;
+      border-radius: 7px;
+      padding: 7px 8px;
+      background: var(--blue);
+      color: white;
+      font-size: 11px;
+      font-weight: 900;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .download.disabled,
+    .preview-btn.disabled {
+      background: #e5e7eb;
+      color: #6b7280;
+      cursor: not-allowed;
+    }
+
+    .download-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      justify-content: center;
+    }
+
+    .download-actions .download {
+      width: 100%;
+    }
+
+    .download.ppt {
+      background: #1e3a8a;
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: 115px minmax(170px, 1fr) minmax(170px, 1fr) 120px;
+      gap: 8px;
+      margin: 0 0 14px;
+    }
+
+    .filter {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafc;
+      padding: 11px 12px;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    select.filter {
+      appearance: auto;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .poster {
+      position: static;
+      align-self: start;
+      height: fit-content;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #f8fafc;
+      padding: 16px 16px 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .poster-frame {
+      position: relative;
+      width: 100%;
+      max-width: 860px;
+      margin: 0 auto;
+      overflow: hidden;
+      border-radius: 4px;
+      background: #076dff;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.28);
+      color: #fff;
+      padding: 14px 14px 12px;
+    }
+
+    .poster-frame::before,
+    .poster-frame::after { display: none; }
+
+    .slide-logo,
+    .slide-title,
+    .agency-pill,
+    .rate-band,
+    .slide-main,
+    .promo-grid,
+    .notice-box {
+      position: relative;
+      z-index: 1;
+    }
+
+    .slide-logo {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      color: #fff;
+      border-radius: 2px;
+      padding: 0;
+      font-weight: 1000;
+      font-size: clamp(28px, 3.9vw, 42px);
+      letter-spacing: -.08em;
+      line-height: 1;
+    }
+
+    .agency-pill {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      min-width: 170px;
+      width: min(40%, 230px);
+      max-height: 56px;
+      border-radius: 4px;
+      background: #fff;
+      color: #172033;
+      padding: 6px 8px;
+      text-align: center;
+      font-weight: 900;
+      font-size: clamp(10px, 1.15vw, 13px);
+      line-height: 1.15;
+      box-shadow: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      overflow-wrap: anywhere;
+      word-break: keep-all;
+    }
+
+    .slide-title {
+      display: inline-block;
+      margin: 0 0 0 14px;
+      max-width: calc(100% - 270px);
+      color: #ffff00;
+      text-shadow: 0 3px 10px rgba(0, 0, 0, .28);
+      font-size: clamp(28px, 3.7vw, 40px);
+      line-height: .98;
+      font-weight: 900;
+      letter-spacing: -.06em;
+      vertical-align: top;
+      white-space: nowrap;
+    }
+
+    .slide-title .month {
+      font-size: 1em;
+    }
+
+    .promo-subtitle {
+      position: relative;
+      z-index: 1;
+      margin: 10px 0 12px;
+      color: #ffff00;
+      font-size: clamp(15px, 1.8vw, 21px);
+      line-height: 1.12;
+      font-weight: 1000;
+      text-align: center;
+    }
+
+    .rate-band {
+      display: grid;
+      grid-template-columns: 1.25fr .55fr 1.25fr .38fr .55fr 1.25fr;
+      border: 2px solid #ffff00;
+      border-radius: 0;
+      overflow: hidden;
+      box-shadow: none;
+      margin-bottom: 10px;
+    }
+
+    .rate-cell {
+      background: #fff;
+      color: #0066ff;
+      min-height: 58px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      border-right: 2px solid #ffff00;
+      padding: 6px 4px;
+    }
+
+    .rate-cell:first-child {
+      background: #076dff;
+      color: #ffff00;
+    }
+
+    .rate-cell:last-child { border-right: 0; }
+
+    .rate-cell strong {
+      font-size: clamp(30px, 4vw, 46px);
+      line-height: .9;
+      font-weight: 1000;
+      text-shadow: 0 2px 3px rgba(0, 0, 0, .22);
+    }
+
+    .rate-cell span {
+      display: block;
+      margin-top: 4px;
+      color: inherit;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .rate-pill,
+    .rate-plus {
+      background: #fff;
+      color: #0f172a;
+      display: grid;
+      place-items: center;
+      border-right: 2px solid #ffff00;
+      padding: 2px;
+      font-weight: 1000;
+    }
+
+    .rate-pill span {
+      display: inline-block;
+      min-width: 52px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #ffffff, #8b8b8b);
+      color: #111827;
+      padding: 4px 10px;
+      font-size: 11px;
+      line-height: 1;
+    }
+
+    .rate-pill.green span {
+      background: #10a34a;
+      color: #fff;
+    }
+
+    .rate-plus {
+      color: #e11d48;
+      font-size: 28px;
+    }
+
+    .slide-main {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .section-card {
+      border-radius: 0;
+      background: rgba(255,255,255,.96);
+      color: #172033;
+      overflow: hidden;
+      box-shadow: none;
+    }
+
+    .section-table-wrap {
+      display: grid;
+      grid-template-columns: 104px 1fr;
+      border: 2px solid #ffff00;
+      border-top: 0;
+      background: #fff;
+    }
+
+    .max-cell {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      background: #076dff;
+      color: #ffff00;
+      border-right: 2px solid #ffff00;
+      padding: 8px 6px;
+      font-weight: 1000;
+      line-height: 1;
+    }
+
+    .max-cell span {
+      color: #fff;
+      font-size: 12px;
+      text-align: left;
+    }
+
+    .max-cell strong {
+      font-size: clamp(30px, 4vw, 44px);
+      letter-spacing: -.06em;
+    }
+
+    .section-bar {
+      background: #076dff;
+      color: #ffff00;
+      text-align: right;
+      font-weight: 1000;
+      font-size: clamp(14px, 1.7vw, 19px);
+      padding: 4px 8px;
+      border-bottom: 2px solid #ffff00;
+    }
+
+    .mini-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: clamp(9px, 1.1vw, 12px);
+      background: #fff;
+    }
+
+    .mini-table th,
+    .mini-table td {
+      border: 1px solid #8ea0b5;
+      padding: 4px 5px;
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    .mini-table th {
+      background: #fff;
+      color: #172033;
+      font-weight: 900;
+    }
+
+    .mini-table td strong {
+      color: #0066ff;
+      font-size: clamp(13px, 1.7vw, 18px);
+      font-weight: 1000;
+    }
+
+    .mini-table .blue {
+      color: #0066ff;
+      font-weight: 1000;
+    }
+
+    .mini-table .red {
+      color: #ff1d1d;
+      font-weight: 1000;
+    }
+
+    .mini-table .yellow-title {
+      background: #076dff;
+      color: #ffff00;
+      font-size: clamp(12px, 1.45vw, 15px);
+      font-weight: 1000;
+      text-align: right;
+    }
+
+    .compact-table th,
+    .compact-table td {
+      padding: 3px 4px;
+      font-size: clamp(8.8px, 1.02vw, 11px);
+    }
+
+    .gold-heading {
+      margin-top: 8px;
+      background: #076dff;
+      color: #ffff00;
+      text-align: center;
+      font-size: clamp(14px, 1.6vw, 18px);
+      font-weight: 1000;
+      line-height: 1.12;
+    }
+
+    .promo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .promo-mini {
+      border: 2px solid #ffff00;
+      border-radius: 0;
+      background: rgba(255, 255, 255, .96);
+      color: #172033;
+      overflow: hidden;
+    }
+
+    .promo-mini strong {
+      display: block;
+      background: #076dff;
+      color: #ffff00;
+      padding: 5px 7px;
+      text-align: center;
+      font-size: clamp(12px, 1.5vw, 16px);
+      font-weight: 1000;
+    }
+
+    .promo-mini div {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0;
+    }
+
+    .promo-mini span {
+      border-right: 1px solid #b6c9df;
+      padding: 6px 4px;
+      text-align: center;
+      color: #0066ff;
+      font-size: clamp(10px, 1.25vw, 13px);
+      font-weight: 1000;
+    }
+
+    .promo-mini span:last-child { border-right: 0; }
+
+    .notice-box {
+      margin-top: 8px;
+      border-radius: 0;
+      background: rgba(255, 255, 255, .95);
+      color: #172033;
+      padding: 6px 8px;
+      font-size: clamp(8.5px, .92vw, 10px);
+      line-height: 1.3;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, .12);
+    }
+
+    .notice-box strong {
+      color: #075ac7;
+      font-weight: 1000;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .flow div {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: white;
+      padding: 13px;
+    }
+
+    .flow strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    @media (max-width: 1180px) {
+      .grid,
+      .workbench { grid-template-columns: 1fr; }
+      .poster { position: static; }
+    }
+
+    @media (max-width: 760px) {
+      .shell { width: min(100% - 24px, 1480px); margin-top: 18px; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .top-actions { justify-content: flex-start; }
+      .control-row { grid-template-columns: 1fr; }
+      .control-card-head { align-items: flex-start; flex-direction: column; }
+      .control-actions { justify-content: flex-start; }
+      .metrics,
+      .flow { grid-template-columns: 1fr 1fr; }
+      .filters { grid-template-columns: 1fr; }
+      table { min-width: 720px; }
+      .table-wrap { overflow-x: auto; }
+    }
+
+    @media (max-width: 520px) {
+      .metrics,
+      .flow { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="topbar">
+      <div>
+        <h1><span class="brand-main">프로모션</span><span class="brand-on">ON</span></h1>
+      </div>
+      <div class="top-actions">
+        <button class="button small" id="adminModeButton" type="button">관리자모드</button>
+        <div class="admin-login" id="adminLoginPanel">
+          <label for="adminPassword">관리자 비밀번호</label>
+          <input id="adminPassword" type="password" inputmode="numeric" placeholder="비밀번호 입력" />
+          <div class="admin-login-actions">
+            <button class="button small" id="adminCancelButton" type="button">취소</button>
+            <button class="button small primary" id="adminLoginButton" type="button">확인</button>
+          </div>
+          <div class="admin-error" id="adminError">비밀번호가 올바르지 않습니다.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <section>
+        <div class="section-title">
+          <h2>지점별 프로모션 현황</h2>
+        </div>
+        <div hidden>
+          <input id="branchInput" type="text" value="금천" list="branchList" autocomplete="off" />
+          <datalist id="branchList"></datalist>
+        </div>
+        <div class="metrics">
+          <button class="metric active" type="button" data-filter="all">
+            <span id="totalLabel">금천 총 지사</span>
+            <strong id="totalCount">18</strong>
+          </button>
+          <button class="metric" type="button" data-filter="confirmed">
+            <span>확정 완료</span>
+            <strong id="confirmedCount">14</strong>
+          </button>
+          <button class="metric" type="button" data-filter="pending">
+            <span>협의중</span>
+            <strong id="pendingCount">3</strong>
+          </button>
+        </div>
+
+        <div class="control-hub panel pad">
+          <div class="control-row">
+            <div class="control-card">
+              <span class="control-label">월별 프로모션 총괄판</span>
+              <div class="control-card-head">
+                <div class="month-switcher" aria-label="월별 프로모션 선택">
+                  <select class="month-select" id="monthlyPromoSelect" aria-label="총괄판 월 선택">
+                    <option value="1">1월 총괄판</option>
+                    <option value="2">2월 총괄판</option>
+                    <option value="3">3월 총괄판</option>
+                    <option value="4">4월 총괄판</option>
+                    <option value="5">5월 총괄판</option>
+                    <option value="6" selected>6월 총괄판</option>
+                  </select>
+                </div>
+                <div class="control-actions">
+                  <a class="button small primary" id="monthlyDownload" href="../6월 프로모션 총괄판(260529)_공지.xlsx" download>다운로드</a>
+                  <label class="button small admin-only" for="monthlyUpload">총괄판 업로드</label>
+                  <input id="monthlyUpload" class="admin-only" type="file" accept=".xlsx" hidden />
+                  <label class="button small admin-only" for="officeStepUpload">점포현황 업로드</label>
+                  <input id="officeStepUpload" class="admin-only" type="file" accept=".xlsx" hidden />
+                </div>
+              </div>
+            </div>
+
+            <div class="control-card">
+              <span class="control-label">표준 PPT 프로모션 장표</span>
+              <div class="control-card-head">
+                <div class="month-switcher" aria-label="월별 PPT 템플릿 선택">
+                  <select class="month-select" id="pptTemplateSelect" aria-label="PPT 템플릿 월 선택">
+                    <option value="1">1월 템플릿</option>
+                    <option value="2">2월 템플릿</option>
+                    <option value="3">3월 템플릿</option>
+                    <option value="4">4월 템플릿</option>
+                    <option value="5">5월 템플릿</option>
+                    <option value="6" selected>6월 템플릿</option>
+                  </select>
+                </div>
+                <div class="control-actions">
+                  <a class="button small" id="pptTemplateDownload" href="../26.6월 프로모션 포스터_1P용-1.pptx" download>PPT 다운로드</a>
+                  <label class="button small admin-only" for="pptTemplateUpload">업로드</label>
+                  <input id="pptTemplateUpload" class="admin-only" type="file" accept=".ppt,.pptx" hidden />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="control-card admin-mode" id="adminUploadPanel">
+            <span class="control-label">관리자 업로드</span>
+            <div class="admin-upload-top">
+              <div>
+                <label for="adminMonthSelect">업로드 기준 월</label>
+                <select class="month-select" id="adminMonthSelect" aria-label="관리자 업로드 월 선택">
+                  <option value="1">2026.01</option>
+                  <option value="2">2026.02</option>
+                  <option value="3">2026.03</option>
+                  <option value="4">2026.04</option>
+                  <option value="5">2026.05</option>
+                  <option value="6" selected>2026.06</option>
+                </select>
+              </div>
+              <p class="small admin-bundle-status" id="adminBundleStatus">2026.06 저장 현황을 불러오는 중입니다.</p>
+              <p class="small admin-db-note" id="adminDbNote">월별 운영 파일은 ① 프로모션 총괄판 ② PPT 프로모션 장표 템플릿 ③ 점포현황 3개만 사용합니다.</p>
+              <div class="admin-save-row">
+                <span class="admin-save-note" id="adminSaveNote">파일 선택 후 저장을 눌러야 Supabase에 반영됩니다.</span>
+                <button class="button small primary" id="adminSaveUploads" type="button">선택 파일 저장</button>
+              </div>
+            </div>
+            <div class="admin-upload-grid">
+              <div class="admin-upload-field">
+                <label for="masterUpload">월별 프로모션 총괄판 업로드</label>
+                <input id="masterUpload" type="file" accept=".xlsx" />
+                <p class="small" id="uploadStatus">새 프로모션 총괄판을 업로드하면 확정 수치와 대리점 목록에 반영됩니다.</p>
+              </div>
+              <div class="admin-upload-field">
+                <label for="officeStatusUpload">월별 점포현황 업로드</label>
+                <input id="officeStatusUpload" type="file" accept=".xlsx" />
+                <p class="small" id="officeUploadStatus">점포현황을 업로드하면 대리점등록번호·본점코드 기준으로 최신 지역단/지점 매칭을 반영합니다.</p>
+              </div>
+              <div class="admin-upload-field">
+                <label for="adminPptTemplateUpload">월별 PPT 템플릿 업로드</label>
+                <input id="adminPptTemplateUpload" type="file" accept=".ppt,.pptx" />
+                <p class="small" id="pptUploadStatus">PPT 템플릿을 업로드하면 해당 월 최종 프로모션 미리보기의 배경 기준으로 저장됩니다.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="workbench">
+          <div class="panel pad">
+            <div class="section-title">
+              <h2>지점별 프로모션 현황</h2>
+              <span class="tag">월/대리점/상태별 확인</span>
+            </div>
+            <div class="filters" aria-label="프로모션 검색 필터">
+              <select class="filter" id="listMonthSelect" aria-label="월 선택">
+                <option value="2026.01">2026.01</option>
+                <option value="2026.02">2026.02</option>
+                <option value="2026.03">2026.03</option>
+                <option value="2026.04">2026.04</option>
+                <option value="2026.05">2026.05</option>
+                <option value="2026.06" selected>2026.06</option>
+              </select>
+              <select class="filter" id="regionSelect" aria-label="지역단 선택"></select>
+              <select class="filter" id="branchSelect" aria-label="지점 선택"></select>
+              <select class="filter" id="statusSelect" aria-label="상태 선택">
+                <option value="all">전체</option>
+                <option value="confirmed" selected>확정</option>
+                <option value="pending">협의중</option>
+              </select>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>대리점</th>
+                    <th>상태</th>
+                    <th>승인</th>
+                    <th>JPG</th>
+                    <th>미리보기</th>
+                    <th>다운로드</th>
+                  </tr>
+                </thead>
+                <tbody id="promotionRows"></tbody>
+              </table>
+            </div>
+
+          </div>
+
+          <aside class="poster" aria-label="최종 프로모션 미리보기">
+            <div class="section-title">
+              <h2>최종 프로모션 미리보기</h2>
+              <div class="title-actions">
+                <span class="tag" id="previewAgencyTag">더금융서비스</span>
+                <button class="button small" id="downloadPreviewPpt" type="button">PPT 받기</button>
+                <button class="button small primary" id="downloadPreviewJpg" type="button">JPG 다운로드</button>
+              </div>
+            </div>
+            <p class="reference-note" id="previewReferenceNote">6월 총괄판 숫자 + 6월 PPT 템플릿 기준</p>
+            <div class="poster-frame">
+              <div class="slide-logo">삼성생명</div>
+              <div class="agency-pill" id="previewAgencyPill">더금융서비스</div>
+              <div class="slide-title"><span class="month" id="previewMonthLabel">26.6월</span> 프로모션</div>
+              <div class="promo-subtitle">
+                『대상상품』 가족대표/인생대표/청춘대표/The라이트/간편다모은<br />
+                정규 시상 (6/1 ~ 30) [익월]
+              </div>
+
+              <div class="rate-band" aria-label="프로모션 핵심 지급률">
+                <div class="rate-cell">
+                  <div>
+                    <strong id="previewMainRate">450%</strong>
+                    <span>주력 건강</span>
+                  </div>
+                </div>
+                <div class="rate-pill green"><span>익월</span></div>
+                <div class="rate-cell">
+                  <div>
+                    <strong id="previewSubRate">350%</strong>
+                    <span>보장성 상품</span>
+                  </div>
+                </div>
+                <div class="rate-plus">+</div>
+                <div class="rate-pill"><span>13회</span></div>
+                <div class="rate-cell">
+                  <div>
+                    <strong id="previewExtraRate">100%</strong>
+                    <span>유지회차</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="slide-main">
+                <div class="section-card">
+                  <div class="section-bar">기본 가동 시상 [13회]</div>
+                  <div class="section-table-wrap">
+                    <div class="max-cell"><span>최대</span><strong>500%</strong></div>
+                    <table class="mini-table compact-table">
+                      <thead>
+                        <tr>
+                          <th>실적</th>
+                          <th>5만↑</th>
+                          <th>10만↑</th>
+                          <th>20만↑</th>
+                          <th>30만↑</th>
+                          <th>50만↑</th>
+                          <th>100만↑</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td class="blue">1~12일</td>
+                          <td><strong>5만</strong></td>
+                          <td><strong>30만</strong></td>
+                          <td><strong>60만</strong></td>
+                          <td><strong>120만</strong></td>
+                          <td><strong>250만</strong></td>
+                          <td><strong>500만</strong></td>
+                        </tr>
+                        <tr>
+                          <td class="blue">13~19일</td>
+                          <td>-</td>
+                          <td><strong>20만</strong></td>
+                          <td><strong>40만</strong></td>
+                          <td><strong>120만</strong></td>
+                          <td><strong>250만</strong></td>
+                          <td><strong>500만</strong></td>
+                        </tr>
+                        <tr>
+                          <td class="blue">20~30일</td>
+                          <td>-</td>
+                          <td><strong>10만</strong></td>
+                          <td><strong>20만</strong></td>
+                          <td><strong>90만</strong></td>
+                          <td><strong>200만</strong></td>
+                          <td><strong>400만</strong></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div class="section-card">
+                  <div class="section-bar">주력 상품 추가 시상 [13회]</div>
+                  <div class="section-table-wrap">
+                    <div class="max-cell"><span>최대</span><strong>300%</strong></div>
+                    <table class="mini-table compact-table">
+                      <thead>
+                        <tr>
+                          <th>실적</th>
+                          <th>10만↑</th>
+                          <th>20만↑</th>
+                          <th>30만↑</th>
+                          <th>50만↑</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td class="blue">1~12일</td>
+                          <td><strong>30만</strong></td>
+                          <td><strong>60만</strong></td>
+                          <td><strong>90만</strong></td>
+                          <td><strong>150만</strong></td>
+                        </tr>
+                        <tr>
+                          <td class="blue">13~30일</td>
+                          <td><strong>30만</strong></td>
+                          <td><strong>60만</strong></td>
+                          <td><strong>90만</strong></td>
+                          <td><strong>150만</strong></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div class="gold-heading">(5월+6월) &amp; (6월+7월) 주간 연속가동 시상 [13회]</div>
+              <div class="promo-grid">
+                <table class="mini-table compact-table">
+                  <tbody>
+                    <tr>
+                      <th>5/16~31</th>
+                      <th class="red">6/1~12</th>
+                      <th>시상</th>
+                    </tr>
+                    <tr>
+                      <td>10만↑</td>
+                      <td></td>
+                      <td><strong>100만</strong></td>
+                    </tr>
+                    <tr>
+                      <td>20만↑</td>
+                      <td class="red" rowspan="2">10만↑</td>
+                      <td><strong>150만</strong></td>
+                    </tr>
+                    <tr>
+                      <td>30만↑</td>
+                      <td><strong>200만</strong></td>
+                    </tr>
+                    <tr>
+                      <td>50만↑</td>
+                      <td></td>
+                      <td><strong>300만</strong></td>
+                    </tr>
+                  </tbody>
+                </table>
+                <table class="mini-table compact-table">
+                  <tbody>
+                    <tr>
+                      <th class="red">6/13~30</th>
+                      <th>7/1~10</th>
+                      <th>시상</th>
+                    </tr>
+                    <tr>
+                      <td class="red">10만↑</td>
+                      <td></td>
+                      <td><strong>100만</strong></td>
+                    </tr>
+                    <tr>
+                      <td class="red">20만↑</td>
+                      <td rowspan="2">10만↑</td>
+                      <td><strong>150만</strong></td>
+                    </tr>
+                    <tr>
+                      <td class="red">30만↑</td>
+                      <td><strong>200만</strong></td>
+                    </tr>
+                    <tr>
+                      <td class="red">50만↑</td>
+                      <td></td>
+                      <td><strong>300만</strong></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="gold-heading">Summer (6~8월) 연속 가동 Gold 시상 [13회]</div>
+              <table class="mini-table compact-table">
+                <tbody>
+                  <tr>
+                    <th>지원</th>
+                    <th>기준</th>
+                    <th>6월</th>
+                    <th>7월</th>
+                    <th>8월</th>
+                    <th>합산</th>
+                  </tr>
+                  <tr>
+                    <td class="blue">금 0.5돈</td>
+                    <td>①</td>
+                    <td><strong>5만</strong></td>
+                    <td><strong>5만</strong></td>
+                    <td><strong>5만</strong></td>
+                    <td>-</td>
+                  </tr>
+                  <tr>
+                    <td class="blue">금 2돈</td>
+                    <td>②</td>
+                    <td><strong>5만</strong></td>
+                    <td><strong>10만</strong></td>
+                    <td><strong>10만</strong></td>
+                    <td><strong>70만</strong></td>
+                  </tr>
+                  <tr>
+                    <td class="blue">금 4돈</td>
+                    <td>③</td>
+                    <td><strong>10만</strong></td>
+                    <td><strong>20만</strong></td>
+                    <td><strong>20만</strong></td>
+                    <td><strong>120만</strong></td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="notice-box">
+                ※ 조건: 가족대표, 1540청춘대표, 4180인생대표, The라이트건강 상품 + 주력담보 10종 중 특정 1가지 이상 부가건
+                <span id="previewMainTableRate" hidden>450%</span><span id="previewSubTableRate" hidden>350%</span>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </section>
+  </main>
+  <script src="./xlsx-lite.js"></script>
+  <script src="../data/branch-promotion-data.js?v=20260616-june-default"></script>
+  <script>
+    const STORAGE_PREFIX = "gaPromotionOn_20260616_june_latest3";
+    const MONTH_FILE_DB_NAME = "gaPromotionOnMonthFiles_20260616_june_latest3";
+    const SUPABASE_DATA_ENDPOINT = "https://iqqstuftvlehgqtmtjug.supabase.co/functions/v1/ga-promotion-on-data";
+
+    function storageKey(name) {
+      return `${STORAGE_PREFIX}_${name}`;
+    }
+
+    const branchInput = document.getElementById("branchInput");
+    const branchList = document.getElementById("branchList");
+    const totalLabel = document.getElementById("totalLabel");
+    const totalCount = document.getElementById("totalCount");
+    const confirmedCount = document.getElementById("confirmedCount");
+    const pendingCount = document.getElementById("pendingCount");
+    const promotionRows = document.getElementById("promotionRows");
+    const metricButtons = document.querySelectorAll(".metric[data-filter]");
+    const adminModeButton = document.getElementById("adminModeButton");
+    const adminLoginPanel = document.getElementById("adminLoginPanel");
+    const adminPassword = document.getElementById("adminPassword");
+    const adminLoginButton = document.getElementById("adminLoginButton");
+    const adminCancelButton = document.getElementById("adminCancelButton");
+    const adminError = document.getElementById("adminError");
+    const adminUploadPanel = document.getElementById("adminUploadPanel");
+    const adminMonthSelect = document.getElementById("adminMonthSelect");
+    const adminBundleStatus = document.getElementById("adminBundleStatus");
+    const adminDbNote = document.getElementById("adminDbNote");
+    const adminSaveUploads = document.getElementById("adminSaveUploads");
+    const adminSaveNote = document.getElementById("adminSaveNote");
+    const masterUpload = document.getElementById("masterUpload");
+    const uploadStatus = document.getElementById("uploadStatus");
+    const officeStatusUpload = document.getElementById("officeStatusUpload");
+    const officeUploadStatus = document.getElementById("officeUploadStatus");
+    const adminPptTemplateUpload = document.getElementById("adminPptTemplateUpload");
+    const pptUploadStatus = document.getElementById("pptUploadStatus");
+    const monthlyPromoSelect = document.getElementById("monthlyPromoSelect");
+    const monthlyDownload = document.getElementById("monthlyDownload");
+    const masterDownload = monthlyDownload;
+    const monthlyUpload = document.getElementById("monthlyUpload");
+    const officeStepUpload = document.getElementById("officeStepUpload");
+    const pptTemplateSelect = document.getElementById("pptTemplateSelect");
+    const pptTemplateReference = document.getElementById("pptTemplateReference");
+    const pptTemplateDownload = document.getElementById("pptTemplateDownload");
+    const pptTemplateUpload = document.getElementById("pptTemplateUpload");
+    const listMonthSelect = document.getElementById("listMonthSelect");
+    const regionSelect = document.getElementById("regionSelect");
+    const branchSelect = document.getElementById("branchSelect");
+    const statusSelect = document.getElementById("statusSelect");
+    function loadSavedBranchStats() {
+      try {
+        const saved = localStorage.getItem(storageKey("branchData"));
+        return saved ? JSON.parse(saved) : null;
+      } catch {
+        return null;
+      }
+    }
+
+    function loadSavedOfficeMap() {
+      try {
+        const saved = localStorage.getItem(storageKey("officeMap"));
+        return saved ? JSON.parse(saved) : null;
+      } catch {
+        return null;
+      }
+    }
+
+    function loadSavedPromotionRows() {
+      try {
+        const saved = localStorage.getItem(storageKey("promotionRows"));
+        return saved ? JSON.parse(saved) : null;
+      } catch {
+        return null;
+      }
+    }
+
+    function loadSavedMap(key) {
+      try {
+        const saved = localStorage.getItem(storageKey(key));
+        return saved ? JSON.parse(saved) : {};
+      } catch {
+        return {};
+      }
+    }
+
+    let officeMap = loadSavedOfficeMap() || window.branchOfficeMap || null;
+    let promotionRowsData = loadSavedPromotionRows() || window.branchPromotionRows || [];
+    let branchStats = {};
+    let activeFilter = "all";
+    let uploadedMonthlyUrl = "";
+    let uploadedPptTemplateUrl = "";
+    let pptTemplateHref = "../26.6월 프로모션 포스터_1P용-1.pptx";
+    let selectedMonthKey = "6";
+    let adminSessionPassword = "1111";
+    let adminSaveInProgress = false;
+    const pendingAdminFiles = { workbook: null, office: null, template: null };
+    const templateFallbackMeta = {};
+    const defaultSeedMonthKey = "6";
+    const savedWorkbookMeta = loadSavedMap("monthlyWorkbookMeta");
+    const savedOfficeMeta = loadSavedMap("monthlyOfficeMeta");
+    const savedPptTemplateMeta = loadSavedMap("monthlyTemplateMeta");
+    const basePromotionRowsData = JSON.parse(JSON.stringify(promotionRowsData));
+    const baseOfficeMap = JSON.parse(JSON.stringify(officeMap || { regions: [] }));
+    const monthlyFiles = {
+      "1": { label: "1월", href: "" },
+      "2": { label: "2월", href: "" },
+      "3": { label: "3월", href: "" },
+      "4": { label: "4월", href: "" },
+      "5": { label: "5월", href: "" },
+      "6": { label: "6월", href: "../6월 프로모션 총괄판(260529)_공지.xlsx" }
+    };
+    const pptTemplateFiles = {
+      "1": { label: "1월", href: "" },
+      "2": { label: "2월", href: "" },
+      "3": { label: "3월", href: "" },
+      "4": { label: "4월", href: "" },
+      "5": { label: "5월", href: "" },
+      "6": { label: "6월", href: "../26.6월 프로모션 포스터_1P용-1.pptx" }
+    };
+    const parsedWorkbookCache = {};
+    const parsedOfficeCache = {};
+
+    function requestToPromise(request) {
+      return new Promise((resolve, reject) => {
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    function openMonthFileDb() {
+      if (!window.indexedDB) return Promise.resolve(null);
+      return new Promise((resolve, reject) => {
+        const request = window.indexedDB.open(MONTH_FILE_DB_NAME, 1);
+        request.onupgradeneeded = () => {
+          const db = request.result;
+          if (!db.objectStoreNames.contains("files")) db.createObjectStore("files", { keyPath: "id" });
+        };
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    async function saveMonthFile(kind, month, file) {
+      const db = await openMonthFileDb();
+      if (!db) return;
+      await new Promise((resolve, reject) => {
+        const tx = db.transaction("files", "readwrite");
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+        tx.objectStore("files").put({
+          id: `${kind}:${month}`,
+          kind,
+          month,
+          name: file.name,
+          type: file.type,
+          file,
+          updatedAt: Date.now()
+        });
+      });
+    }
+
+    async function loadMonthFile(kind, month) {
+      const db = await openMonthFileDb();
+      if (!db) return null;
+      const record = await requestToPromise(db.transaction("files", "readonly").objectStore("files").get(`${kind}:${month}`));
+      if (!record?.file) return null;
+      return new File([record.file], record.name || `${kind}-${month}`, {
+        type: record.type || record.file.type || "",
+        lastModified: record.updatedAt || Date.now()
+      });
+    }
+
+    async function fetchRemoteFile(url, name, type = "") {
+      if (!url) return null;
+      const response = await fetch(url, { cache: "no-store" });
+      if (!response.ok) throw new Error(`원격 파일을 불러오지 못했습니다. (${response.status})`);
+      const blob = await response.blob();
+      return new File([blob], name || "remote-file", {
+        type: type || blob.type || "",
+        lastModified: Date.now()
+      });
+    }
+
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || "").split(",")[1] || "");
+        reader.onerror = () => reject(reader.error || new Error("파일을 읽지 못했습니다."));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function applySupabaseFiles(month, files = []) {
+      const byKind = Object.fromEntries(files.map((file) => [file.kind, file]));
+      if (byKind.workbook?.public_url) {
+        monthlyFiles[month] = {
+          ...(monthlyFiles[month] || { label: monthLabel(month) }),
+          href: byKind.workbook.public_url
+        };
+        savedWorkbookMeta[month] = {
+          name: byKind.workbook.file_name,
+          updatedAt: Date.parse(byKind.workbook.updated_at || "") || Date.now(),
+          cloudUrl: byKind.workbook.public_url
+        };
+      }
+      if (byKind.office?.public_url) {
+        savedOfficeMeta[month] = {
+          name: byKind.office.file_name,
+          updatedAt: Date.parse(byKind.office.updated_at || "") || Date.now(),
+          cloudUrl: byKind.office.public_url
+        };
+      }
+      if (byKind.template?.public_url) {
+        pptTemplateFiles[month] = {
+          ...(pptTemplateFiles[month] || { label: monthLabel(month) }),
+          href: byKind.template.public_url
+        };
+        savedPptTemplateMeta[month] = {
+          name: byKind.template.file_name,
+          updatedAt: Date.parse(byKind.template.updated_at || "") || Date.now(),
+          cloudUrl: byKind.template.public_url
+        };
+      }
+      saveMetaMap("monthlyWorkbookMeta", savedWorkbookMeta);
+      saveMetaMap("monthlyOfficeMeta", savedOfficeMeta);
+      saveMetaMap("monthlyTemplateMeta", savedPptTemplateMeta);
+    }
+
+    function hasOfficeMapData(map) {
+      return Boolean(map && Array.isArray(map.offices) && map.offices.length);
+    }
+
+    function hasTemplateReference(month) {
+      return Boolean(pptTemplateFiles[month]?.href || savedPptTemplateMeta[month]?.cloudUrl || savedPptTemplateMeta[month]?.name);
+    }
+
+    function monthFallbackOrder() {
+      return Object.keys(monthlyFiles)
+        .sort((a, b) => Number(b) - Number(a));
+    }
+
+    async function loadLatestOfficeMapFromSupabase(currentMonth) {
+      for (const candidateMonth of monthFallbackOrder()) {
+        try {
+          const response = await fetch(`${SUPABASE_DATA_ENDPOINT}?month=${encodeURIComponent(candidateMonth)}`, {
+            method: "GET",
+            cache: "no-store"
+          });
+          if (!response.ok) continue;
+          const payload = await response.json();
+          const officeFile = (payload.files || []).find((file) => file.kind === "office" && file.public_url);
+          if (!officeFile) continue;
+          const candidateOfficeMap = payload.bundle?.office_map;
+          if (!hasOfficeMapData(candidateOfficeMap)) continue;
+          applySupabaseFiles(candidateMonth, payload.files || []);
+          return {
+            month: candidateMonth,
+            officeMap: candidateOfficeMap,
+            officeName: officeFile?.file_name || payload.bundle?.source_meta?.office || `${monthLabel(candidateMonth)} 점포현황`,
+            isFallback: candidateMonth !== String(currentMonth)
+          };
+        } catch (error) {
+          console.warn("Latest office map fallback skipped:", error);
+        }
+      }
+      return null;
+    }
+
+    async function loadLatestTemplateFromSupabase(currentMonth) {
+      for (const candidateMonth of monthFallbackOrder()) {
+        try {
+          const response = await fetch(`${SUPABASE_DATA_ENDPOINT}?month=${encodeURIComponent(candidateMonth)}`, {
+            method: "GET",
+            cache: "no-store"
+          });
+          if (!response.ok) continue;
+          const payload = await response.json();
+          const templateFile = (payload.files || []).find((file) => file.kind === "template" && file.public_url);
+          if (!templateFile) continue;
+          applySupabaseFiles(candidateMonth, payload.files || []);
+          return {
+            month: candidateMonth,
+            href: templateFile.public_url,
+            templateName: templateFile.file_name || `${monthLabel(candidateMonth)} PPT 템플릿`,
+            isFallback: candidateMonth !== String(currentMonth)
+          };
+        } catch (error) {
+          console.warn("Latest template fallback skipped:", error);
+        }
+      }
+      return null;
+    }
+
+    async function loadMonthFromSupabase(month) {
+      if (!SUPABASE_DATA_ENDPOINT) return null;
+      try {
+        const response = await fetch(`${SUPABASE_DATA_ENDPOINT}?month=${encodeURIComponent(month)}`, {
+          method: "GET",
+          cache: "no-store"
+        });
+        if (!response.ok) throw new Error(`Supabase 불러오기 실패(${response.status})`);
+        const payload = await response.json();
+        const uploadedFiles = payload.files || [];
+        const hasUploadedOfficeFile = uploadedFiles.some((file) => file.kind === "office" && file.public_url);
+        const uploadedWorkbookFile = uploadedFiles.find((file) => file.kind === "workbook" && file.public_url);
+        applySupabaseFiles(month, uploadedFiles);
+        const bundle = payload.bundle;
+        let officeName = savedOfficeMeta[month]?.name || "";
+        let templateName = savedPptTemplateMeta[month]?.name || "";
+        let usedFallbackOffice = null;
+        let usedFallbackTemplate = null;
+        let monthHasOfficeMap = false;
+        let monthHasTemplate = hasTemplateReference(month);
+        if (bundle) {
+          if (hasUploadedOfficeFile && hasOfficeMapData(bundle.office_map)) {
+            officeMap = JSON.parse(JSON.stringify(bundle.office_map));
+            window.branchOfficeMap = officeMap;
+            localStorage.setItem(storageKey("officeMap"), JSON.stringify(officeMap));
+            officeName = savedOfficeMeta[month]?.name || bundle.source_meta?.office || "";
+            monthHasOfficeMap = true;
+          }
+        }
+        if (!monthHasTemplate) {
+          usedFallbackTemplate = await loadLatestTemplateFromSupabase(month);
+          if (usedFallbackTemplate) {
+            templateFallbackMeta[month] = usedFallbackTemplate;
+            templateName = `${usedFallbackTemplate.templateName} (${monthDisplay(usedFallbackTemplate.month)} 기준)`;
+            monthHasTemplate = true;
+          }
+        } else {
+          delete templateFallbackMeta[month];
+        }
+        if (!monthHasOfficeMap) {
+          usedFallbackOffice = await loadLatestOfficeMapFromSupabase(month);
+          if (usedFallbackOffice) {
+            officeMap = JSON.parse(JSON.stringify(usedFallbackOffice.officeMap));
+            window.branchOfficeMap = officeMap;
+            localStorage.setItem(storageKey("officeMap"), JSON.stringify(officeMap));
+            localStorage.setItem(storageKey("officeMapSource"), `${usedFallbackOffice.officeName} (${monthDisplay(usedFallbackOffice.month)} 기준)`);
+            officeName = `${usedFallbackOffice.officeName} (${monthDisplay(usedFallbackOffice.month)} 기준)`;
+          }
+        }
+        let rebuiltFromWorkbook = false;
+        if (uploadedWorkbookFile?.public_url) {
+          try {
+            const remoteWorkbook = await fetchRemoteFile(
+              uploadedWorkbookFile.public_url,
+              uploadedWorkbookFile.file_name || `${monthLabel(month)} 총괄판`,
+              uploadedWorkbookFile.mime_type || "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            );
+            const sheets = await window.XlsxLite.readWorkbook(remoteWorkbook);
+            const parsed = buildBranchDataFromWorkbook(sheets);
+            const sanitizedRows = parsed.promotionRows.map(({ _matchIndex, ...row }) => row);
+            parsedWorkbookCache[month] = {
+              fileName: remoteWorkbook.name,
+              sheetName: parsed.sheetName,
+              selectedBranchName: parsed.selectedBranchName || "",
+              promotionRows: sanitizedRows
+            };
+            promotionRowsData = JSON.parse(JSON.stringify(sanitizedRows));
+            window.branchPromotionRows = promotionRowsData;
+            localStorage.setItem(storageKey("promotionRows"), JSON.stringify(promotionRowsData));
+            rebuiltFromWorkbook = true;
+          } catch (error) {
+            console.warn("Supabase workbook rebuild skipped:", error);
+          }
+        }
+        if (!rebuiltFromWorkbook && Array.isArray(bundle?.promotion_rows)) {
+          promotionRowsData = JSON.parse(JSON.stringify(bundle.promotion_rows));
+          window.branchPromotionRows = promotionRowsData;
+          localStorage.setItem(storageKey("promotionRows"), JSON.stringify(promotionRowsData));
+        }
+        const canRebuildStats = Array.isArray(promotionRowsData) && promotionRowsData.length && (hasOfficeMapData(officeMap) || hasOfficeMapData(baseOfficeMap));
+        const hasBranchData = bundle?.branch_data && Object.keys(bundle.branch_data).length;
+        branchStats = canRebuildStats
+          ? buildBranchStatsFromPromotionRows(promotionRowsData, officeMap || baseOfficeMap)
+          : hasBranchData
+            ? JSON.parse(JSON.stringify(bundle.branch_data))
+            : {};
+        window.branchPromotionData = branchStats;
+        localStorage.setItem(storageKey("branchData"), JSON.stringify(branchStats));
+        return {
+          workbookName: savedWorkbookMeta[month]?.name || "",
+          officeName,
+          templateName,
+          hasBundle: Boolean(bundle),
+          fallbackOfficeMonth: usedFallbackOffice?.month || "",
+          fallbackTemplateMonth: usedFallbackTemplate?.month || ""
+        };
+      } catch (error) {
+        console.warn("Supabase month load skipped:", error);
+        return null;
+      }
+    }
+
+    async function saveMonthToSupabase({ files = [], sourceMeta = {}, includeBundle = true } = {}) {
+      const encodedFiles = [];
+      for (const item of files) {
+        if (!item?.file || !item.kind) continue;
+        encodedFiles.push({
+          kind: item.kind,
+          name: item.file.name,
+          mimeType: item.file.type || "application/octet-stream",
+          base64: await fileToBase64(item.file)
+        });
+      }
+      const body = {
+        password: adminSessionPassword || "1111",
+        month: Number(selectedMonthKey),
+        files: encodedFiles,
+        sourceMeta
+      };
+      if (includeBundle) {
+        body.branchData = branchStats;
+        body.promotionRows = promotionRowsData;
+        body.officeMap = officeMap;
+      }
+      const response = await fetch(SUPABASE_DATA_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok || payload.error) {
+        throw new Error(payload.error || `Supabase 저장 실패(${response.status})`);
+      }
+      applySupabaseFiles(selectedMonthKey, payload.files || []);
+      return payload;
+    }
+
+    function setButtonDownloadState(button, enabled) {
+      button.classList.toggle("is-disabled", !enabled);
+      button.setAttribute("aria-disabled", enabled ? "false" : "true");
+    }
+
+    function saveMetaMap(key, value) {
+      localStorage.setItem(storageKey(key), JSON.stringify(value));
+    }
+
+    function monthDisplay(month) {
+      return `2026.${String(month).padStart(2, "0")}`;
+    }
+
+    function monthLabel(month) {
+      return monthlyFiles[month]?.label || `${month}월`;
+    }
+
+    function getBranchMeta(branchName) {
+      for (const region of officeMap?.regions || []) {
+        const branch = (region.branches || []).find((item) => item.name === branchName);
+        if (branch) {
+          return {
+            regionName: region.name,
+            branchLabel: branch.label || `GA${branch.name}지점`,
+            branchCode: branch.code || ""
+          };
+        }
+      }
+      const agencies = branchStats[branchName]?.agencies || [];
+      const agency = agencies.find((item) => item.regionName || item.branchOrgName || item.branchCode) || {};
+      return {
+        regionName: agency.regionName || "지역단 미분류",
+        branchLabel: agency.branchOrgName || `GA${branchName}지점`,
+        branchCode: agency.branchCode || ""
+      };
+    }
+
+    function getBranchCodeFromMap(branchName, map = officeMap) {
+      const normalized = normalizeBranchName(branchName);
+      if (!normalized) return "";
+      for (const region of map?.regions || []) {
+        const branch = (region.branches || []).find((item) => item.name === normalized);
+        if (branch?.code) return branch.code;
+      }
+      return "";
+    }
+
+    const preferredRegionOrder = [
+      "GA서울지역단",
+      "GA강북지역단",
+      "GA강남지역단",
+      "GA경인지역단",
+      "GA경원지역단",
+      "GA충청지역단",
+      "GA부산지역단",
+      "GA대구지역단",
+      "GA호남지역단",
+      "GA경남지역단",
+      "강북금융지역단",
+      "강남금융지역단",
+      "동부금융지역단"
+    ];
+
+    function compareRegionNames(a, b) {
+      const aIndex = preferredRegionOrder.indexOf(a);
+      const bIndex = preferredRegionOrder.indexOf(b);
+      const aKnown = aIndex >= 0;
+      const bKnown = bIndex >= 0;
+      if (aKnown && bKnown) return aIndex - bIndex;
+      if (aKnown) return -1;
+      if (bKnown) return 1;
+      return a.localeCompare(b, "ko");
+    }
+
+    function compareBranchOptions(a, b) {
+      const aDirect = (a.label || "").includes("직할지점");
+      const bDirect = (b.label || "").includes("직할지점");
+      if (aDirect !== bDirect) return aDirect ? 1 : -1;
+      return (a.label || "").localeCompare(b.label || "", "ko");
+    }
+
+    function getRegionHierarchy() {
+      if (officeMap?.regions?.length) {
+        return Object.fromEntries(officeMap.regions.map((region) => [
+          region.name,
+          (region.branches || []).map((branch) => ({
+            value: branch.name,
+            label: branch.label || `GA${branch.name}지점`,
+            code: branch.code || ""
+          })).sort(compareBranchOptions)
+        ]));
+      }
+      const branchNames = Object.keys(branchStats).sort((a, b) => a.localeCompare(b, "ko"));
+      const regions = {};
+      branchNames.forEach((branchName) => {
+        const meta = getBranchMeta(branchName);
+        if (!regions[meta.regionName]) regions[meta.regionName] = [];
+        regions[meta.regionName].push({
+          value: branchName,
+          label: meta.branchLabel,
+          code: meta.branchCode
+        });
+      });
+      Object.values(regions).forEach((branches) => {
+        branches.sort(compareBranchOptions);
+      });
+      return regions;
+    }
+
+    function populateBranchOptions(preferredBranch = "금천", preferredRegion = "") {
+      const regions = getRegionHierarchy();
+      const sortedBranches = Object.keys(branchStats)
+        .map((branchName) => ({ value: branchName, label: getBranchMeta(branchName).branchLabel }))
+        .sort(compareBranchOptions);
+      branchList.innerHTML = "";
+      regionSelect.innerHTML = "";
+      branchSelect.innerHTML = "";
+      const allOption = document.createElement("option");
+      allOption.value = "전체";
+      branchList.appendChild(allOption);
+
+      const allRegionOption = document.createElement("option");
+      allRegionOption.value = "전체";
+      allRegionOption.textContent = "전체 지역단";
+      regionSelect.appendChild(allRegionOption);
+
+      Object.keys(regions).sort(compareRegionNames).forEach((regionName) => {
+        const option = document.createElement("option");
+        option.value = regionName;
+        option.textContent = regionName;
+        regionSelect.appendChild(option);
+      });
+
+      const targetBranch = preferredBranch === "전체"
+        ? "전체"
+        : branchStats[preferredBranch]
+        ? preferredBranch
+        : branchStats["금천"]
+          ? "금천"
+          : sortedBranches[0]?.value || "";
+      const targetRegion = targetBranch === "전체"
+        ? "전체"
+        : preferredRegion && regions[preferredRegion]?.some((branch) => branch.value === targetBranch)
+        ? preferredRegion
+        : getBranchMeta(targetBranch).regionName || "전체";
+
+      regionSelect.value = targetRegion;
+      const allSelectOption = document.createElement("option");
+      allSelectOption.value = "전체";
+      allSelectOption.textContent = "전체 지점";
+      branchSelect.appendChild(allSelectOption);
+
+      sortedBranches.forEach((branch) => {
+        const option = document.createElement("option");
+        option.value = branch.value;
+        branchList.appendChild(option);
+      });
+
+      const visibleBranches = targetRegion === "전체"
+        ? sortedBranches
+        : regions[targetRegion] || [];
+      visibleBranches.forEach((branch) => {
+        const selectOption = document.createElement("option");
+        selectOption.value = branch.value;
+        selectOption.textContent = branch.label;
+        branchSelect.appendChild(selectOption);
+      });
+
+      const nextBranch = targetBranch === "전체" || visibleBranches.some((branch) => branch.value === targetBranch)
+        ? targetBranch
+        : visibleBranches[0]?.value || "전체";
+      branchInput.value = nextBranch;
+      branchSelect.value = nextBranch;
+    }
+
+    branchStats = promotionRowsData.length
+      ? buildBranchStatsFromPromotionRows(promotionRowsData, officeMap)
+      : loadSavedBranchStats() || window.branchPromotionData || {};
+
+    populateBranchOptions("금천");
+
+    function getCurrentBranchName() {
+      const inputValue = branchInput.value.trim();
+      if (inputValue === "전체" || branchSelect.value === "전체") return "전체";
+      if (branchStats[inputValue]) return inputValue;
+      if (branchStats[branchSelect.value]) return branchSelect.value;
+      return Object.keys(branchStats)[0] || inputValue || "금천";
+    }
+
+    function updateMonthNavigation(month) {
+      monthlyPromoSelect.value = month;
+      pptTemplateSelect.value = month;
+      adminMonthSelect.value = month;
+    }
+
+    function applyPromotionRowsForCurrentMap(rows) {
+      const clonedRows = JSON.parse(JSON.stringify(rows || []));
+      promotionRowsData = clonedRows;
+      branchStats = buildBranchStatsFromPromotionRows(clonedRows, officeMap || baseOfficeMap);
+      window.branchPromotionRows = promotionRowsData;
+      window.branchPromotionData = branchStats;
+      localStorage.setItem(storageKey("branchData"), JSON.stringify(branchStats));
+      localStorage.setItem(storageKey("promotionRows"), JSON.stringify(promotionRowsData));
+    }
+
+    function updatePreviewReference(month, workbookName = "", officeName = "", templateName = "") {
+      const currentMonthLabel = monthLabel(month);
+      const workbookLabel = workbookName || `${currentMonthLabel} 총괄판`;
+      const officeLabel = officeName || `${currentMonthLabel} 점포현황`;
+      const templateLabel = templateName || `${currentMonthLabel} PPT 템플릿`;
+      previewReferenceNote.textContent = `${workbookLabel} 숫자 + ${officeLabel} 편제 + ${templateLabel} 배경 기준`;
+      if (pptTemplateReference) {
+        pptTemplateReference.textContent = `${templateLabel} 배경, ${officeLabel} 조직 편제, ${workbookLabel} 숫자를 기준으로 최종 프로모션 장표를 생성합니다.`;
+      }
+    }
+
+    function uploadBadge(label, value, pendingFile = null) {
+      if (pendingFile) {
+        return `<span class="upload-badge pending">${label}: 저장 대기(${escapeHtml(pendingFile.name)})</span>`;
+      }
+      if (value) {
+        return `<span class="upload-badge">${label}: ${escapeHtml(value)}</span>`;
+      }
+      return `<span class="upload-badge missing">${label}: 미업로드</span>`;
+    }
+
+    function updateAdminSaveNote() {
+      const pendingNames = [
+        pendingAdminFiles.workbook ? `총괄판 ${pendingAdminFiles.workbook.name}` : "",
+        pendingAdminFiles.office ? `점포현황 ${pendingAdminFiles.office.name}` : "",
+        pendingAdminFiles.template ? `PPT ${pendingAdminFiles.template.name}` : ""
+      ].filter(Boolean);
+      adminSaveNote.textContent = pendingNames.length
+        ? `저장 대기: ${pendingNames.join(" / ")}`
+        : "파일 선택 후 저장을 눌러야 Supabase에 반영됩니다.";
+      adminSaveUploads.disabled = adminSaveInProgress;
+    }
+
+    function updateMonthBundleSummary(month) {
+      const workbookLabel = savedWorkbookMeta[month]?.name || "미업로드";
+      const officeLabel = savedOfficeMeta[month]?.name || "미업로드";
+      const templateFallback = templateFallbackMeta[month];
+      const templateLabel = savedPptTemplateMeta[month]?.name
+        || (templateFallback ? `${templateFallback.templateName} (${monthDisplay(templateFallback.month)} 기준)` : "미업로드");
+      const displayMonth = monthDisplay(month);
+      adminBundleStatus.innerHTML = `${displayMonth} 저장 현황 · `
+        + uploadBadge("총괄판", savedWorkbookMeta[month]?.name || "", pendingAdminFiles.workbook)
+        + uploadBadge("점포현황", savedOfficeMeta[month]?.name || "", pendingAdminFiles.office)
+        + uploadBadge("PPT", savedPptTemplateMeta[month]?.name || "", pendingAdminFiles.template);
+      adminDbNote.textContent = `월별 원본 파일과 변환 데이터는 Supabase 월별 저장소에 저장되고, 브라우저 로컬 DB(${MONTH_FILE_DB_NAME})는 임시 캐시로 사용됩니다.`;
+      uploadStatus.textContent = pendingAdminFiles.workbook
+        ? `${displayMonth} 총괄판 저장 대기: ${pendingAdminFiles.workbook.name}`
+        : savedWorkbookMeta[month]?.name
+          ? `${displayMonth} 총괄판 저장됨: ${savedWorkbookMeta[month].name}`
+          : `${displayMonth} 총괄판을 업로드하면 아래 프로모션 현황과 미리보기 숫자에 반영됩니다.`;
+      officeUploadStatus.textContent = pendingAdminFiles.office
+        ? `${displayMonth} 점포현황 저장 대기: ${pendingAdminFiles.office.name}`
+        : savedOfficeMeta[month]?.name
+          ? `${displayMonth} 점포현황 저장됨: ${savedOfficeMeta[month].name}`
+          : `${displayMonth} 점포현황을 업로드하면 지역단/지점/대리점 편제가 해당 월 기준으로 반영됩니다.`;
+      pptUploadStatus.textContent = pendingAdminFiles.template
+        ? `${displayMonth} PPT 템플릿 저장 대기: ${pendingAdminFiles.template.name}`
+        : savedPptTemplateMeta[month]?.name
+          ? `${displayMonth} PPT 템플릿 저장됨: ${savedPptTemplateMeta[month].name}`
+          : templateFallback
+            ? `${displayMonth} PPT 템플릿 미업로드: ${templateFallback.templateName} (${monthDisplay(templateFallback.month)} 기준)을 임시 배경 기준으로 사용합니다.`
+            : `${displayMonth} PPT 템플릿을 업로드하면 해당 월 최종 프로모션 미리보기의 배경 기준으로 저장됩니다.`;
+      updateAdminSaveNote();
+    }
+
+    async function refreshMonthlyDownloadLink(month) {
+      const file = monthlyFiles[month];
+      const meta = savedWorkbookMeta[month];
+      if (uploadedMonthlyUrl) {
+        URL.revokeObjectURL(uploadedMonthlyUrl);
+        uploadedMonthlyUrl = "";
+      }
+      if (meta) {
+        const uploadedFile = await loadMonthFile("workbook", month);
+        if (uploadedFile) {
+          uploadedMonthlyUrl = URL.createObjectURL(uploadedFile);
+          monthlyDownload.href = uploadedMonthlyUrl;
+          monthlyDownload.download = uploadedFile.name;
+          setButtonDownloadState(monthlyDownload, true);
+          return uploadedFile.name;
+        }
+      }
+      monthlyDownload.href = file.href || "#";
+      monthlyDownload.download = "";
+      setButtonDownloadState(monthlyDownload, Boolean(file.href));
+      return "";
+    }
+
+    async function refreshPptTemplateLink(month) {
+      const file = pptTemplateFiles[month];
+      const meta = savedPptTemplateMeta[month];
+      if (uploadedPptTemplateUrl) {
+        URL.revokeObjectURL(uploadedPptTemplateUrl);
+        uploadedPptTemplateUrl = "";
+      }
+      if (meta) {
+        const uploadedFile = await loadMonthFile("template", month);
+        if (uploadedFile) {
+          uploadedPptTemplateUrl = URL.createObjectURL(uploadedFile);
+          pptTemplateHref = uploadedPptTemplateUrl;
+          pptTemplateDownload.href = pptTemplateHref;
+          pptTemplateDownload.download = uploadedFile.name;
+          setButtonDownloadState(pptTemplateDownload, true);
+          return uploadedFile.name;
+        }
+      }
+      pptTemplateHref = file.href || "";
+      pptTemplateDownload.href = file.href || "#";
+      pptTemplateDownload.download = "";
+      if (file.href) {
+        setButtonDownloadState(pptTemplateDownload, true);
+        return savedPptTemplateMeta[month]?.name || "";
+      }
+      const fallback = templateFallbackMeta[month];
+      if (fallback?.href) {
+        pptTemplateHref = fallback.href;
+        pptTemplateDownload.href = fallback.href;
+        pptTemplateDownload.download = fallback.templateName || "";
+        setButtonDownloadState(pptTemplateDownload, true);
+        return `${fallback.templateName} (${monthDisplay(fallback.month)} 기준)`;
+      }
+      setButtonDownloadState(pptTemplateDownload, false);
+      return "";
+    }
+
+    async function restoreMonthOfficeData(month) {
+      const meta = savedOfficeMeta[month];
+      if (meta) {
+        const uploadedFile = await loadMonthFile("office", month);
+        if (uploadedFile) {
+          if (!parsedOfficeCache[month]) {
+            const sheets = await window.XlsxLite.readWorkbook(uploadedFile);
+            parsedOfficeCache[month] = buildOfficeMapFromWorkbook(sheets);
+          }
+          officeMap = JSON.parse(JSON.stringify(parsedOfficeCache[month]));
+          window.branchOfficeMap = officeMap;
+          localStorage.setItem(storageKey("officeMap"), JSON.stringify(officeMap));
+          localStorage.setItem(storageKey("officeMapSource"), uploadedFile.name);
+          return uploadedFile.name;
+        }
+      }
+
+      officeMap = JSON.parse(JSON.stringify(baseOfficeMap || { regions: [] }));
+      window.branchOfficeMap = officeMap;
+      localStorage.setItem(storageKey("officeMap"), JSON.stringify(officeMap));
+      localStorage.setItem(storageKey("officeMapSource"), `${monthLabel(month)} 기본 점포현황`);
+      return "";
+    }
+
+    async function restoreMonthWorkbookData(month) {
+      const meta = savedWorkbookMeta[month];
+      if (meta) {
+        const uploadedFile = await loadMonthFile("workbook", month);
+        if (uploadedFile) {
+          if (!parsedWorkbookCache[month]) {
+            const sheets = await window.XlsxLite.readWorkbook(uploadedFile);
+            const parsed = buildBranchDataFromWorkbook(sheets);
+            parsedWorkbookCache[month] = {
+              fileName: uploadedFile.name,
+              sheetName: parsed.sheetName,
+              selectedBranchName: parsed.selectedBranchName || "",
+              promotionRows: parsed.promotionRows
+            };
+          }
+          applyPromotionRowsForCurrentMap(parsedWorkbookCache[month].promotionRows);
+          localStorage.setItem(storageKey("branchDataSource"), parsedWorkbookCache[month].fileName);
+          uploadStatus.textContent = `${monthlyFiles[month].label} 총괄판: ${parsedWorkbookCache[month].fileName} 기준 데이터 적용 완료`;
+          return parsedWorkbookCache[month].fileName;
+        }
+      }
+
+      const fallbackRows = month === defaultSeedMonthKey ? basePromotionRowsData : [];
+      applyPromotionRowsForCurrentMap(fallbackRows);
+      localStorage.setItem(storageKey("branchDataSource"), fallbackRows.length ? `${monthlyFiles[month].label} 기본 데이터` : `${monthlyFiles[month].label} 미업로드`);
+      return fallbackRows.length ? `${monthlyFiles[month].label} 기본 데이터` : "";
+    }
+
+    async function setSelectedMonth(month) {
+      const file = monthlyFiles[month];
+      if (!file) return;
+      selectedMonthKey = month;
+      listMonthSelect.value = monthDisplay(month);
+      previewMonthLabel.textContent = `26.${month}월`;
+      updateMonthNavigation(month);
+      const restoredOfficeName = await restoreMonthOfficeData(month);
+      const [downloadWorkbookName, templateName, restoredWorkbookName] = await Promise.all([
+        refreshMonthlyDownloadLink(month),
+        refreshPptTemplateLink(month),
+        restoreMonthWorkbookData(month)
+      ]);
+      const cloudMonth = await loadMonthFromSupabase(month);
+      if (cloudMonth) {
+        await Promise.all([
+          refreshMonthlyDownloadLink(month),
+          refreshPptTemplateLink(month)
+        ]);
+      }
+      updatePreviewReference(
+        month,
+        cloudMonth?.workbookName || restoredWorkbookName || downloadWorkbookName,
+        cloudMonth?.officeName || restoredOfficeName,
+        cloudMonth?.templateName || templateName
+      );
+      updateMonthBundleSummary(month);
+      const restoredPreferredBranch = parsedWorkbookCache[month]?.selectedBranchName || branchInput.value;
+      populateBranchOptions(restoredPreferredBranch, regionSelect.value);
+      branchInput.value = restoredPreferredBranch;
+      branchSelect.value = restoredPreferredBranch;
+      updateBranchStats();
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function safeFileName(value) {
+      return String(value ?? "프로모션").trim().replace(/[\\/:*?"<>|]/g, "_") || "프로모션";
+    }
+
+    function cellText(value) {
+      if (value === null || value === undefined) return "";
+      return String(value).replace(/\r/g, "").trim();
+    }
+
+    function compactText(value) {
+      return cellText(value).replace(/\s/g, "");
+    }
+
+    function normalizeBranchName(value) {
+      let text = cellText(value);
+      if (text.startsWith("GA")) text = text.slice(2);
+      if (text.endsWith("지점")) text = text.slice(0, -2);
+      return text.trim();
+    }
+
+    function normalizeAgencyName(value) {
+      return compactText(value)
+        .replace(/보험대리점$/g, "")
+        .replaceAll("주식회사", "(주)")
+        .toLowerCase();
+    }
+
+    function cleanOfficeAgencyName(value) {
+      return cellText(value).replace(/보험대리점$/g, "");
+    }
+
+    function officeKey(registrationNo, officeCode) {
+      const registration = cellText(registrationNo);
+      const office = cellText(officeCode);
+      return registration && office ? `${registration}|${office}` : "";
+    }
+
+    function isNumericValue(value) {
+      if (typeof value === "number") return Number.isFinite(value);
+      const text = cellText(value).replaceAll(",", "").replace("%", "");
+      return text !== "" && /^-?\d+(\.\d+)?$/.test(text);
+    }
+
+    function formatRate(value) {
+      if (value === null || value === undefined || cellText(value) === "") return "미확정";
+      if (typeof value === "number") {
+        if (value > -10 && value <= 10) return `${Math.round(value * 100)}%`;
+        return `${Math.round(value)}%`;
+      }
+      const text = cellText(value);
+      const numericText = text.replaceAll(",", "").replace("%", "");
+      if (/^-?\d+(\.\d+)?$/.test(numericText)) {
+        const numeric = Number(numericText);
+        if (numeric > -10 && numeric <= 10) return `${Math.round(numeric * 100)}%`;
+        return `${Math.round(numeric)}%`;
+      }
+      return text;
+    }
+
+    function isSelectedBranchFlag(value) {
+      const text = compactText(value).toUpperCase();
+      if (!text) return false;
+      return text === "O" || text === "○" || text === "◯";
+    }
+
+    function isConfirmedStatusFlag(value) {
+      const text = compactText(value).toUpperCase();
+      if (!text) return false;
+      return text === "O" || text === "○" || text === "◯" || text === "OK" || text.includes("확정") || text.includes("완료");
+    }
+
+    function hasPromotionContent(rateValues = []) {
+      return rateValues.some((value) => {
+        const text = cellText(value);
+        return isNumericValue(value) || (text && !["X", "○", "◯", "O", "-"].includes(text.toUpperCase()));
+      });
+    }
+
+    function resolvePromotionStatus(finalFlagValue, rateValues = []) {
+      const finalText = compactText(finalFlagValue);
+      if (isConfirmedStatusFlag(finalFlagValue)) return "confirmed";
+      if (finalText) return "pending";
+      return hasPromotionContent(rateValues) ? "pending" : "pending";
+    }
+
+    function pickBestPromotionMatch(matches = []) {
+      if (!matches.length) return null;
+      return [...matches].sort((a, b) => {
+        const aScore = (a.status === "confirmed" ? 100 : 0) + (a.hasPromoContent ? 10 : 0) + (a.finalFlag ? 1 : 0);
+        const bScore = (b.status === "confirmed" ? 100 : 0) + (b.hasPromoContent ? 10 : 0) + (b.finalFlag ? 1 : 0);
+        if (aScore !== bScore) return bScore - aScore;
+        return `${a.name}${a.type}`.localeCompare(`${b.name}${b.type}`, "ko");
+      })[0];
+    }
+
+    function choosePromotionSheet(sheets) {
+      const fullSheets = sheets.filter((sheet) =>
+        sheet.name.includes("지점별 담당 분류") && sheet.name.includes("전체")
+      );
+      if (fullSheets.length) return fullSheets[fullSheets.length - 1];
+      return sheets.find((sheet) =>
+        sheet.rows.some((row) =>
+          row.some((cell) => compactText(cell).includes("GA명")) &&
+          row.some((cell) => compactText(cell).includes("담당지점"))
+        )
+      ) || sheets[0];
+    }
+
+    function findColumn(rows, predicate, maxRows = 20) {
+      for (let rowIndex = 0; rowIndex < Math.min(rows.length, maxRows); rowIndex += 1) {
+        const row = rows[rowIndex] || [];
+        for (let colIndex = 0; colIndex < row.length; colIndex += 1) {
+          if (predicate(compactText(row[colIndex]), rowIndex, colIndex)) {
+            return { rowIndex, colIndex };
+          }
+        }
+      }
+      return null;
+    }
+
+    function findSelectedBranchName(rows, maxRows = 6) {
+      const marker = findColumn(rows, (text) => text === "지점명" || text.includes("지점명"), maxRows);
+      if (!marker) return "";
+      const row = rows[marker.rowIndex] || [];
+      for (let colIndex = marker.colIndex + 1; colIndex < Math.min(row.length, marker.colIndex + 5); colIndex += 1) {
+        const branchName = normalizeBranchName(row[colIndex]);
+        if (branchName && !branchName.includes("입력") && !branchName.includes("변경")) return branchName;
+      }
+      return "";
+    }
+
+    function buildOfficeMapFromWorkbook(sheets) {
+      function parseStatusRegions() {
+        const statusSheet = sheets.find((sheet) => sheet.name === "현황") || null;
+        if (!statusSheet) return [];
+        const items = (statusSheet.rows || []).map((row) => ({
+          code: cellText(row[1]),
+          name: cellText(row[2]),
+          count: Number(cellText(row[3]).replaceAll(",", "")) || 0
+        })).filter((item) => item.code && item.name);
+        const regionRows = items.filter((item) => item.name.includes("지역단"));
+        const allBranches = items.filter((item) => item.name.includes("지점"));
+        const directBranches = allBranches.filter((item) => item.name.includes("직할지점"));
+        const branchRows = allBranches.filter((item) => !item.name.includes("직할지점"));
+        const belongsToRegion = (branchName, regionName) => {
+          const branchBase = branchName.replace("지점", "");
+          const regionBase = regionName.replace("지역단", "").replace("Union", "");
+          return branchBase.startsWith(regionBase) || branchBase.startsWith(`GA${regionBase.replace("GA", "")}`);
+        };
+        const usedDirect = new Set();
+        const regions = [];
+        let branchIndex = 0;
+        regionRows.forEach((region) => {
+          const direct = directBranches.filter((branch, index) => {
+            if (usedDirect.has(index) || !belongsToRegion(branch.name, region.name)) return false;
+            usedDirect.add(index);
+            return true;
+          });
+          const targetCount = Math.max(0, region.count - direct.reduce((sum, branch) => sum + branch.count, 0));
+          const branches = [];
+          let total = 0;
+          while (branchIndex < branchRows.length && total < targetCount) {
+            const branch = branchRows[branchIndex];
+            branches.push({ name: normalizeBranchName(branch.name), label: branch.name, code: branch.code, count: branch.count });
+            total += branch.count;
+            branchIndex += 1;
+          }
+          direct.forEach((branch) => {
+            branches.push({ name: normalizeBranchName(branch.name), label: branch.name, code: branch.code, count: branch.count });
+          });
+          branches.sort((a, b) => a.label.localeCompare(b.label, "ko"));
+          regions.push({ name: region.name, code: region.code, count: region.count, branches });
+        });
+        return regions;
+      }
+
+      const officeSheet = sheets.find((sheet) =>
+        sheet.rows?.some((row) =>
+          row.some((cell) => compactText(cell) === "대리점등록번호") &&
+          row.some((cell) => compactText(cell) === "본점코드") &&
+          row.some((cell) => compactText(cell) === "지점명")
+        )
+      );
+      if (!officeSheet) throw new Error("점포현황에서 `대리점` 시트를 찾지 못했습니다.");
+      const regions = parseStatusRegions();
+      const branchMeta = {};
+      regions.forEach((region) => {
+        (region.branches || []).forEach((branch) => {
+          branchMeta[branch.name] = {
+            regionName: region.name,
+            regionCode: region.code,
+            branchOrgName: branch.label,
+            branchCode: branch.code
+          };
+        });
+      });
+
+      const allOpenSheet = sheets.find((sheet) =>
+        sheet.rows?.some((row) =>
+          row.some((cell) => compactText(cell) === "지역단조직번호") &&
+          row.some((cell) => compactText(cell) === "지점조직번호") &&
+          row.some((cell) => compactText(cell) === "조직번호")
+        )
+      );
+      const branchCodes = {};
+      if (allOpenSheet) {
+        const rows = allOpenSheet.rows || [];
+        const headerRowIndex = rows.findIndex((row) => row.some((cell) => compactText(cell) === "지역단조직번호"));
+        const header = rows[headerRowIndex] || [];
+        const colIndex = (label) => header.findIndex((cell) => compactText(cell) === label);
+        const regionCodeCol = colIndex("지역단조직번호");
+        const branchCodeCol = colIndex("지점조직번호");
+        const branchNameCol = colIndex("지점조직명");
+        rows.slice(headerRowIndex + 1).forEach((row) => {
+          const branchName = normalizeBranchName(row[branchNameCol]);
+          if (!branchName || branchCodes[branchName]) return;
+          branchCodes[branchName] = {
+            regionCode: cellText(row[regionCodeCol]),
+            branchCode: cellText(row[branchCodeCol])
+          };
+        });
+      }
+
+      const rows = officeSheet.rows || [];
+      const headerRowIndex = rows.findIndex((row) => row.some((cell) => compactText(cell) === "대리점등록번호"));
+      const header = rows[headerRowIndex] || [];
+      const colIndex = (label) => header.findIndex((cell) => compactText(cell) === label);
+      const registrationCol = colIndex("대리점등록번호");
+      const officeCol = colIndex("본점코드");
+      const regionCol = colIndex("지역단");
+      const branchCol = colIndex("지점명");
+      const agencyOrgCol = colIndex("지사코드");
+      const agencyCol = colIndex("GA명");
+      if ([registrationCol, officeCol, branchCol, agencyCol].some((index) => index < 0)) {
+        throw new Error("점포현황에서 대리점등록번호, 본점코드, 지점명, GA명 열을 찾지 못했습니다.");
+      }
+
+      const offices = [];
+      const seen = new Set();
+      rows.slice(headerRowIndex + 1).forEach((row) => {
+        const registrationNo = cellText(row[registrationCol]);
+        const officeCode = cellText(row[officeCol]);
+        const name = cellText(row[agencyCol]);
+        const branchOrgName = cellText(row[branchCol]);
+        const branchName = normalizeBranchName(branchOrgName);
+        const meta = branchMeta[branchName] || {};
+        const key = officeKey(registrationNo, officeCode);
+        if (!key || !name || !branchName || seen.has(key)) return;
+        seen.add(key);
+        offices.push({
+          key,
+          registrationNo,
+          hqCode: officeCode,
+          regionName: meta.regionName || cellText(row[regionCol]),
+          regionCode: meta.regionCode || branchCodes[branchName]?.regionCode || "",
+          branchName,
+          branchOrgName: meta.branchOrgName || branchOrgName,
+          branchCode: meta.branchCode || branchCodes[branchName]?.branchCode || "",
+          agencyOrgCode: cellText(row[agencyOrgCol]),
+          name,
+          nameKey: normalizeAgencyName(name)
+        });
+      });
+
+      if (!offices.length) throw new Error("점포현황에서 반영할 대리점 행을 찾지 못했습니다.");
+      return {
+        source: officeSheet.name,
+        regions,
+        offices,
+        byKey: Object.fromEntries(offices.map((office) => [office.key, office])),
+        byName: Object.fromEntries(offices.map((office) => [office.nameKey, office])),
+        branchCount: new Set(offices.map((office) => office.branchName)).size,
+        agencyCount: offices.length
+      };
+    }
+
+    function buildBranchStatsFromPromotionRows(rows, map = officeMap) {
+      const grouped = {};
+      (map?.regions || []).forEach((region) => {
+        (region.branches || []).forEach((branch) => {
+          if (!grouped[branch.name]) grouped[branch.name] = [];
+        });
+      });
+      if (map?.offices?.length) {
+        const promosByKey = {};
+        const promosByName = {};
+        rows.forEach((row, index) => {
+          row._matchIndex = index;
+          const key = officeKey(row.agencyCode, row.officeCode);
+          if (key) (promosByKey[key] ||= []).push(row);
+          const nameKey = normalizeAgencyName(row.name);
+          if (nameKey) (promosByName[nameKey] ||= []).push(row);
+        });
+        const used = new Set();
+
+        map.offices.forEach((office) => {
+          const matches = promosByKey[office.key] || promosByName[office.nameKey] || [];
+          if (matches.length) {
+            matches.forEach((promo) => used.add(promo._matchIndex));
+            const promo = pickBestPromotionMatch(matches);
+            const matchSource = officeKey(promo.agencyCode, promo.officeCode) === office.key ? "조직번호 매칭" : "대리점명 매칭";
+            (grouped[office.branchName] ||= []).push({
+              ...promo,
+              name: cleanOfficeAgencyName(office.name),
+              agencyCode: office.registrationNo,
+              officeCode: office.hqCode,
+              agencyOrgCode: office.agencyOrgCode,
+              regionName: office.regionName,
+              regionCode: office.regionCode,
+              branchOrgName: office.branchOrgName,
+              branchCode: office.branchCode,
+              promoBranch: office.branchName,
+              promoBranchCode: office.branchCode,
+              matchSource
+            });
+          } else {
+            (grouped[office.branchName] ||= []).push({
+              name: cleanOfficeAgencyName(office.name),
+              status: "pending",
+              type: "점포현황 기준",
+              main: "",
+              sub: "",
+              extra: "",
+              download: "pending",
+              agencyCode: office.registrationNo,
+              officeCode: office.hqCode,
+              agencyOrgCode: office.agencyOrgCode,
+              regionName: office.regionName,
+              regionCode: office.regionCode,
+              branchOrgName: office.branchOrgName,
+              branchCode: office.branchCode,
+              matchSource: "점포현황 기준"
+            });
+          }
+        });
+
+        rows.forEach((row, index) => {
+          if (used.has(index)) return;
+          (grouped["미매칭"] ||= []).push({ ...row, promoBranch: "미매칭", matchSource: "총괄판 기준", unmatchedPromotion: true });
+        });
+      } else {
+        rows.forEach((row) => {
+          const branchName = normalizeBranchName(row.promoBranch);
+          if (!branchName) return;
+          (grouped[branchName] ||= []).push(row);
+        });
+      }
+
+      const result = {};
+      Object.entries(grouped).forEach(([branchName, agencies]) => {
+        const sorted = agencies
+          .map(({ _matchIndex, ...agency }) => agency)
+          .sort((a, b) => `${a.name}${a.type}`.localeCompare(`${b.name}${b.type}`, "ko"));
+        const confirmed = sorted.filter((item) => item.status === "confirmed").length;
+        result[branchName] = {
+          total: sorted.length,
+          confirmed,
+          pending: sorted.length - confirmed,
+          agencies: sorted
+        };
+      });
+      return result;
+    }
+
+    function buildBranchDataFromWorkbook(sheets) {
+      const sheet = choosePromotionSheet(sheets);
+      if (!sheet) throw new Error("총괄판 시트를 찾지 못했습니다.");
+      const rows = sheet.rows || [];
+      const selectedBranchName = findSelectedBranchName(rows);
+      const agency = findColumn(rows, (text) => text === "GA명" || text.includes("GA명"));
+      const code = findColumn(rows, (text) => text === "코드");
+      const branch = findColumn(rows, (text) => text.includes("담당지점") && !text.includes("담당지점수"));
+      const finalConfirm = findColumn(rows, (text) => text.includes("최종확정") && text.includes("여부"));
+      const type = findColumn(rows, (text) => text.includes("순수3종") && text.includes("유형"));
+      const pureRate = findColumn(rows, (text) => text.includes("순수3종지급률"));
+
+      if (!agency || !branch) {
+        throw new Error("총괄판에서 `GA명` 또는 `담당 지점` 열을 찾지 못했습니다.");
+      }
+
+      const agencyCol = agency.colIndex;
+      const codeCol = code?.colIndex ?? agencyCol - 2;
+      const officeCodeCol = codeCol + 1;
+      const branchCol = branch.colIndex;
+      const finalConfirmCol = finalConfirm?.colIndex ?? -1;
+      const typeCol = type?.colIndex ?? agencyCol + 1;
+      const mainCol = pureRate?.colIndex ?? 12;
+      const subCol = mainCol + 1;
+      const extraCol = mainCol + 2;
+      const rateStartCol = Math.max(0, mainCol - 6);
+      const rateEndCol = Math.max(extraCol, 14);
+      const startRow = Math.max(agency.rowIndex, branch.rowIndex) + 1;
+      const promotionRows = [];
+      let selectedBranchMatchCount = 0;
+
+      rows.slice(startRow).forEach((row) => {
+        const agencyName = cellText(row[agencyCol]);
+        const directBranchName = normalizeBranchName(row[branchCol]);
+        if (!agencyName || compactText(agencyName).includes("GA명")) return;
+        const rateValues = row.slice(rateStartCol, rateEndCol + 1);
+        const hasContent = hasPromotionContent(rateValues);
+        const finalFlag = finalConfirmCol >= 0 ? cellText(row[finalConfirmCol]) : "";
+        const status = resolvePromotionStatus(finalFlag, rateValues);
+        if (selectedBranchName && directBranchName === selectedBranchName) selectedBranchMatchCount += 1;
+        promotionRows.push({
+          name: agencyName,
+          status,
+          type: cellText(row[typeCol]) || "총괄판 기준",
+          main: hasContent ? formatRate(row[mainCol]) : "",
+          sub: hasContent ? formatRate(row[subCol]) : "",
+          extra: hasContent ? formatRate(row[extraCol]) : "",
+          download: status === "confirmed" ? "ready" : "pending",
+          agencyCode: cellText(row[codeCol]),
+          officeCode: cellText(row[officeCodeCol]),
+          promoBranch: directBranchName,
+          promoBranchCode: getBranchCodeFromMap(directBranchName),
+          originalBranch: directBranchName,
+          finalFlag,
+          hasPromoContent: hasContent
+        });
+      });
+
+      if (!promotionRows.length) {
+        throw new Error("총괄판에서 반영할 대리점 행을 찾지 못했습니다.");
+      }
+      return {
+        data: buildBranchStatsFromPromotionRows(promotionRows, officeMap),
+        promotionRows,
+        sheetName: sheet.name,
+        selectedBranchName,
+        selectedBranchMatchCount
+      };
+    }
+
+    function getBranchSummary(branchName) {
+      if (branchName !== "전체") {
+        return branchStats[branchName] || { total: 0, confirmed: 0, pending: 0, agencies: [] };
+      }
+
+      const agencies = Object.entries(branchStats).flatMap(([sourceBranch, stats]) =>
+        (stats.agencies || []).map((agency) => ({
+          ...agency,
+          sourceBranch
+        }))
+      );
+      const confirmed = agencies.filter((agency) => agency.status === "confirmed").length;
+      return {
+        total: agencies.length,
+        confirmed,
+        pending: agencies.length - confirmed,
+        agencies
+      };
+    }
+
+    function getFilteredAgencies(branchName) {
+      const agencies = getBranchSummary(branchName).agencies || [];
+      if (activeFilter === "confirmed") return agencies.filter((agency) => agency.status === "confirmed");
+      if (activeFilter === "pending") return agencies.filter((agency) => agency.status === "pending");
+      return agencies;
+    }
+
+    function updatePreview(agency) {
+      if (!agency || agency.status !== "confirmed") return;
+      previewAgencyTag.textContent = agency.name;
+      previewAgencyPill.textContent = agency.name;
+      previewMainRate.textContent = agency.main;
+      previewSubRate.textContent = agency.sub;
+      previewExtraRate.textContent = agency.extra;
+      previewMainTableRate.textContent = agency.main;
+      previewSubTableRate.textContent = agency.sub;
+    }
+
+    function renderPromotionRows(branchName) {
+      const agencies = getFilteredAgencies(branchName);
+      if (agencies.length === 0) {
+        promotionRows.innerHTML = '<tr><td colspan="6"><span class="small">해당 조건의 대리점이 없습니다.</span></td></tr>';
+        return;
+      }
+
+      promotionRows.innerHTML = agencies.map((agency, index) => {
+        const isConfirmed = agency.status === "confirmed";
+        const statusClass = isConfirmed ? "done" : "wait";
+        const statusLabel = isConfirmed ? "확정" : "협의중";
+        const metaParts = [];
+        if (branchName === "전체" && agency.sourceBranch) metaParts.push(agency.sourceBranch);
+        metaParts.push(agency.type || "총괄판 기준");
+        if (agency.agencyCode) metaParts.push(`등록 ${agency.agencyCode}`);
+        if (agency.officeCode) metaParts.push(`본점 ${agency.officeCode}`);
+        if (agency.agencyOrgCode) metaParts.push(`조직 ${agency.agencyOrgCode}`);
+        const agencySubText = metaParts.join(" · ");
+        const previewButton = isConfirmed
+          ? `<button class="preview-btn" type="button" data-index="${index}">미리보기</button>`
+          : "";
+        const downloadButton = isConfirmed
+          ? `<div class="download-actions">
+              <button class="download row-jpg-btn" type="button" data-index="${index}">JPG 받기</button>
+              <button class="download ppt row-ppt-btn" type="button" data-index="${index}">PPT 받기</button>
+            </div>`
+          : "";
+        return `
+          <tr>
+            <td><strong>${escapeHtml(agency.name)}</strong><br /><span class="small">${escapeHtml(agencySubText)}</span></td>
+            <td><span class="status ${statusClass}">${statusLabel}</span></td>
+            <td>${isConfirmed ? "완료" : ""}</td>
+            <td>${isConfirmed ? "생성 완료" : ""}</td>
+            <td>${previewButton}</td>
+            <td>${downloadButton}</td>
+          </tr>
+        `;
+      }).join("");
+
+      promotionRows.querySelectorAll(".preview-btn:not(:disabled)").forEach((button) => {
+        button.addEventListener("click", () => {
+          updatePreview(agencies[Number(button.dataset.index)]);
+        });
+      });
+
+      promotionRows.querySelectorAll(".row-jpg-btn").forEach((button) => {
+        button.addEventListener("click", () => {
+          const agency = agencies[Number(button.dataset.index)];
+          updatePreview(agency);
+          downloadCurrentPreviewAsJpg(agency);
+        });
+      });
+
+      promotionRows.querySelectorAll(".row-ppt-btn").forEach((button) => {
+        button.addEventListener("click", () => {
+          const agency = agencies[Number(button.dataset.index)];
+          updatePreview(agency);
+          downloadCurrentPreviewAsPpt(agency);
+        });
+      });
+
+      const firstConfirmed = agencies.find((agency) => agency.status === "confirmed");
+      updatePreview(firstConfirmed);
+    }
+
+    function updateBranchStats() {
+      const branchName = getCurrentBranchName();
+      const stats = getBranchSummary(branchName);
+      totalLabel.textContent = branchName === "전체" ? "전체 대리점" : `${branchName} 총 지사`;
+      totalCount.textContent = stats.total;
+      confirmedCount.textContent = stats.confirmed;
+      pendingCount.textContent = stats.pending;
+      if (branchName === "전체" || branchStats[branchName]) {
+        const regionName = branchName === "전체" ? "전체" : getBranchMeta(branchName).regionName;
+        if (regionSelect.value !== regionName) populateBranchOptions(branchName, regionName);
+        branchSelect.value = branchName;
+      }
+      renderPromotionRows(branchName);
+    }
+
+    branchInput.addEventListener("input", () => {
+      const inputValue = branchInput.value.trim();
+      if (inputValue === "전체" || branchStats[inputValue]) {
+        populateBranchOptions(inputValue);
+      }
+      updateBranchStats();
+    });
+    regionSelect.addEventListener("change", () => {
+      const branches = regionSelect.value === "전체"
+        ? Object.keys(branchStats).sort((a, b) => a.localeCompare(b, "ko"))
+        : (getRegionHierarchy()[regionSelect.value] || []).map((branch) => branch.value);
+      const nextBranch = branches.includes(branchSelect.value) ? branchSelect.value : branches[0] || "전체";
+      populateBranchOptions(nextBranch, regionSelect.value);
+      branchInput.value = nextBranch;
+      updateBranchStats();
+    });
+    branchSelect.addEventListener("change", () => {
+      branchInput.value = branchSelect.value;
+      updateBranchStats();
+    });
+
+    statusSelect.addEventListener("change", () => {
+      activeFilter = statusSelect.value;
+      metricButtons.forEach((item) => item.classList.toggle("active", item.dataset.filter === activeFilter));
+      updateBranchStats();
+    });
+
+    metricButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        activeFilter = button.dataset.filter;
+        metricButtons.forEach((item) => item.classList.toggle("active", item === button));
+        statusSelect.value = activeFilter;
+        updateBranchStats();
+      });
+    });
+
+    function activateAdminMode() {
+      document.body.classList.add("admin-mode");
+      adminUploadPanel.classList.add("active");
+      adminLoginPanel.classList.remove("active");
+      adminError.classList.remove("active");
+      adminModeButton.textContent = "관리자모드 ON";
+      adminModeButton.classList.add("primary");
+      adminMonthSelect.focus();
+    }
+
+    adminModeButton.addEventListener("click", () => {
+      if (document.body.classList.contains("admin-mode")) return;
+      adminLoginPanel.classList.toggle("active");
+      adminError.classList.remove("active");
+      adminPassword.value = "";
+      if (adminLoginPanel.classList.contains("active")) adminPassword.focus();
+    });
+
+    adminLoginButton.addEventListener("click", () => {
+      if (adminPassword.value === "1111") {
+        adminSessionPassword = adminPassword.value;
+        activateAdminMode();
+      }
+      else adminError.classList.add("active");
+    });
+
+    adminPassword.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") adminLoginButton.click();
+      if (event.key === "Escape") adminCancelButton.click();
+    });
+
+    adminCancelButton.addEventListener("click", () => {
+      adminLoginPanel.classList.remove("active");
+      adminError.classList.remove("active");
+      adminPassword.value = "";
+    });
+
+    function updateUploadedDownload(file) {
+      if (uploadedMonthlyUrl) URL.revokeObjectURL(uploadedMonthlyUrl);
+      uploadedMonthlyUrl = URL.createObjectURL(file);
+      monthlyDownload.href = uploadedMonthlyUrl;
+      monthlyDownload.download = file.name;
+      setButtonDownloadState(monthlyDownload, true);
+      if (masterDownload) {
+        masterDownload.href = uploadedMonthlyUrl;
+        masterDownload.download = file.name;
+      }
+    }
+
+    function stageAdminFile(kind, file, statusElement, label) {
+      if (!file) return;
+      pendingAdminFiles[kind] = file;
+      updateMonthBundleSummary(selectedMonthKey);
+      statusElement.textContent = `${label} 선택됨: ${file.name} · 아직 저장되지 않았습니다.`;
+    }
+
+    function clearPendingAdminFiles() {
+      pendingAdminFiles.workbook = null;
+      pendingAdminFiles.office = null;
+      pendingAdminFiles.template = null;
+      updateAdminSaveNote();
+    }
+
+    async function handlePromotionWorkbookUpload(file, sourceLabel) {
+      if (!file) return;
+      if (/\.zip$/i.test(file.name)) {
+        uploadStatus.textContent = "ZIP 파일은 총괄판 업로드 대상이 아니어서 무시했습니다. 엑셀(.xlsx) 총괄판을 올려주세요.";
+        return;
+      }
+      uploadStatus.textContent = `${file.name} 읽는 중...`;
+      try {
+        const sheets = await window.XlsxLite.readWorkbook(file);
+        const parsed = buildBranchDataFromWorkbook(sheets);
+        parsedWorkbookCache[selectedMonthKey] = {
+          fileName: file.name,
+          sheetName: parsed.sheetName,
+          selectedBranchName: parsed.selectedBranchName || "",
+          promotionRows: parsed.promotionRows.map(({ _matchIndex, ...row }) => row)
+        };
+        savedWorkbookMeta[selectedMonthKey] = {
+          name: file.name,
+          updatedAt: Date.now()
+        };
+        saveMetaMap("monthlyWorkbookMeta", savedWorkbookMeta);
+        await saveMonthFile("workbook", selectedMonthKey, file);
+        applyPromotionRowsForCurrentMap(parsedWorkbookCache[selectedMonthKey].promotionRows);
+        localStorage.setItem(storageKey("branchDataSource"), file.name);
+        activeFilter = "all";
+        statusSelect.value = "all";
+        metricButtons.forEach((item) => item.classList.toggle("active", item.dataset.filter === "all"));
+        const preferredBranch = parsed.selectedBranchName || branchInput.value;
+        populateBranchOptions(preferredBranch);
+        branchInput.value = preferredBranch;
+        branchSelect.value = preferredBranch;
+        updateBranchStats();
+        updateUploadedDownload(file);
+        updatePreviewReference(
+          selectedMonthKey,
+          file.name,
+          savedOfficeMeta[selectedMonthKey]?.name || "",
+          savedPptTemplateMeta[selectedMonthKey]?.name || ""
+        );
+        updateMonthBundleSummary(selectedMonthKey);
+        const branchCount = Object.keys(branchStats).length;
+        const agencyCount = Object.values(branchStats).reduce((sum, item) => sum + item.total, 0);
+        const branchScopeText = parsed.selectedBranchName
+          ? `, 선택 지점 ${parsed.selectedBranchName} / O매칭 ${parsed.selectedBranchMatchCount}건`
+          : "";
+        uploadStatus.textContent = `${sourceLabel}: ${file.name} 반영 완료. 사용 시트: ${parsed.sheetName}${branchScopeText}, 화면 지점 ${branchCount}개 / 대리점 ${agencyCount}개`;
+        try {
+          await saveMonthToSupabase({
+            files: [{ kind: "workbook", file }],
+            sourceMeta: { workbook: file.name }
+          });
+          uploadStatus.textContent += " · Supabase 저장 완료";
+        } catch (cloudError) {
+          uploadStatus.textContent += ` · Supabase 저장 실패: ${cloudError.message || cloudError}`;
+        }
+      } catch (error) {
+        uploadStatus.textContent = error.message || "엑셀 총괄판을 읽는 중 오류가 발생했습니다.";
+      }
+    }
+
+    async function handlePptTemplateUpload(file, statusElement, sourceLabel, shouldAlert = false) {
+      if (!file) return;
+      statusElement.textContent = `${file.name} 저장 중...`;
+      try {
+        savedPptTemplateMeta[selectedMonthKey] = {
+          name: file.name,
+          updatedAt: Date.now()
+        };
+        saveMetaMap("monthlyTemplateMeta", savedPptTemplateMeta);
+        await saveMonthFile("template", selectedMonthKey, file);
+        await refreshPptTemplateLink(selectedMonthKey);
+        updatePreviewReference(
+          selectedMonthKey,
+          savedWorkbookMeta[selectedMonthKey]?.name || "",
+          savedOfficeMeta[selectedMonthKey]?.name || "",
+          file.name
+        );
+        updateMonthBundleSummary(selectedMonthKey);
+        renderPromotionRows(getCurrentBranchName());
+        statusElement.textContent = `${sourceLabel}: ${file.name} 반영 완료`;
+        try {
+          await saveMonthToSupabase({
+            files: [{ kind: "template", file }],
+            sourceMeta: { template: file.name },
+            includeBundle: false
+          });
+          statusElement.textContent += " · Supabase 저장 완료";
+          if (shouldAlert) window.alert(`${monthlyFiles[selectedMonthKey].label} 템플릿으로 ${file.name} 반영 완료. Supabase에도 저장했습니다.`);
+        } catch (cloudError) {
+          statusElement.textContent += ` · Supabase 저장 실패: ${cloudError.message || cloudError}`;
+          if (shouldAlert) window.alert(`${monthlyFiles[selectedMonthKey].label} 템플릿으로 ${file.name} 로컬 반영 완료. Supabase 저장 실패: ${cloudError.message || cloudError}`);
+        }
+      } catch (error) {
+        statusElement.textContent = error.message || "PPT 템플릿을 저장하는 중 오류가 발생했습니다.";
+        throw error;
+      }
+    }
+
+    async function handleOfficeWorkbookUpload(file, sourceLabel) {
+      if (!file) return;
+      if (/\.zip$/i.test(file.name)) {
+        officeUploadStatus.textContent = "ZIP 파일은 점포현황 업로드 대상이 아니어서 무시했습니다. 엑셀(.xlsx) 파일을 올려주세요.";
+        return;
+      }
+      officeUploadStatus.textContent = `${file.name} 읽는 중...`;
+      try {
+        const sheets = await window.XlsxLite.readWorkbook(file);
+        officeMap = buildOfficeMapFromWorkbook(sheets);
+        parsedOfficeCache[selectedMonthKey] = JSON.parse(JSON.stringify(officeMap));
+        savedOfficeMeta[selectedMonthKey] = {
+          name: file.name,
+          updatedAt: Date.now()
+        };
+        saveMetaMap("monthlyOfficeMeta", savedOfficeMeta);
+        await saveMonthFile("office", selectedMonthKey, file);
+        window.branchOfficeMap = officeMap;
+        localStorage.setItem(storageKey("officeMap"), JSON.stringify(officeMap));
+        localStorage.setItem(storageKey("officeMapSource"), file.name);
+        const currentMonthRows = parsedWorkbookCache[selectedMonthKey]?.promotionRows || promotionRowsData || [];
+        applyPromotionRowsForCurrentMap(currentMonthRows);
+        populateBranchOptions(branchInput.value);
+        updateBranchStats();
+        updatePreviewReference(
+          selectedMonthKey,
+          savedWorkbookMeta[selectedMonthKey]?.name || "",
+          file.name,
+          savedPptTemplateMeta[selectedMonthKey]?.name || ""
+        );
+        updateMonthBundleSummary(selectedMonthKey);
+        const branchCount = Object.keys(branchStats).length;
+        const agencyCount = Object.values(branchStats).reduce((sum, item) => sum + item.total, 0);
+        officeUploadStatus.textContent = `${sourceLabel}: ${file.name} 반영 완료. 점포현황 ${officeMap.branchCount}개 지점 / ${officeMap.agencyCount}개 대리점 기준, 화면 ${branchCount}개 지점 / ${agencyCount}개 행`;
+        try {
+          await saveMonthToSupabase({
+            files: [{ kind: "office", file }],
+            sourceMeta: { office: file.name }
+          });
+          officeUploadStatus.textContent += " · Supabase 저장 완료";
+        } catch (cloudError) {
+          officeUploadStatus.textContent += ` · Supabase 저장 실패: ${cloudError.message || cloudError}`;
+        }
+      } catch (error) {
+        officeUploadStatus.textContent = error.message || "점포현황을 읽는 중 오류가 발생했습니다.";
+      }
+    }
+
+    masterUpload.addEventListener("change", () => {
+      stageAdminFile("workbook", masterUpload.files?.[0], uploadStatus, "총괄판");
+    });
+
+    officeStatusUpload.addEventListener("change", () => {
+      stageAdminFile("office", officeStatusUpload.files?.[0], officeUploadStatus, "점포현황");
+    });
+
+    adminMonthSelect.addEventListener("change", () => {
+      clearPendingAdminFiles();
+      setSelectedMonth(adminMonthSelect.value);
+    });
+
+    listMonthSelect.addEventListener("change", () => {
+      const month = Number(listMonthSelect.value.split(".")[1]).toString();
+      setSelectedMonth(month);
+    });
+
+    monthlyPromoSelect.addEventListener("change", () => {
+      setSelectedMonth(monthlyPromoSelect.value);
+    });
+
+    pptTemplateSelect.addEventListener("change", () => {
+      setSelectedMonth(pptTemplateSelect.value);
+    });
+
+    monthlyUpload.addEventListener("change", () => {
+      stageAdminFile("workbook", monthlyUpload.files?.[0], uploadStatus, "총괄판");
+    });
+
+    officeStepUpload.addEventListener("change", () => {
+      stageAdminFile("office", officeStepUpload.files?.[0], officeUploadStatus, "점포현황");
+    });
+
+    pptTemplateUpload.addEventListener("change", () => {
+      const file = pptTemplateUpload.files?.[0];
+      stageAdminFile("template", file, pptUploadStatus, "PPT 템플릿");
+    });
+
+    adminPptTemplateUpload.addEventListener("change", () => {
+      const file = adminPptTemplateUpload.files?.[0];
+      stageAdminFile("template", file, pptUploadStatus, "PPT 템플릿");
+    });
+
+    adminSaveUploads.addEventListener("click", async () => {
+      const stagedFiles = {
+        workbook: pendingAdminFiles.workbook,
+        office: pendingAdminFiles.office,
+        template: pendingAdminFiles.template
+      };
+      if (!stagedFiles.workbook && !stagedFiles.office && !stagedFiles.template) {
+        adminSaveNote.textContent = "저장할 파일이 없습니다. 먼저 파일을 선택해주세요.";
+        return;
+      }
+      adminSaveUploads.disabled = true;
+      adminSaveInProgress = true;
+      adminSaveNote.textContent = "선택 파일 저장 중...";
+      try {
+        if (stagedFiles.office) await handleOfficeWorkbookUpload(stagedFiles.office, "관리자 저장");
+        if (stagedFiles.workbook) await handlePromotionWorkbookUpload(stagedFiles.workbook, "관리자 저장");
+        if (stagedFiles.template) await handlePptTemplateUpload(stagedFiles.template, pptUploadStatus, "관리자 저장");
+        clearPendingAdminFiles();
+        updateMonthBundleSummary(selectedMonthKey);
+        adminSaveNote.textContent = `${monthDisplay(selectedMonthKey)} 선택 파일 저장 완료`;
+      } catch (error) {
+        adminSaveNote.textContent = `저장 중 오류가 발생했습니다: ${error.message || error}`;
+      } finally {
+        adminSaveInProgress = false;
+        adminSaveUploads.disabled = false;
+      }
+    });
+
+    const previewAgencyTag = document.getElementById("previewAgencyTag");
+    const previewAgencyPill = document.getElementById("previewAgencyPill");
+    const previewReferenceNote = document.getElementById("previewReferenceNote");
+    const previewMainRate = document.getElementById("previewMainRate");
+    const previewSubRate = document.getElementById("previewSubRate");
+    const previewExtraRate = document.getElementById("previewExtraRate");
+    const previewMonthLabel = document.getElementById("previewMonthLabel");
+    const previewMainTableRate = document.getElementById("previewMainTableRate");
+    const previewSubTableRate = document.getElementById("previewSubTableRate");
+    const downloadPreviewPpt = document.getElementById("downloadPreviewPpt");
+    const downloadPreviewJpg = document.getElementById("downloadPreviewJpg");
+
+    setSelectedMonth(selectedMonthKey);
+
+    function inlineComputedStyles(source, target) {
+      const computed = window.getComputedStyle(source);
+      for (const property of computed) {
+        target.style.setProperty(
+          property,
+          computed.getPropertyValue(property),
+          computed.getPropertyPriority(property)
+        );
+      }
+      target.style.setProperty("box-sizing", "border-box");
+      Array.from(source.children).forEach((sourceChild, index) => {
+        inlineComputedStyles(sourceChild, target.children[index]);
+      });
+    }
+
+    function makeStandaloneClone(element, width, height) {
+      const clone = element.cloneNode(true);
+      inlineComputedStyles(element, clone);
+      clone.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
+      clone.style.setProperty("width", `${width}px`);
+      clone.style.setProperty("height", `${height}px`);
+      clone.style.setProperty("margin", "0");
+      clone.style.setProperty("transform", "none");
+      return new XMLSerializer().serializeToString(clone);
+    }
+
+    async function renderElementToJpgBlob(element) {
+      if (!element) throw new Error("미리보기 장표를 찾지 못했습니다.");
+      if (document.fonts?.ready) await document.fonts.ready;
+      const rect = element.getBoundingClientRect();
+      const width = Math.ceil(rect.width);
+      const height = Math.ceil(rect.height);
+      const standaloneMarkup = makeStandaloneClone(element, width, height);
+      const markup = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
+          <foreignObject width="100%" height="100%">
+            ${standaloneMarkup}
+          </foreignObject>
+        </svg>`;
+      const image = new Image();
+      const svgUrl = URL.createObjectURL(new Blob([markup], { type: "image/svg+xml;charset=utf-8" }));
+      await new Promise((resolve, reject) => {
+        image.onload = resolve;
+        image.onerror = () => reject(new Error("미리보기 장표를 이미지로 변환하지 못했습니다."));
+        image.src = svgUrl;
+      });
+      const canvas = document.createElement("canvas");
+      canvas.width = width * 2;
+      canvas.height = height * 2;
+      const context = canvas.getContext("2d");
+      context.fillStyle = "#ffffff";
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.scale(2, 2);
+      context.drawImage(image, 0, 0);
+      URL.revokeObjectURL(svgUrl);
+      const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.95));
+      if (!blob) throw new Error("JPG 파일 생성에 실패했습니다.");
+      return { blob, width: canvas.width, height: canvas.height };
+    }
+
+    function fileExtension(filename) {
+      return filename.includes(".") ? filename.slice(filename.lastIndexOf(".")) : "";
+    }
+
+    async function requestSaveHandle(filename, description, mimeType) {
+      if (window.showSaveFilePicker) {
+        try {
+          const extension = fileExtension(filename);
+          return await window.showSaveFilePicker({
+            suggestedName: filename,
+            types: [{
+              description,
+              accept: { [mimeType || "application/octet-stream"]: extension ? [extension] : [] }
+            }]
+          });
+        } catch (error) {
+          if (error.name === "AbortError") throw new Error("파일 저장이 취소되었습니다.");
+          return null;
+        }
+      }
+      return null;
+    }
+
+    async function saveBlob(blob, filename, description = "GA 프로모션ON 파일", saveHandle = null) {
+      if (!blob || !blob.size) throw new Error("다운로드할 파일이 비어 있습니다.");
+      if (saveHandle) {
+        const handle = saveHandle;
+        const writable = await handle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+        return;
+      }
+      if (navigator.msSaveOrOpenBlob) {
+        navigator.msSaveOrOpenBlob(blob, filename);
+        return;
+      }
+      const downloadUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = filename;
+      link.style.display = "none";
+      document.body.appendChild(link);
+      link.click();
+      setTimeout(() => {
+        URL.revokeObjectURL(downloadUrl);
+        link.remove();
+      }, 1000);
+    }
+
+    async function downloadElementAsJpg(element, filename) {
+      const saveHandle = await requestSaveHandle(filename, "JPG 이미지", "image/jpeg");
+      const rendered = await renderElementToJpgBlob(element);
+      await saveBlob(rendered.blob, filename, "JPG 이미지", saveHandle);
+    }
+
+    function makeCrc32Table() {
+      const table = new Uint32Array(256);
+      for (let i = 0; i < 256; i += 1) {
+        let crc = i;
+        for (let bit = 0; bit < 8; bit += 1) {
+          crc = (crc & 1) ? (0xedb88320 ^ (crc >>> 1)) : (crc >>> 1);
+        }
+        table[i] = crc >>> 0;
+      }
+      return table;
+    }
+
+    const crc32Table = makeCrc32Table();
+
+    function crc32(bytes) {
+      let crc = 0xffffffff;
+      for (const byte of bytes) {
+        crc = crc32Table[(crc ^ byte) & 0xff] ^ (crc >>> 8);
+      }
+      return (crc ^ 0xffffffff) >>> 0;
+    }
+
+    function utf8Bytes(text) {
+      return new TextEncoder().encode(text);
+    }
+
+    function concatBytes(parts) {
+      const total = parts.reduce((sum, part) => sum + part.length, 0);
+      const out = new Uint8Array(total);
+      let offset = 0;
+      parts.forEach((part) => {
+        out.set(part, offset);
+        offset += part.length;
+      });
+      return out;
+    }
+
+    function writeU16(view, offset, value) {
+      view.setUint16(offset, value, true);
+    }
+
+    function writeU32(view, offset, value) {
+      view.setUint32(offset, value >>> 0, true);
+    }
+
+    function dosDateTime(date = new Date()) {
+      const time = (date.getHours() << 11) | (date.getMinutes() << 5) | Math.floor(date.getSeconds() / 2);
+      const day = ((date.getFullYear() - 1980) << 9) | ((date.getMonth() + 1) << 5) | date.getDate();
+      return { time, day };
+    }
+
+    function createZip(files) {
+      const localParts = [];
+      const centralParts = [];
+      let offset = 0;
+      const stamp = dosDateTime();
+
+      files.forEach((file) => {
+        const name = utf8Bytes(file.name);
+        const content = typeof file.content === "string" ? utf8Bytes(file.content) : file.content;
+        const checksum = crc32(content);
+
+        const local = new Uint8Array(30 + name.length);
+        const localView = new DataView(local.buffer);
+        writeU32(localView, 0, 0x04034b50);
+        writeU16(localView, 4, 20);
+        writeU16(localView, 6, 0x0800);
+        writeU16(localView, 8, 0);
+        writeU16(localView, 10, stamp.time);
+        writeU16(localView, 12, stamp.day);
+        writeU32(localView, 14, checksum);
+        writeU32(localView, 18, content.length);
+        writeU32(localView, 22, content.length);
+        writeU16(localView, 26, name.length);
+        writeU16(localView, 28, 0);
+        local.set(name, 30);
+        localParts.push(local, content);
+
+        const central = new Uint8Array(46 + name.length);
+        const centralView = new DataView(central.buffer);
+        writeU32(centralView, 0, 0x02014b50);
+        writeU16(centralView, 4, 20);
+        writeU16(centralView, 6, 20);
+        writeU16(centralView, 8, 0x0800);
+        writeU16(centralView, 10, 0);
+        writeU16(centralView, 12, stamp.time);
+        writeU16(centralView, 14, stamp.day);
+        writeU32(centralView, 16, checksum);
+        writeU32(centralView, 20, content.length);
+        writeU32(centralView, 24, content.length);
+        writeU16(centralView, 28, name.length);
+        writeU16(centralView, 30, 0);
+        writeU16(centralView, 32, 0);
+        writeU16(centralView, 34, 0);
+        writeU16(centralView, 36, 0);
+        writeU32(centralView, 38, 0);
+        writeU32(centralView, 42, offset);
+        central.set(name, 46);
+        centralParts.push(central);
+
+        offset += local.length + content.length;
+      });
+
+      const centralOffset = offset;
+      const centralDirectory = concatBytes(centralParts);
+      const end = new Uint8Array(22);
+      const endView = new DataView(end.buffer);
+      writeU32(endView, 0, 0x06054b50);
+      writeU16(endView, 8, files.length);
+      writeU16(endView, 10, files.length);
+      writeU32(endView, 12, centralDirectory.length);
+      writeU32(endView, 16, centralOffset);
+      return concatBytes([...localParts, centralDirectory, end]);
+    }
+
+    function xmlEscape(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&apos;");
+    }
+
+    function pptColor(hex) {
+      return String(hex || "#111827").replace("#", "").toUpperCase();
+    }
+
+    function pptEmu(value) {
+      return Math.round(value * 9144000 / 1080);
+    }
+
+    function pptFontSize(points) {
+      return Math.round(points * 100);
+    }
+
+    function pptShape(id, x, y, w, h, options = {}) {
+      const fill = options.fill
+        ? `<a:solidFill><a:srgbClr val="${pptColor(options.fill)}"/></a:solidFill>`
+        : "<a:noFill/>";
+      const line = options.line
+        ? `<a:ln w="${options.lineWidth || 12700}"><a:solidFill><a:srgbClr val="${pptColor(options.line)}"/></a:solidFill></a:ln>`
+        : "<a:ln><a:noFill/></a:ln>";
+      const text = options.text ?? "";
+      const paragraphs = String(text).split("\n").map((part) => `
+          <a:p>
+            <a:pPr algn="${options.align || "ctr"}"/>
+            <a:r>
+              <a:rPr lang="ko-KR" sz="${pptFontSize(options.fontSize || 18)}" ${options.bold ? 'b="1"' : ""}>
+                <a:solidFill><a:srgbClr val="${pptColor(options.color || "#111827")}"/></a:solidFill>
+                <a:latin typeface="Malgun Gothic"/>
+                <a:ea typeface="Malgun Gothic"/>
+              </a:rPr>
+              <a:t>${xmlEscape(part)}</a:t>
+            </a:r>
+          </a:p>`).join("");
+
+      return `
+      <p:sp>
+        <p:nvSpPr>
+          <p:cNvPr id="${id}" name="${xmlEscape(options.name || `shape ${id}`)}"/>
+          <p:cNvSpPr/>
+          <p:nvPr/>
+        </p:nvSpPr>
+        <p:spPr>
+          <a:xfrm>
+            <a:off x="${pptEmu(x)}" y="${pptEmu(y)}"/>
+            <a:ext cx="${pptEmu(w)}" cy="${pptEmu(h)}"/>
+          </a:xfrm>
+          <a:prstGeom prst="${options.geom || "rect"}"><a:avLst/></a:prstGeom>
+          ${fill}
+          ${line}
+        </p:spPr>
+        <p:txBody>
+          <a:bodyPr anchor="${options.valign || "mid"}" wrap="square">
+            <a:spAutoFit/>
+          </a:bodyPr>
+          <a:lstStyle/>
+          ${paragraphs}
+        </p:txBody>
+      </p:sp>`;
+    }
+
+    function pptTableShapes(startId, x, y, widths, rowHeight, rows) {
+      const shapes = [];
+      let id = startId;
+      rows.forEach((row, rowIndex) => {
+        let cursor = x;
+        row.forEach((cell, colIndex) => {
+          const width = widths[colIndex];
+          shapes.push(pptShape(id++, cursor, y + rowIndex * rowHeight, width, rowHeight, {
+            text: cell.text ?? cell,
+            fill: cell.fill || "#FFFFFF",
+            line: cell.line || "#6B7280",
+            lineWidth: 9000,
+            color: cell.color || (rowIndex === 0 ? "#111827" : "#0066FF"),
+            fontSize: cell.fontSize || (rowIndex === 0 ? 12 : 13),
+            bold: cell.bold !== false,
+            name: `cell ${id}`
+          }));
+          cursor += width;
+        });
+      });
+      return { shapes: shapes.join(""), nextId: id };
+    }
+
+    function createEditablePreviewPptx() {
+      const data = getPreviewExportData();
+      const slideCx = 9144000;
+      const slideCy = Math.round(slideCx * 1333 / 1080);
+      let id = 2;
+      const shapes = [];
+      const add = (xml) => shapes.push(xml);
+      const addShape = (...args) => {
+        add(pptShape(id++, ...args));
+      };
+
+      addShape(0, 0, 1080, 1333, { fill: "#076DFF", name: "blue background" });
+      addShape(18, 22, 210, 58, { text: "삼성생명", fill: "#076DFF", color: "#FFFFFF", fontSize: 27, bold: true, align: "l", line: "#076DFF" });
+      addShape(255, 22, 450, 58, { text: `${data.month} 프로모션`, fill: "#076DFF", color: "#FFFF00", fontSize: 28, bold: true, align: "l", line: "#076DFF" });
+      addShape(765, 10, 292, 96, { text: data.agency, fill: "#FFFFFF", color: "#111827", fontSize: 17, bold: false, line: "#FFFFFF", name: "agency editable" });
+      addShape(25, 112, 1030, 38, { text: "『대상상품』 가족대표/인생대표/청춘대표/The라이트/간편다모은", fill: "#076DFF", color: "#FFFF00", fontSize: 18, bold: true, line: "#076DFF" });
+      addShape(450, 150, 600, 38, { text: "정규 시상  (6/1 ~ 30)  [익월]", fill: "#076DFF", color: "#FFFF00", fontSize: 18, bold: true, align: "r", line: "#076DFF" });
+
+      const rateY = 196;
+      const rateCells = [
+        [28, 210, data.main, "주력 건강", "#076DFF", "#FFFF00"],
+        [238, 130, "익월", "", "#0EA34A", "#FFFFFF"],
+        [368, 210, data.sub, "보장성 상품", "#FFFFFF", "#0066FF"],
+        [578, 75, "+", "", "#FFFFFF", "#E11D48"],
+        [653, 130, "13회", "", "#777777", "#FFFFFF"],
+        [783, 260, data.extra, "유지회차", "#FFFFFF", "#0066FF"]
+      ];
+      rateCells.forEach(([x, w, value, label, fill, color]) => {
+        addShape(x, rateY, w, 86, { text: label ? `${value}\n${label}` : value, fill, line: "#FFFF00", lineWidth: 19050, color, fontSize: label ? 26 : 17, bold: true });
+      });
+
+      const addSection = (title, maxRate, y, headers, rows, height) => {
+        addShape(480, y, 570, 34, { text: title, fill: "#076DFF", color: "#FFFF00", fontSize: 17, bold: true, align: "r", line: "#076DFF" });
+        const tableY = y + 38;
+        addShape(28, tableY, 170, height, { text: `최대\n${maxRate}`, fill: "#076DFF", color: "#FFFF00", fontSize: 25, bold: true, line: "#FFFF00", lineWidth: 19050 });
+        const tableRows = [
+          headers.map((text) => ({ text, color: "#111827", fontSize: 12 })),
+          ...rows.map((row) => row.map((text, idx) => ({ text, color: idx === 0 ? "#0066FF" : "#0066FF", fontSize: 13 })))
+        ];
+        const made = pptTableShapes(id, 198, tableY, headers.map(() => 845 / headers.length), height / tableRows.length, tableRows);
+        add(made.shapes);
+        id = made.nextId;
+      };
+
+      addSection("기본 가동 시상 [13회]", "500%", 300, ["실적", "5만↑", "10만↑", "20만↑", "30만↑", "50만↑", "100만↑"], [
+        ["1~12일", "5만", "30만", "60만", "120만", "250만", "500만"],
+        ["13~19일", "-", "20만", "40만", "120만", "250만", "500만"],
+        ["20~30일", "-", "10만", "20만", "90만", "200만", "400만"]
+      ], 170);
+      addSection("주력 상품 추가 시상 [13회]", "300%", 530, ["실적", "10만↑", "20만↑", "30만↑", "50만↑"], [
+        ["1~12일", "30만", "60만", "90만", "150만"],
+        ["13~30일", "30만", "60만", "90만", "150만"]
+      ], 140);
+
+      addShape(80, 720, 920, 34, { text: "(5월+6월) & (6월+7월) 주간 연속가동 시상 [13회]", fill: "#076DFF", color: "#FFFF00", fontSize: 17, bold: true, line: "#076DFF" });
+      let made = pptTableShapes(id, 28, 760, [160, 170, 160], 45, [
+        ["5/16~31", "6/1~12", "시상"].map((text) => ({ text, color: text.includes("6/") ? "#FF1D1D" : "#111827" })),
+        ["10만↑", "", "100만"],
+        ["20만↑", "10만↑", "150만"],
+        ["30만↑", "10만↑", "200만"],
+        ["50만↑", "", "300만"]
+      ]);
+      add(made.shapes);
+      id = made.nextId;
+      made = pptTableShapes(id, 560, 760, [160, 170, 160], 45, [
+        ["6/13~30", "7/1~10", "시상"].map((text) => ({ text, color: text.includes("6/") ? "#FF1D1D" : "#111827" })),
+        ["10만↑", "", "100만"],
+        ["20만↑", "10만↑", "150만"],
+        ["30만↑", "10만↑", "200만"],
+        ["50만↑", "", "300만"]
+      ]);
+      add(made.shapes);
+      id = made.nextId;
+
+      addShape(125, 1010, 830, 34, { text: "Summer (6~8월) 연속 가동 Gold 시상 [13회]", fill: "#076DFF", color: "#FFFF00", fontSize: 17, bold: true, line: "#076DFF" });
+      made = pptTableShapes(id, 28, 1050, [180, 110, 180, 180, 180, 210], 48, [
+        ["지원", "기준", "6월", "7월", "8월", "합산"],
+        ["금 0.5돈", "①", "5만", "5만", "5만", "-"],
+        ["금 2돈", "②", "5만", "10만", "10만", "70만"],
+        ["금 4돈", "③", "10만", "20만", "20만", "120만"]
+      ]);
+      add(made.shapes);
+      id = made.nextId;
+      addShape(28, 1268, 1015, 34, { text: "※ 조건: 가족대표, 1540청춘대표, 4180인생대표, The라이트건강 상품 + 주력담보 10종 중 특정 1가지 이상 부가건", fill: "#076DFF", color: "#FFFFFF", fontSize: 10, bold: true, align: "l", line: "#076DFF" });
+
+      const contentTypes = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/ppt/presentation.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml"/>
+  <Override PartName="/ppt/slides/slide1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slide+xml"/>
+</Types>`;
+      const rootRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="ppt/presentation.xml"/>
+</Relationships>`;
+      const presentation = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<p:presentation xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
+  <p:sldIdLst><p:sldId id="256" r:id="rId1"/></p:sldIdLst>
+  <p:sldSz cx="${slideCx}" cy="${slideCy}" type="custom"/>
+  <p:notesSz cx="6858000" cy="9144000"/>
+</p:presentation>`;
+      const presentationRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide" Target="slides/slide1.xml"/>
+</Relationships>`;
+      const slide = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<p:sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
+  <p:cSld>
+    <p:spTree>
+      <p:nvGrpSpPr>
+        <p:cNvPr id="1" name=""/>
+        <p:cNvGrpSpPr/>
+        <p:nvPr/>
+      </p:nvGrpSpPr>
+      <p:grpSpPr>
+        <a:xfrm>
+          <a:off x="0" y="0"/>
+          <a:ext cx="${slideCx}" cy="${slideCy}"/>
+          <a:chOff x="0" y="0"/>
+          <a:chExt cx="${slideCx}" cy="${slideCy}"/>
+        </a:xfrm>
+      </p:grpSpPr>
+      ${shapes.join("")}
+    </p:spTree>
+  </p:cSld>
+  <p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr>
+</p:sld>`;
+      const slideRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"/>`;
+
+      return new Blob([createZip([
+        { name: "[Content_Types].xml", content: contentTypes },
+        { name: "_rels/.rels", content: rootRels },
+        { name: "ppt/presentation.xml", content: presentation },
+        { name: "ppt/_rels/presentation.xml.rels", content: presentationRels },
+        { name: "ppt/slides/slide1.xml", content: slide },
+        { name: "ppt/slides/_rels/slide1.xml.rels", content: slideRels }
+      ])], { type: "application/vnd.openxmlformats-officedocument.presentationml.presentation" });
+    }
+
+    function drawRoundRect(ctx, x, y, w, h, r, fill, stroke = null, lineWidth = 1) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+      if (fill) {
+        ctx.fillStyle = fill;
+        ctx.fill();
+      }
+      if (stroke) {
+        ctx.strokeStyle = stroke;
+        ctx.lineWidth = lineWidth;
+        ctx.stroke();
+      }
+    }
+
+    function drawText(ctx, text, x, y, options = {}) {
+      ctx.save();
+      ctx.font = options.font || "24px Malgun Gothic, Arial";
+      ctx.fillStyle = options.color || "#111827";
+      ctx.textAlign = options.align || "left";
+      ctx.textBaseline = options.baseline || "top";
+      if (options.shadow) {
+        ctx.shadowColor = "rgba(0,0,0,.22)";
+        ctx.shadowBlur = 3;
+        ctx.shadowOffsetY = 2;
+      }
+      ctx.fillText(String(text ?? ""), x, y);
+      ctx.restore();
+    }
+
+    function drawWrappedText(ctx, text, x, y, maxWidth, lineHeight, options = {}) {
+      ctx.save();
+      ctx.font = options.font || "24px Malgun Gothic, Arial";
+      let line = "";
+      const lines = [];
+      const chars = String(text ?? "").split("");
+      chars.forEach((ch) => {
+        const next = line + ch;
+        if (ctx.measureText(next).width > maxWidth && line) {
+          lines.push(line);
+          line = ch;
+        } else {
+          line = next;
+        }
+      });
+      if (line) lines.push(line);
+      ctx.restore();
+      const drawX = options.align === "center" ? x + maxWidth / 2 : x;
+      lines.forEach((item, index) => drawText(ctx, item, drawX, y + index * lineHeight, options));
+      return y + lines.length * lineHeight;
+    }
+
+    function buildCanvasLines(ctx, text, maxWidth) {
+      const lines = [];
+      let line = "";
+      String(text ?? "").split("").forEach((ch) => {
+        const next = line + ch;
+        if (ctx.measureText(next).width > maxWidth && line) {
+          lines.push(line);
+          line = ch;
+        } else {
+          line = next;
+        }
+      });
+      if (line) lines.push(line);
+      return lines;
+    }
+
+    function drawFittedTextInBox(ctx, text, x, y, width, height, options = {}) {
+      const minFontSize = options.minFontSize || 13;
+      const maxFontSize = options.maxFontSize || 26;
+      const weight = options.weight || 700;
+      const family = options.family || "Malgun Gothic, Arial";
+      const color = options.color || "#111827";
+      const lineRatio = options.lineRatio || 1.18;
+      let fittedLines = [];
+      let fittedSize = minFontSize;
+
+      for (let size = maxFontSize; size >= minFontSize; size -= 1) {
+        ctx.font = `${weight} ${size}px ${family}`;
+        const lineHeight = Math.ceil(size * lineRatio);
+        const maxLines = Math.max(1, Math.floor(height / lineHeight));
+        const lines = buildCanvasLines(ctx, text, width);
+        if (lines.length <= maxLines) {
+          fittedLines = lines;
+          fittedSize = size;
+          break;
+        }
+        fittedLines = lines.slice(0, maxLines);
+        fittedSize = size;
+      }
+
+      ctx.font = `${weight} ${fittedSize}px ${family}`;
+      const lineHeight = Math.ceil(fittedSize * lineRatio);
+      const maxLines = Math.max(1, Math.floor(height / lineHeight));
+      fittedLines = fittedLines.slice(0, maxLines);
+      if (fittedLines.length && buildCanvasLines(ctx, text, width).length > maxLines) {
+        let last = fittedLines[fittedLines.length - 1];
+        while (last.length > 1 && ctx.measureText(`${last}...`).width > width) {
+          last = last.slice(0, -1);
+        }
+        fittedLines[fittedLines.length - 1] = `${last}...`;
+      }
+
+      const totalHeight = fittedLines.length * lineHeight;
+      const startY = y + Math.max(0, (height - totalHeight) / 2);
+      fittedLines.forEach((line, index) => {
+        drawText(ctx, line, x + width / 2, startY + index * lineHeight + lineHeight / 2, {
+          font: `${weight} ${fittedSize}px ${family}`,
+          color,
+          align: "center",
+          baseline: "middle"
+        });
+      });
+      return startY + totalHeight;
+    }
+
+    function drawTable(ctx, x, y, widths, rowHeight, rows, options = {}) {
+      const totalWidth = widths.reduce((sum, item) => sum + item, 0);
+      rows.forEach((row, rowIndex) => {
+        let cursor = x;
+        row.forEach((cell, colIndex) => {
+          const width = widths[colIndex];
+          const fill = cell.fill || (rowIndex === 0 ? "#ffffff" : "#ffffff");
+          ctx.fillStyle = fill;
+          ctx.fillRect(cursor, y, width, rowHeight);
+          ctx.strokeStyle = cell.border || "#6b7280";
+          ctx.lineWidth = 1;
+          ctx.strokeRect(cursor, y, width, rowHeight);
+          drawText(ctx, cell.text, cursor + width / 2, y + rowHeight / 2, {
+            font: cell.font || options.font || "22px Malgun Gothic, Arial",
+            color: cell.color || options.color || "#0066ff",
+            align: "center",
+            baseline: "middle"
+          });
+          cursor += width;
+        });
+        y += rowHeight;
+      });
+      return { y, totalWidth };
+    }
+
+    function getPreviewExportData() {
+      return {
+        agency: previewAgencyTag.textContent.trim() || "대리점",
+        month: previewMonthLabel.textContent.trim() || "26.6월",
+        main: previewMainRate.textContent.trim() || "450%",
+        sub: previewSubRate.textContent.trim() || "350%",
+        extra: previewExtraRate.textContent.trim() || "100%"
+      };
+    }
+
+    function createPreviewCanvas(scale = 2) {
+      const data = getPreviewExportData();
+      const width = 1080;
+      const height = 1333;
+      const canvas = document.createElement("canvas");
+      canvas.width = width * scale;
+      canvas.height = height * scale;
+      const ctx = canvas.getContext("2d");
+      ctx.scale(scale, scale);
+      ctx.fillStyle = "#076dff";
+      ctx.fillRect(0, 0, width, height);
+
+      ctx.fillStyle = "rgba(255,255,255,.11)";
+      ctx.beginPath();
+      ctx.arc(390, -35, 360, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "rgba(0,45,140,.18)";
+      ctx.beginPath();
+      ctx.arc(860, 330, 250, 0, Math.PI * 2);
+      ctx.fill();
+
+      drawText(ctx, "삼성생명", 18, 26, {
+        font: "900 48px Malgun Gothic, Arial",
+        color: "#ffffff",
+        shadow: true
+      });
+      drawText(ctx, `${data.month} 프로모션`, 260, 30, {
+        font: "900 48px Malgun Gothic, Arial",
+        color: "#ffff00",
+        shadow: true
+      });
+      drawRoundRect(ctx, 765, 10, 292, 96, 8, "#ffffff");
+      drawFittedTextInBox(ctx, data.agency, 790, 20, 242, 76, {
+        maxFontSize: 26,
+        minFontSize: 13,
+        weight: 700,
+        color: "#111827"
+      });
+
+      drawText(ctx, "『대상상품』 가족대표/인생대표/청춘대표/The라이트/간편다모은", width / 2, 116, {
+        font: "900 30px Malgun Gothic, Arial",
+        color: "#ffff00",
+        align: "center"
+      });
+      drawText(ctx, "정규 시상  (6/1 ~ 30)  [익월]", width - 32, 158, {
+        font: "900 30px Malgun Gothic, Arial",
+        color: "#ffff00",
+        align: "right"
+      });
+
+      const bandY = 196;
+      const bandH = 86;
+      const bandWidths = [210, 130, 210, 75, 130, 210];
+      let x = 28;
+      drawRoundRect(ctx, x, bandY, 1015, bandH, 0, "#ffffff", "#ffff00", 4);
+      const cells = [
+        { w: bandWidths[0], fill: "#076dff", strong: data.main, label: "주력 건강", color: "#ffff00" },
+        { w: bandWidths[1], pill: "익월", pillFill: "#0ea34a" },
+        { w: bandWidths[2], strong: data.sub, label: "보장성 상품", color: "#0066ff" },
+        { w: bandWidths[3], plus: "+" },
+        { w: bandWidths[4], pill: "13회", pillFill: "#777777" },
+        { w: bandWidths[5], strong: data.extra, label: "유지회차", color: "#0066ff" }
+      ];
+      cells.forEach((cell) => {
+        ctx.fillStyle = cell.fill || "#ffffff";
+        ctx.fillRect(x, bandY, cell.w, bandH);
+        ctx.strokeStyle = "#ffff00";
+        ctx.lineWidth = 3;
+        ctx.strokeRect(x, bandY, cell.w, bandH);
+        if (cell.strong) {
+          drawText(ctx, cell.strong, x + cell.w / 2, bandY + 17, {
+            font: "900 52px Malgun Gothic, Arial",
+            color: cell.color,
+            align: "center",
+            shadow: true
+          });
+          drawText(ctx, cell.label, x + cell.w / 2, bandY + 62, {
+            font: "900 18px Malgun Gothic, Arial",
+            color: cell.color,
+            align: "center"
+          });
+        }
+        if (cell.pill) {
+          drawRoundRect(ctx, x + 25, bandY + 28, cell.w - 50, 32, 16, cell.pillFill);
+          drawText(ctx, cell.pill, x + cell.w / 2, bandY + 44, {
+            font: "900 18px Malgun Gothic, Arial",
+            color: "#ffffff",
+            align: "center",
+            baseline: "middle"
+          });
+        }
+        if (cell.plus) {
+          drawText(ctx, "+", x + cell.w / 2, bandY + 43, {
+            font: "900 42px Malgun Gothic, Arial",
+            color: "#e11d48",
+            align: "center",
+            baseline: "middle"
+          });
+        }
+        x += cell.w;
+      });
+
+      let y = 300;
+      function section(title, maxRate, headers, bodyRows, sectionHeight = 188) {
+        drawText(ctx, title, width - 34, y, {
+          font: "900 31px Malgun Gothic, Arial",
+          color: "#ffff00",
+          align: "right"
+        });
+        y += 38;
+        drawRoundRect(ctx, 28, y, 170, sectionHeight, 0, "#076dff", "#ffff00", 4);
+        drawText(ctx, "최대", 46, y + 36, { font: "700 22px Malgun Gothic, Arial", color: "#ffffff" });
+        drawText(ctx, maxRate, 46, y + 76, { font: "900 52px Malgun Gothic, Arial", color: "#ffff00" });
+        const tableX = 198;
+        const tableW = 845;
+        const widths = headers.map(() => tableW / headers.length);
+        const rows = [
+          headers.map((item) => ({ text: item, color: "#111827", font: "700 22px Malgun Gothic, Arial" })),
+          ...bodyRows.map((row) => row.map((item, idx) => ({
+            text: item,
+            color: idx === 0 ? "#0066ff" : "#0066ff",
+            font: idx === 0 ? "900 22px Malgun Gothic, Arial" : "900 23px Malgun Gothic, Arial"
+          })))
+        ];
+        drawTable(ctx, tableX, y, widths, sectionHeight / rows.length, rows);
+        y += sectionHeight + 22;
+      }
+
+      section("기본 가동 시상 [13회]", "500%", ["실적", "5만↑", "10만↑", "20만↑", "30만↑", "50만↑", "100만↑"], [
+        ["1~12일", "5만", "30만", "60만", "120만", "250만", "500만"],
+        ["13~19일", "-", "20만", "40만", "120만", "250만", "500만"],
+        ["20~30일", "-", "10만", "20만", "90만", "200만", "400만"]
+      ], 170);
+
+      section("주력 상품 추가 시상 [13회]", "300%", ["실적", "10만↑", "20만↑", "30만↑", "50만↑"], [
+        ["1~12일", "30만", "60만", "90만", "150만"],
+        ["13~30일", "30만", "60만", "90만", "150만"]
+      ], 140);
+
+      drawText(ctx, "(5월+6월) & (6월+7월) 주간 연속가동 시상 [13회]", width / 2, y, {
+        font: "900 29px Malgun Gothic, Arial",
+        color: "#ffff00",
+        align: "center"
+      });
+      y += 38;
+      const smallHeaders = ["5/16~31", "6/1~12", "시상"];
+      drawTable(ctx, 28, y, [160, 170, 160], 45, [
+        smallHeaders.map((t, i) => ({ text: t, color: i === 1 ? "#ff1d1d" : "#111827", font: "800 21px Malgun Gothic, Arial" })),
+        ["10만↑", "", "100만"].map((t) => ({ text: t, color: "#0066ff", font: "900 21px Malgun Gothic, Arial" })),
+        ["20만↑", "10만↑", "150만"].map((t, i) => ({ text: t, color: i === 1 ? "#ff1d1d" : "#0066ff", font: "900 21px Malgun Gothic, Arial" })),
+        ["30만↑", "10만↑", "200만"].map((t, i) => ({ text: t, color: i === 1 ? "#ff1d1d" : "#0066ff", font: "900 21px Malgun Gothic, Arial" })),
+        ["50만↑", "", "300만"].map((t) => ({ text: t, color: "#0066ff", font: "900 21px Malgun Gothic, Arial" }))
+      ]);
+      drawTable(ctx, 560, y, [160, 170, 160], 45, [
+        ["6/13~30", "7/1~10", "시상"].map((t, i) => ({ text: t, color: i === 0 ? "#ff1d1d" : "#111827", font: "800 21px Malgun Gothic, Arial" })),
+        ["10만↑", "", "100만"].map((t, i) => ({ text: t, color: i === 0 ? "#ff1d1d" : "#0066ff", font: "900 21px Malgun Gothic, Arial" })),
+        ["20만↑", "10만↑", "150만"].map((t, i) => ({ text: t, color: i === 0 ? "#ff1d1d" : "#0066ff", font: "900 21px Malgun Gothic, Arial" })),
+        ["30만↑", "10만↑", "200만"].map((t, i) => ({ text: t, color: i === 0 ? "#ff1d1d" : "#0066ff", font: "900 21px Malgun Gothic, Arial" })),
+        ["50만↑", "", "300만"].map((t, i) => ({ text: t, color: i === 0 ? "#ff1d1d" : "#0066ff", font: "900 21px Malgun Gothic, Arial" }))
+      ]);
+      y += 250;
+
+      drawText(ctx, "Summer (6~8월) 연속 가동 Gold 시상 [13회]", width / 2, y, {
+        font: "900 29px Malgun Gothic, Arial",
+        color: "#ffff00",
+        align: "center"
+      });
+      y += 38;
+      drawTable(ctx, 28, y, [180, 110, 180, 180, 180, 210], 48, [
+        ["지원", "기준", "6월", "7월", "8월", "합산"].map((t) => ({ text: t, color: "#111827", font: "800 21px Malgun Gothic, Arial" })),
+        ["금 0.5돈", "①", "5만", "5만", "5만", "-"].map((t) => ({ text: t, color: "#0066ff", font: "900 21px Malgun Gothic, Arial" })),
+        ["금 2돈", "②", "5만", "10만", "10만", "70만"].map((t) => ({ text: t, color: "#0066ff", font: "900 21px Malgun Gothic, Arial" })),
+        ["금 4돈", "③", "10만", "20만", "20만", "120만"].map((t) => ({ text: t, color: "#0066ff", font: "900 21px Malgun Gothic, Arial" }))
+      ]);
+      drawText(ctx, "※ 조건: 가족대표, 1540청춘대표, 4180인생대표, The라이트건강 상품 + 주력담보 10종 중 특정 1가지 이상 부가건", 34, 1290, {
+        font: "700 18px Malgun Gothic, Arial",
+        color: "#ffffff"
+      });
+      return canvas;
+    }
+
+    async function renderElementToJpgBlob() {
+      if (document.fonts?.ready) await document.fonts.ready;
+      const canvas = createPreviewCanvas(2);
+      const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.95));
+      if (!blob) throw new Error("JPG 파일 생성에 실패했습니다.");
+      return { blob, width: canvas.width, height: canvas.height };
+    }
+
+    function downloadCurrentPreviewAsJpg(agency) {
+      const agencyName = safeFileName(agency?.name || previewAgencyTag.textContent);
+      downloadElementAsJpg(
+        document.querySelector(".poster-frame"),
+        `GA프로모션ON_${agencyName}_최종미리보기.jpg`
+      ).catch((error) => window.alert(`JPG 다운로드 중 오류가 발생했습니다.\n${error.message || ""}`));
+    }
+
+    async function downloadCurrentPreviewAsPpt(agency) {
+      try {
+        const agencyName = safeFileName(agency?.name || previewAgencyTag.textContent);
+        const filename = `GA프로모션ON_${agencyName}_최종미리보기.pptx`;
+        const saveHandle = await requestSaveHandle(
+          filename,
+          "PowerPoint 프레젠테이션",
+          "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+        );
+        const pptx = createEditablePreviewPptx();
+        await saveBlob(pptx, filename, "PowerPoint 프레젠테이션", saveHandle);
+      } catch (error) {
+        window.alert(`PPT 다운로드 중 오류가 발생했습니다.\n${error.message || ""}`);
+      }
+    }
+
+    downloadPreviewJpg.addEventListener("click", () => {
+      downloadCurrentPreviewAsJpg();
+    });
+
+    downloadPreviewPpt.addEventListener("click", () => {
+      downloadCurrentPreviewAsPpt();
+    });
+
+    updateBranchStats();
+  </script>
+</body>
+</html>

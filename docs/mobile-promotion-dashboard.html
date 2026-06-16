@@ -1,0 +1,1476 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>프로모션 ON 모바일</title>
+  <script>
+    (() => {
+      const isMobileDevice = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+      const isNarrowScreen = window.matchMedia("(max-width: 760px)").matches;
+      if (!isMobileDevice && !isNarrowScreen) {
+        window.location.replace("final-monthly-promotion-dashboard.html");
+      }
+    })();
+  </script>
+  <style>
+    :root {
+      --bg: #f6f9fc;
+      --card: #ffffff;
+      --mint: #e5f6ef;
+      --ink: #142033;
+      --muted: #6b778b;
+      --line: #e4eaf2;
+      --blue: #1f62e6;
+      --blue-dark: #1b3f96;
+      --green: #15803d;
+      --orange: #b45309;
+      --red: #b42318;
+      --shadow: 0 12px 28px rgba(20, 32, 51, .08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: linear-gradient(180deg, #fbfcfe 0%, #f5f8fb 58%, #edf2f8 100%);
+      color: var(--ink);
+      font-family: "Pretendard Variable", "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", "Segoe UI", sans-serif;
+    }
+
+    .app {
+      width: min(100%, 520px);
+      margin: 0 auto;
+      padding: 16px 14px 36px;
+    }
+
+    .top {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      margin: -16px -14px 14px;
+      padding: 16px 14px 12px;
+      background: rgba(255, 255, 255, .94);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(228, 234, 242, .95);
+    }
+
+    .top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    h1 {
+      margin: 0;
+      display: inline-flex;
+      align-items: baseline;
+      gap: 7px;
+      font-size: 25px;
+      letter-spacing: -.06em;
+      line-height: 1;
+      font-weight: 800;
+      color: var(--blue-dark);
+    }
+
+    .brand-main {
+      color: var(--blue);
+    }
+
+    .brand-on {
+      color: var(--blue-dark);
+    }
+
+    .admin-button,
+    .button {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      color: var(--ink);
+      padding: 9px 11px;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .button.primary,
+    .admin-button.active {
+      border-color: var(--blue);
+      background: var(--blue);
+      color: #fff;
+    }
+
+    .section {
+      margin-top: 12px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, .96);
+      box-shadow: var(--shadow);
+      padding: 14px;
+    }
+
+    .label {
+      margin: 0 0 7px;
+      color: var(--blue-dark);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .selectors {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    select,
+    input {
+      width: 100%;
+      border: 1px solid #d7e0ee;
+      border-radius: 12px;
+      background: #fff;
+      color: var(--ink);
+      padding: 12px;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
+      padding: 12px 9px;
+      text-align: left;
+      cursor: pointer;
+      box-shadow: 0 8px 18px rgba(20, 32, 51, .05);
+    }
+
+    .stat.active {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(31, 98, 230, .10), 0 10px 20px rgba(20, 32, 51, .06);
+    }
+
+    .stat span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 1.25;
+    }
+
+    .stat strong {
+      display: block;
+      margin-top: 7px;
+      font-size: 25px;
+      letter-spacing: -.04em;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .admin-only { display: none; }
+    body.admin-mode .admin-only { display: inline-flex; }
+    body.admin-mode input.admin-only { display: none !important; }
+
+    .admin-status {
+      display: none;
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    body.admin-mode .admin-status { display: block; }
+
+    .admin-panel {
+      display: none;
+      margin-top: 10px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fff;
+      padding: 12px;
+    }
+
+    .admin-panel.active { display: block; }
+
+    .agency-list {
+      display: grid;
+      gap: 9px;
+      margin-top: 10px;
+    }
+
+    .agency {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      padding: 12px;
+    }
+
+    .agency-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .agency strong {
+      display: block;
+      font-size: 15px;
+      line-height: 1.35;
+    }
+
+    .agency small {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .status {
+      border-radius: 999px;
+      padding: 5px 8px;
+      font-size: 11px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .done { background: #eaf7ee; color: var(--green); }
+    .wait { background: #fff4df; color: var(--orange); }
+
+    .agency-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .preview {
+      overflow: hidden;
+      border-radius: 16px;
+      background:
+        radial-gradient(circle at 8% 6%, rgba(255,255,255,.24), transparent 16%),
+        linear-gradient(135deg, #0066ff 0%, #0a63eb 44%, #0649b8 100%);
+      color: #fff;
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .preview-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .logo {
+      display: inline-flex;
+      background: #000;
+      color: #fff;
+      border-radius: 3px;
+      padding: 5px 10px;
+      font-weight: 1000;
+      letter-spacing: -.08em;
+    }
+
+    .agency-pill {
+      border-radius: 999px;
+      background: #fff;
+      color: var(--ink);
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 900;
+      text-align: right;
+      max-width: 52%;
+    }
+
+    .preview-title {
+      margin: 18px 0 12px;
+      color: #ffff00;
+      font-size: 36px;
+      line-height: .98;
+      font-weight: 1000;
+      letter-spacing: -.07em;
+      text-shadow: 0 3px 10px rgba(0,0,0,.25);
+    }
+
+    .rate-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .rate {
+      border: 2px solid #ffff00;
+      border-radius: 12px;
+      background: rgba(255,255,255,.96);
+      color: #0066ff;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .rate:first-child {
+      background: #076dff;
+      color: #ffff00;
+    }
+
+    .rate strong {
+      display: block;
+      font-size: 32px;
+      font-weight: 1000;
+      line-height: 1;
+    }
+
+    .rate span {
+      display: block;
+      margin-top: 5px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .notice {
+      margin-top: 10px;
+      border-radius: 12px;
+      background: rgba(255,255,255,.95);
+      color: var(--ink);
+      padding: 10px;
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .empty {
+      border: 1px dashed #b8c7da;
+      border-radius: 14px;
+      background: #fff;
+      padding: 18px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="top">
+      <div class="top-row">
+        <h1><span class="brand-main">프로모션</span><span class="brand-on">ON</span></h1>
+        <button class="admin-button" id="adminButton" type="button">관리자</button>
+      </div>
+      <div class="admin-panel" id="adminPanel">
+        <p class="label">관리자 비밀번호</p>
+        <input id="adminPassword" type="password" inputmode="numeric" placeholder="1111 입력" />
+        <div class="actions">
+          <button class="button" id="adminCancel" type="button">취소</button>
+          <button class="button primary" id="adminLogin" type="button">확인</button>
+        </div>
+      </div>
+    </header>
+
+    <section class="section card">
+      <p class="label">월별 프로모션 총괄판</p>
+      <div class="selectors">
+        <select id="monthSelect" aria-label="월 선택">
+          <option value="1">1월</option>
+          <option value="2">2월</option>
+          <option value="3">3월</option>
+          <option value="4">4월</option>
+          <option value="5">5월</option>
+          <option value="6" selected>6월</option>
+        </select>
+        <select id="regionSelect" aria-label="지역단 선택"></select>
+        <select id="branchSelect" aria-label="담당 지점 선택"></select>
+      </div>
+      <div class="actions">
+        <a class="button primary" id="monthlyDownload" href="../6월 프로모션 총괄판(260529)_공지.xlsx" download>총괄판 다운로드</a>
+        <label class="button admin-only" for="monthlyUpload">총괄판 업로드</label>
+        <input id="monthlyUpload" class="admin-only" type="file" accept=".xlsx,.xls" hidden />
+        <label class="button admin-only" for="officeStatusUpload">점포현황 업로드</label>
+        <input id="officeStatusUpload" class="admin-only" type="file" accept=".xlsx" hidden />
+      </div>
+      <p class="admin-status" id="mobileUploadStatus">월별 운영 파일은 프로모션 총괄판·PPT 템플릿·점포현황 3개만 사용합니다. 모바일은 총괄판과 점포현황 업로드, JPG 저장 중심으로 작동합니다.</p>
+    </section>
+
+    <section class="section">
+      <p class="label" id="branchTitle">금천 지점별 프로모션 현황</p>
+      <div class="stats">
+        <button class="stat active" type="button" data-filter="all">
+          <span>총 지사</span>
+          <strong id="totalCount">0</strong>
+        </button>
+        <button class="stat" type="button" data-filter="confirmed">
+          <span>확정 완료</span>
+          <strong id="confirmedCount">0</strong>
+        </button>
+        <button class="stat" type="button" data-filter="pending">
+          <span>협의중</span>
+          <strong id="pendingCount">0</strong>
+        </button>
+      </div>
+    </section>
+
+    <section class="section">
+      <p class="label">대리점 목록</p>
+      <div class="agency-list" id="agencyList"></div>
+    </section>
+
+    <section class="section">
+      <div class="top-row">
+        <p class="label">최종 JPG 미리보기</p>
+        <button class="button primary" id="downloadPreviewJpg" type="button">JPG 받기</button>
+      </div>
+      <div class="preview">
+        <div class="preview-top">
+          <div class="logo">삼성생명</div>
+          <div class="agency-pill" id="previewAgency">대리점 선택</div>
+        </div>
+        <div class="preview-title"><span id="previewMonth">26.6월</span><br />프로모션</div>
+        <div class="rate-row">
+          <div class="rate">
+            <strong id="previewMain">-</strong>
+            <span>주력 건강</span>
+          </div>
+          <div class="rate">
+            <strong id="previewSub">-</strong>
+            <span>보장성 상품</span>
+          </div>
+          <div class="rate">
+            <strong id="previewExtra">-</strong>
+            <span>익월 / 유지회차</span>
+          </div>
+        </div>
+        <div class="notice">
+          총괄판 지급률 숫자가 확정된 대리점만 미리보기와 JPG 받기가 활성화되며, 모바일에서는 저장/공유 창으로 바로 전달됩니다.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="./xlsx-lite.js"></script>
+  <script src="../data/branch-promotion-data.js?v=20260616-june-default"></script>
+  <script>
+    const STORAGE_PREFIX = "gaPromotionOn_20260616_june_latest3";
+    const SUPABASE_DATA_ENDPOINT = "https://iqqstuftvlehgqtmtjug.supabase.co/functions/v1/ga-promotion-on-data";
+
+    function storageKey(name) {
+      return `${STORAGE_PREFIX}_${name}`;
+    }
+
+    function loadSavedJson(key) {
+      try {
+        const saved = localStorage.getItem(storageKey(key));
+        return saved ? JSON.parse(saved) : null;
+      } catch {
+        return null;
+      }
+    }
+
+    let officeMap = loadSavedJson("officeMap") || window.branchOfficeMap || null;
+    let promotionRowsData = loadSavedJson("promotionRows") || window.branchPromotionRows || [];
+    let data = loadSavedJson("branchData") || window.branchPromotionData || {};
+    const monthFiles = {
+      "1": "",
+      "2": "",
+      "3": "",
+      "4": "",
+      "5": "",
+      "6": "../6월 프로모션 총괄판(260529)_공지.xlsx"
+    };
+    const templateFiles = {
+      "1": "",
+      "2": "",
+      "3": "",
+      "4": "",
+      "5": "",
+      "6": "../26.6월 프로모션 포스터_1P용-1.pptx"
+    };
+    const templateFallbackMeta = {};
+
+    const monthSelect = document.getElementById("monthSelect");
+    const regionSelect = document.getElementById("regionSelect");
+    const branchSelect = document.getElementById("branchSelect");
+    const monthlyDownload = document.getElementById("monthlyDownload");
+    const agencyList = document.getElementById("agencyList");
+    const branchTitle = document.getElementById("branchTitle");
+    const totalCount = document.getElementById("totalCount");
+    const confirmedCount = document.getElementById("confirmedCount");
+    const pendingCount = document.getElementById("pendingCount");
+    const previewMonth = document.getElementById("previewMonth");
+    const previewAgency = document.getElementById("previewAgency");
+    const previewMain = document.getElementById("previewMain");
+    const previewSub = document.getElementById("previewSub");
+    const previewExtra = document.getElementById("previewExtra");
+    const downloadPreviewJpg = document.getElementById("downloadPreviewJpg");
+    const statButtons = document.querySelectorAll(".stat");
+    const adminButton = document.getElementById("adminButton");
+    const adminPanel = document.getElementById("adminPanel");
+    const adminPassword = document.getElementById("adminPassword");
+    const adminLogin = document.getElementById("adminLogin");
+    const adminCancel = document.getElementById("adminCancel");
+    const monthlyUpload = document.getElementById("monthlyUpload");
+    const officeStatusUpload = document.getElementById("officeStatusUpload");
+    const mobileUploadStatus = document.getElementById("mobileUploadStatus");
+    let activeFilter = "all";
+    let adminSessionPassword = "1111";
+
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || "").split(",")[1] || "");
+        reader.onerror = () => reject(reader.error || new Error("파일을 읽지 못했습니다."));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function applySupabaseFiles(month, files = []) {
+      const workbook = files.find((file) => file.kind === "workbook");
+      if (workbook?.public_url) {
+        monthFiles[month] = workbook.public_url;
+        monthlyDownload.href = workbook.public_url;
+      }
+      const template = files.find((file) => file.kind === "template");
+      if (template?.public_url) {
+        templateFiles[month] = template.public_url;
+        localStorage.setItem(storageKey(`template:${month}`), JSON.stringify({
+          name: template.file_name || `${month}월 PPT 템플릿`,
+          href: template.public_url,
+          updatedAt: template.updated_at || ""
+        }));
+      }
+    }
+
+    function hasOfficeMapData(map) {
+      return Boolean(map && Array.isArray(map.offices) && map.offices.length);
+    }
+
+    function hasTemplateReference(month) {
+      return Boolean(templateFiles[month]);
+    }
+
+    function monthFallbackOrder() {
+      return Object.keys(monthFiles)
+        .sort((a, b) => Number(b) - Number(a));
+    }
+
+    async function loadLatestOfficeMapFromSupabase(currentMonth) {
+      for (const candidateMonth of monthFallbackOrder()) {
+        try {
+          const response = await fetch(`${SUPABASE_DATA_ENDPOINT}?month=${encodeURIComponent(candidateMonth)}`, {
+            method: "GET",
+            cache: "no-store"
+          });
+          if (!response.ok) continue;
+          const payload = await response.json();
+          const officeFile = (payload.files || []).find((file) => file.kind === "office" && file.public_url);
+          if (!officeFile) continue;
+          const candidateOfficeMap = payload.bundle?.office_map;
+          if (!hasOfficeMapData(candidateOfficeMap)) continue;
+          applySupabaseFiles(candidateMonth, payload.files || []);
+          return {
+            month: candidateMonth,
+            officeMap: candidateOfficeMap,
+            officeName: officeFile?.file_name || payload.bundle?.source_meta?.office || `${candidateMonth}월 점포현황`,
+            isFallback: candidateMonth !== String(currentMonth)
+          };
+        } catch (error) {
+          console.warn("Latest office map fallback skipped:", error);
+        }
+      }
+      return null;
+    }
+
+    async function loadLatestTemplateFromSupabase(currentMonth) {
+      for (const candidateMonth of monthFallbackOrder()) {
+        try {
+          const response = await fetch(`${SUPABASE_DATA_ENDPOINT}?month=${encodeURIComponent(candidateMonth)}`, {
+            method: "GET",
+            cache: "no-store"
+          });
+          if (!response.ok) continue;
+          const payload = await response.json();
+          const templateFile = (payload.files || []).find((file) => file.kind === "template" && file.public_url);
+          if (!templateFile) continue;
+          applySupabaseFiles(candidateMonth, payload.files || []);
+          return {
+            month: candidateMonth,
+            href: templateFile.public_url,
+            templateName: templateFile.file_name || `${candidateMonth}월 PPT 템플릿`,
+            isFallback: candidateMonth !== String(currentMonth)
+          };
+        } catch (error) {
+          console.warn("Latest template fallback skipped:", error);
+        }
+      }
+      return null;
+    }
+
+    async function loadMonthFromSupabase(month) {
+      if (!SUPABASE_DATA_ENDPOINT) return false;
+      try {
+        const response = await fetch(`${SUPABASE_DATA_ENDPOINT}?month=${encodeURIComponent(month)}`, {
+          method: "GET",
+          cache: "no-store"
+        });
+        if (!response.ok) throw new Error(`Supabase 불러오기 실패(${response.status})`);
+        const payload = await response.json();
+        const uploadedFiles = payload.files || [];
+        const hasUploadedOfficeFile = uploadedFiles.some((file) => file.kind === "office" && file.public_url);
+        applySupabaseFiles(month, uploadedFiles);
+        const bundle = payload.bundle;
+        let monthHasOfficeMap = false;
+        let monthHasTemplate = hasTemplateReference(month);
+        let usedFallbackOffice = null;
+        let usedFallbackTemplate = null;
+        if (bundle) {
+          if (hasUploadedOfficeFile && hasOfficeMapData(bundle.office_map)) {
+            officeMap = JSON.parse(JSON.stringify(bundle.office_map));
+            localStorage.setItem(storageKey("officeMap"), JSON.stringify(officeMap));
+            monthHasOfficeMap = true;
+          }
+          if (Array.isArray(bundle.promotion_rows)) {
+            promotionRowsData = JSON.parse(JSON.stringify(bundle.promotion_rows));
+            localStorage.setItem(storageKey("promotionRows"), JSON.stringify(promotionRowsData));
+          }
+        }
+        if (!monthHasTemplate) {
+          usedFallbackTemplate = await loadLatestTemplateFromSupabase(month);
+          if (usedFallbackTemplate) {
+            templateFallbackMeta[month] = usedFallbackTemplate;
+            localStorage.setItem(storageKey(`template:${month}:fallback`), JSON.stringify(usedFallbackTemplate));
+            monthHasTemplate = true;
+          }
+        } else {
+          delete templateFallbackMeta[month];
+        }
+        if (!monthHasOfficeMap) {
+          usedFallbackOffice = await loadLatestOfficeMapFromSupabase(month);
+          if (usedFallbackOffice) {
+            officeMap = JSON.parse(JSON.stringify(usedFallbackOffice.officeMap));
+            localStorage.setItem(storageKey("officeMap"), JSON.stringify(officeMap));
+          }
+        }
+        const canRebuildStats = Array.isArray(promotionRowsData) && promotionRowsData.length && hasOfficeMapData(officeMap);
+        if (canRebuildStats) {
+          data = buildBranchStatsFromPromotionRows(promotionRowsData, officeMap);
+        } else if (bundle?.branch_data && Object.keys(bundle.branch_data).length) {
+          data = JSON.parse(JSON.stringify(bundle.branch_data));
+        } else {
+          data = {};
+        }
+        localStorage.setItem(storageKey("branchData"), JSON.stringify(data));
+        return Boolean(bundle);
+      } catch (error) {
+        console.warn("Supabase month load skipped:", error);
+        return false;
+      }
+    }
+
+    async function saveMonthToSupabase({ files = [], sourceMeta = {}, includeBundle = true } = {}) {
+      const encodedFiles = [];
+      for (const item of files) {
+        if (!item?.file || !item.kind) continue;
+        encodedFiles.push({
+          kind: item.kind,
+          name: item.file.name,
+          mimeType: item.file.type || "application/octet-stream",
+          base64: await fileToBase64(item.file)
+        });
+      }
+      const body = {
+        password: adminSessionPassword || "1111",
+        month: Number(monthSelect.value || "6"),
+        files: encodedFiles,
+        sourceMeta
+      };
+      if (includeBundle) {
+        body.branchData = data;
+        body.promotionRows = promotionRowsData;
+        body.officeMap = officeMap;
+      }
+      const response = await fetch(SUPABASE_DATA_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok || payload.error) throw new Error(payload.error || `Supabase 저장 실패(${response.status})`);
+      return payload;
+    }
+
+    function cellText(value) {
+      if (value === null || value === undefined) return "";
+      return String(value).replace(/\r/g, "").trim();
+    }
+
+    function compactText(value) {
+      return cellText(value).replace(/\s/g, "");
+    }
+
+    function normalizeBranchName(value) {
+      let text = cellText(value);
+      if (text.startsWith("GA")) text = text.slice(2);
+      if (text.endsWith("지점")) text = text.slice(0, -2);
+      return text.trim();
+    }
+
+    function normalizeAgencyName(value) {
+      return compactText(value)
+        .replace(/보험대리점$/g, "")
+        .replaceAll("주식회사", "(주)")
+        .toLowerCase();
+    }
+
+    function officeKey(registrationNo, officeCode) {
+      const registration = cellText(registrationNo);
+      const office = cellText(officeCode);
+      return registration && office ? `${registration}|${office}` : "";
+    }
+
+    function cleanOfficeAgencyName(value) {
+      return cellText(value).replace(/보험대리점$/g, "");
+    }
+
+    function isNumericValue(value) {
+      if (typeof value === "number") return Number.isFinite(value);
+      const text = cellText(value).replaceAll(",", "").replace("%", "");
+      return text !== "" && /^-?\d+(\.\d+)?$/.test(text);
+    }
+
+    function formatRate(value) {
+      if (value === null || value === undefined || cellText(value) === "") return "";
+      if (typeof value === "number") {
+        if (value > -10 && value <= 10) return `${Math.round(value * 100)}%`;
+        return `${Math.round(value)}%`;
+      }
+      const text = cellText(value);
+      const numericText = text.replaceAll(",", "").replace("%", "");
+      if (/^-?\d+(\.\d+)?$/.test(numericText)) {
+        const numeric = Number(numericText);
+        if (numeric > -10 && numeric <= 10) return `${Math.round(numeric * 100)}%`;
+        return `${Math.round(numeric)}%`;
+      }
+      return text;
+    }
+
+    function isConfirmedStatusFlag(value) {
+      const text = compactText(value).toUpperCase();
+      if (!text) return false;
+      return text === "O" || text === "○" || text === "◯" || text === "OK" || text.includes("확정") || text.includes("완료");
+    }
+
+    function hasPromotionContent(rateValues = []) {
+      return rateValues.some((value) => {
+        const text = cellText(value);
+        return isNumericValue(value) || (text && !["X", "○", "◯", "O", "-"].includes(text.toUpperCase()));
+      });
+    }
+
+    function resolvePromotionStatus(finalFlagValue, rateValues = []) {
+      const finalText = compactText(finalFlagValue);
+      if (isConfirmedStatusFlag(finalFlagValue)) return "confirmed";
+      if (finalText) return "pending";
+      return hasPromotionContent(rateValues) ? "pending" : "pending";
+    }
+
+    function pickBestPromotionMatch(matches = []) {
+      if (!matches.length) return null;
+      return [...matches].sort((a, b) => {
+        const aScore = (a.status === "confirmed" ? 100 : 0) + (a.hasPromoContent ? 10 : 0) + (a.finalFlag ? 1 : 0);
+        const bScore = (b.status === "confirmed" ? 100 : 0) + (b.hasPromoContent ? 10 : 0) + (b.finalFlag ? 1 : 0);
+        if (aScore !== bScore) return bScore - aScore;
+        return `${a.name}${a.type}`.localeCompare(`${b.name}${b.type}`, "ko");
+      })[0];
+    }
+
+    function buildBranchStatsFromPromotionRows(rows, map = officeMap) {
+      const grouped = {};
+      (map?.regions || []).forEach((region) => {
+        (region.branches || []).forEach((branch) => {
+          if (!grouped[branch.name]) grouped[branch.name] = [];
+        });
+      });
+      if (map?.offices?.length) {
+        const promosByKey = {};
+        const promosByName = {};
+        rows.forEach((row, index) => {
+          row._matchIndex = index;
+          const key = officeKey(row.agencyCode, row.officeCode);
+          if (key) (promosByKey[key] ||= []).push(row);
+          const nameKey = normalizeAgencyName(row.name);
+          if (nameKey) (promosByName[nameKey] ||= []).push(row);
+        });
+        const used = new Set();
+        map.offices.forEach((office) => {
+          const matches = promosByKey[office.key] || promosByName[office.nameKey] || [];
+          if (matches.length) {
+            matches.forEach((promo) => used.add(promo._matchIndex));
+            const promo = pickBestPromotionMatch(matches);
+            (grouped[office.branchName] ||= []).push({
+              ...promo,
+              name: cleanOfficeAgencyName(office.name),
+              agencyCode: office.registrationNo,
+              officeCode: office.hqCode,
+              agencyOrgCode: office.agencyOrgCode,
+              regionName: office.regionName,
+              regionCode: office.regionCode,
+              branchOrgName: office.branchOrgName,
+              branchCode: office.branchCode,
+              promoBranch: office.branchName,
+              promoBranchCode: office.branchCode,
+              matchSource: officeKey(promo.agencyCode, promo.officeCode) === office.key ? "조직번호 매칭" : "대리점명 매칭"
+            });
+          } else {
+            (grouped[office.branchName] ||= []).push({
+              name: cleanOfficeAgencyName(office.name),
+              status: "pending",
+              type: "점포현황 기준",
+              main: "",
+              sub: "",
+              extra: "",
+              download: "pending",
+              agencyCode: office.registrationNo,
+              officeCode: office.hqCode,
+              agencyOrgCode: office.agencyOrgCode,
+              regionName: office.regionName,
+              regionCode: office.regionCode,
+              branchOrgName: office.branchOrgName,
+              branchCode: office.branchCode,
+              matchSource: "점포현황 기준"
+            });
+          }
+        });
+        rows.forEach((row, index) => {
+          if (used.has(index)) return;
+          (grouped["미매칭"] ||= []).push({ ...row, promoBranch: "미매칭", matchSource: "총괄판 기준" });
+        });
+      } else {
+        rows.forEach((row) => {
+          const branchName = normalizeBranchName(row.promoBranch);
+          if (!branchName) return;
+          (grouped[branchName] ||= []).push(row);
+        });
+      }
+
+      const result = {};
+      Object.entries(grouped).forEach(([branchName, agencies]) => {
+        const sorted = agencies
+          .map(({ _matchIndex, ...agency }) => agency)
+          .sort((a, b) => `${a.name}${a.type}`.localeCompare(`${b.name}${b.type}`, "ko"));
+        const confirmed = sorted.filter((item) => item.status === "confirmed").length;
+        result[branchName] = { total: sorted.length, confirmed, pending: sorted.length - confirmed, agencies: sorted };
+      });
+      return result;
+    }
+
+    if (promotionRowsData.length) {
+      data = buildBranchStatsFromPromotionRows(promotionRowsData, officeMap);
+    }
+
+    function getBranchMeta(branchName) {
+      for (const region of officeMap?.regions || []) {
+        const branch = (region.branches || []).find((item) => item.name === branchName);
+        if (branch) {
+          return {
+            regionName: region.name,
+            branchLabel: branch.label || `GA${branch.name}지점`,
+            branchCode: branch.code || ""
+          };
+        }
+      }
+      const agencies = data[branchName]?.agencies || [];
+      const agency = agencies.find((item) => item.regionName || item.branchOrgName || item.branchCode) || {};
+      return {
+        regionName: agency.regionName || "지역단 미분류",
+        branchLabel: agency.branchOrgName || `GA${branchName}지점`,
+        branchCode: agency.branchCode || ""
+      };
+    }
+
+    function getBranchCodeFromMap(branchName, map = officeMap) {
+      const normalized = normalizeBranchName(branchName);
+      if (!normalized) return "";
+      for (const region of map?.regions || []) {
+        const branch = (region.branches || []).find((item) => item.name === normalized);
+        if (branch?.code) return branch.code;
+      }
+      return "";
+    }
+
+    const preferredRegionOrder = [
+      "GA서울지역단",
+      "GA강북지역단",
+      "GA강남지역단",
+      "GA경인지역단",
+      "GA경원지역단",
+      "GA충청지역단",
+      "GA부산지역단",
+      "GA대구지역단",
+      "GA호남지역단",
+      "GA경남지역단",
+      "강북금융지역단",
+      "강남금융지역단",
+      "동부금융지역단"
+    ];
+
+    function compareRegionNames(a, b) {
+      const aIndex = preferredRegionOrder.indexOf(a);
+      const bIndex = preferredRegionOrder.indexOf(b);
+      const aKnown = aIndex >= 0;
+      const bKnown = bIndex >= 0;
+      if (aKnown && bKnown) return aIndex - bIndex;
+      if (aKnown) return -1;
+      if (bKnown) return 1;
+      return a.localeCompare(b, "ko");
+    }
+
+    function compareBranchOptions(a, b) {
+      const aDirect = (a.label || "").includes("직할지점");
+      const bDirect = (b.label || "").includes("직할지점");
+      if (aDirect !== bDirect) return aDirect ? 1 : -1;
+      return (a.label || "").localeCompare(b.label || "", "ko");
+    }
+
+    function getRegionHierarchy() {
+      if (officeMap?.regions?.length) {
+        return Object.fromEntries(officeMap.regions.map((region) => [
+          region.name,
+          (region.branches || []).map((branch) => ({
+            value: branch.name,
+            label: branch.label || `GA${branch.name}지점`,
+            code: branch.code || ""
+          })).sort(compareBranchOptions)
+        ]));
+      }
+      const regions = {};
+      Object.keys(data).forEach((branchName) => {
+        const meta = getBranchMeta(branchName);
+        if (!regions[meta.regionName]) regions[meta.regionName] = [];
+        regions[meta.regionName].push({
+          value: branchName,
+          label: meta.branchLabel,
+          code: meta.branchCode
+        });
+      });
+      Object.values(regions).forEach((branches) => branches.sort(compareBranchOptions));
+      return regions;
+    }
+
+    function populateBranches(preferred = branchSelect.value || "금천", preferredRegion = "") {
+      const regions = getRegionHierarchy();
+      const sortedBranches = Object.keys(data)
+        .map((branchName) => ({ value: branchName, label: getBranchMeta(branchName).branchLabel }))
+        .sort(compareBranchOptions);
+      regionSelect.innerHTML = "";
+      Object.keys(regions).sort(compareRegionNames).forEach((regionName) => {
+        const option = document.createElement("option");
+        option.value = regionName;
+        option.textContent = regionName;
+        regionSelect.appendChild(option);
+      });
+
+      const targetBranch = data[preferred] ? preferred : data["금천"] ? "금천" : sortedBranches[0]?.value || "";
+      const targetRegion = preferredRegion && regions[preferredRegion]?.some((branch) => branch.value === targetBranch)
+        ? preferredRegion
+        : getBranchMeta(targetBranch).regionName || Object.keys(regions)[0] || "";
+      regionSelect.value = targetRegion;
+      branchSelect.innerHTML = "";
+      const visibleBranches = regions[targetRegion] || [];
+      visibleBranches.forEach((branch) => {
+        const option = document.createElement("option");
+        option.value = branch.value;
+        option.textContent = branch.label;
+        branchSelect.appendChild(option);
+      });
+      branchSelect.value = visibleBranches.some((branch) => branch.value === targetBranch)
+        ? targetBranch
+        : visibleBranches[0]?.value || "";
+    }
+
+    populateBranches("금천");
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function findColumn(rows, predicate, maxRows = 20) {
+      for (let rowIndex = 0; rowIndex < Math.min(rows.length, maxRows); rowIndex += 1) {
+        const row = rows[rowIndex] || [];
+        for (let colIndex = 0; colIndex < row.length; colIndex += 1) {
+          if (predicate(compactText(row[colIndex]))) return { rowIndex, colIndex };
+        }
+      }
+      return null;
+    }
+
+    function choosePromotionSheet(sheets) {
+      const fullSheets = sheets.filter((sheet) => sheet.name.includes("지점별 담당 분류") && sheet.name.includes("전체"));
+      if (fullSheets.length) return fullSheets[fullSheets.length - 1];
+      return sheets.find((sheet) => sheet.rows.some((row) => row.some((cell) => compactText(cell).includes("GA명")))) || sheets[0];
+    }
+
+    function buildPromotionRowsFromWorkbook(sheets) {
+      const sheet = choosePromotionSheet(sheets);
+      const rows = sheet.rows || [];
+      const agency = findColumn(rows, (text) => text === "GA명" || text.includes("GA명"));
+      const code = findColumn(rows, (text) => text === "코드");
+      const branch = findColumn(rows, (text) => text.includes("담당지점") && !text.includes("담당지점수"));
+      const finalConfirm = findColumn(rows, (text) => text.includes("최종확정") && text.includes("여부"));
+      const type = findColumn(rows, (text) => text.includes("순수3종") && text.includes("유형"));
+      const pureRate = findColumn(rows, (text) => text.includes("순수3종지급률"));
+      if (!agency || !branch) throw new Error("총괄판에서 GA명 또는 담당지점 열을 찾지 못했습니다.");
+      const agencyCol = agency.colIndex;
+      const codeCol = code?.colIndex ?? agencyCol - 2;
+      const officeCodeCol = codeCol + 1;
+      const branchCol = branch.colIndex;
+      const finalConfirmCol = finalConfirm?.colIndex ?? -1;
+      const typeCol = type?.colIndex ?? agencyCol + 1;
+      const mainCol = pureRate?.colIndex ?? 12;
+      const subCol = mainCol + 1;
+      const extraCol = mainCol + 2;
+      const rateStartCol = Math.max(0, mainCol - 6);
+      const rateEndCol = Math.max(extraCol, 14);
+      const startRow = Math.max(agency.rowIndex, branch.rowIndex) + 1;
+      const promotionRows = [];
+      rows.slice(startRow).forEach((row) => {
+        const name = cellText(row[agencyCol]);
+        const promoBranch = normalizeBranchName(row[branchCol]);
+        if (!name || !promoBranch || compactText(name).includes("GA명")) return;
+        const rateValues = row.slice(rateStartCol, rateEndCol + 1);
+        const hasContent = hasPromotionContent(rateValues);
+        const finalFlag = finalConfirmCol >= 0 ? cellText(row[finalConfirmCol]) : "";
+        const status = resolvePromotionStatus(finalFlag, rateValues);
+        promotionRows.push({
+          name,
+          status,
+          type: cellText(row[typeCol]) || "총괄판 기준",
+          main: hasContent ? formatRate(row[mainCol]) : "",
+          sub: hasContent ? formatRate(row[subCol]) : "",
+          extra: hasContent ? formatRate(row[extraCol]) : "",
+          download: status === "confirmed" ? "ready" : "pending",
+          agencyCode: cellText(row[codeCol]),
+          officeCode: cellText(row[officeCodeCol]),
+          promoBranch,
+          promoBranchCode: getBranchCodeFromMap(promoBranch),
+          finalFlag,
+          hasPromoContent: hasContent
+        });
+      });
+      if (!promotionRows.length) throw new Error("총괄판에서 반영할 대리점 행을 찾지 못했습니다.");
+      return promotionRows;
+    }
+
+    function buildOfficeMapFromWorkbook(sheets) {
+      function parseStatusRegions() {
+        const statusSheet = sheets.find((sheet) => sheet.name === "현황") || null;
+        if (!statusSheet) return [];
+        const items = (statusSheet.rows || []).map((row) => ({
+          code: cellText(row[1]),
+          name: cellText(row[2]),
+          count: Number(cellText(row[3]).replaceAll(",", "")) || 0
+        })).filter((item) => item.code && item.name);
+        const regionRows = items.filter((item) => item.name.includes("지역단"));
+        const allBranches = items.filter((item) => item.name.includes("지점"));
+        const directBranches = allBranches.filter((item) => item.name.includes("직할지점"));
+        const branchRows = allBranches.filter((item) => !item.name.includes("직할지점"));
+        const belongsToRegion = (branchName, regionName) => {
+          const branchBase = branchName.replace("지점", "");
+          const regionBase = regionName.replace("지역단", "").replace("Union", "");
+          return branchBase.startsWith(regionBase) || branchBase.startsWith(`GA${regionBase.replace("GA", "")}`);
+        };
+        const usedDirect = new Set();
+        const regions = [];
+        let branchIndex = 0;
+        regionRows.forEach((region) => {
+          const direct = directBranches.filter((branch, index) => {
+            if (usedDirect.has(index) || !belongsToRegion(branch.name, region.name)) return false;
+            usedDirect.add(index);
+            return true;
+          });
+          const targetCount = Math.max(0, region.count - direct.reduce((sum, branch) => sum + branch.count, 0));
+          const branches = [];
+          let total = 0;
+          while (branchIndex < branchRows.length && total < targetCount) {
+            const branch = branchRows[branchIndex];
+            branches.push({ name: normalizeBranchName(branch.name), label: branch.name, code: branch.code, count: branch.count });
+            total += branch.count;
+            branchIndex += 1;
+          }
+          direct.forEach((branch) => {
+            branches.push({ name: normalizeBranchName(branch.name), label: branch.name, code: branch.code, count: branch.count });
+          });
+          branches.sort((a, b) => a.label.localeCompare(b.label, "ko"));
+          regions.push({ name: region.name, code: region.code, count: region.count, branches });
+        });
+        return regions;
+      }
+
+      const officeSheet = sheets.find((sheet) => sheet.rows?.some((row) => row.some((cell) => compactText(cell) === "대리점등록번호") && row.some((cell) => compactText(cell) === "본점코드") && row.some((cell) => compactText(cell) === "지점명")));
+      if (!officeSheet) throw new Error("점포현황에서 대리점 시트를 찾지 못했습니다.");
+      const regions = parseStatusRegions();
+      const branchMeta = {};
+      regions.forEach((region) => {
+        (region.branches || []).forEach((branch) => {
+          branchMeta[branch.name] = {
+            regionName: region.name,
+            regionCode: region.code,
+            branchOrgName: branch.label,
+            branchCode: branch.code
+          };
+        });
+      });
+      const allOpenSheet = sheets.find((sheet) => sheet.rows?.some((row) => row.some((cell) => compactText(cell) === "지역단조직번호") && row.some((cell) => compactText(cell) === "지점조직번호")));
+      const branchCodes = {};
+      if (allOpenSheet) {
+        const rows = allOpenSheet.rows || [];
+        const headerRowIndex = rows.findIndex((row) => row.some((cell) => compactText(cell) === "지역단조직번호"));
+        const header = rows[headerRowIndex] || [];
+        const colIndex = (label) => header.findIndex((cell) => compactText(cell) === label);
+        rows.slice(headerRowIndex + 1).forEach((row) => {
+          const branchName = normalizeBranchName(row[colIndex("지점조직명")]);
+          if (!branchName || branchCodes[branchName]) return;
+          branchCodes[branchName] = { regionCode: cellText(row[colIndex("지역단조직번호")]), branchCode: cellText(row[colIndex("지점조직번호")]) };
+        });
+      }
+      const rows = officeSheet.rows || [];
+      const headerRowIndex = rows.findIndex((row) => row.some((cell) => compactText(cell) === "대리점등록번호"));
+      const header = rows[headerRowIndex] || [];
+      const colIndex = (label) => header.findIndex((cell) => compactText(cell) === label);
+      const offices = [];
+      const seen = new Set();
+      rows.slice(headerRowIndex + 1).forEach((row) => {
+        const registrationNo = cellText(row[colIndex("대리점등록번호")]);
+        const hqCode = cellText(row[colIndex("본점코드")]);
+        const name = cellText(row[colIndex("GA명")]);
+        const branchOrgName = cellText(row[colIndex("지점명")]);
+        const branchName = normalizeBranchName(branchOrgName);
+        const meta = branchMeta[branchName] || {};
+        const key = officeKey(registrationNo, hqCode);
+        if (!key || !name || !branchName || seen.has(key)) return;
+        seen.add(key);
+        offices.push({
+          key,
+          registrationNo,
+          hqCode,
+          regionName: meta.regionName || cellText(row[colIndex("지역단")]),
+          regionCode: meta.regionCode || branchCodes[branchName]?.regionCode || "",
+          branchName,
+          branchOrgName: meta.branchOrgName || branchOrgName,
+          branchCode: meta.branchCode || branchCodes[branchName]?.branchCode || "",
+          agencyOrgCode: cellText(row[colIndex("지사코드")]),
+          name,
+          nameKey: normalizeAgencyName(name)
+        });
+      });
+      if (!offices.length) throw new Error("점포현황에서 반영할 대리점 행을 찾지 못했습니다.");
+      return { source: officeSheet.name, regions, offices, byKey: Object.fromEntries(offices.map((office) => [office.key, office])), byName: Object.fromEntries(offices.map((office) => [office.nameKey, office])), branchCount: new Set(offices.map((office) => office.branchName)).size, agencyCount: offices.length };
+    }
+
+    function filteredAgencies() {
+      const branch = branchSelect.value;
+      const agencies = data[branch]?.agencies || [];
+      if (activeFilter === "confirmed") return agencies.filter((agency) => agency.status === "confirmed");
+      if (activeFilter === "pending") return agencies.filter((agency) => agency.status === "pending");
+      return agencies;
+    }
+
+    function updatePreview(agency) {
+      if (!agency || agency.status !== "confirmed") return;
+      previewAgency.textContent = agency.name;
+      previewMain.textContent = agency.main;
+      previewSub.textContent = agency.sub;
+      previewExtra.textContent = agency.extra;
+    }
+
+    function render() {
+      const branch = branchSelect.value;
+      const stats = data[branch] || { total: 0, confirmed: 0, pending: 0, agencies: [] };
+      const month = monthSelect.value;
+      branchTitle.textContent = `${branch} 지점별 프로모션 현황`;
+      totalCount.textContent = stats.total;
+      confirmedCount.textContent = stats.confirmed;
+      pendingCount.textContent = stats.pending;
+      const downloadHref = monthFiles[month] || "";
+      monthlyDownload.href = downloadHref || "#";
+      monthlyDownload.classList.toggle("disabled", !downloadHref);
+      monthlyDownload.setAttribute("aria-disabled", downloadHref ? "false" : "true");
+      previewMonth.textContent = `26.${month}월`;
+
+      const agencies = filteredAgencies();
+      agencyList.innerHTML = agencies.length
+        ? agencies.map((agency, index) => {
+          const confirmed = agency.status === "confirmed";
+          const metaParts = [agency.type || "총괄판 기준"];
+          if (agency.agencyCode) metaParts.push(`등록 ${agency.agencyCode}`);
+          if (agency.officeCode) metaParts.push(`본점 ${agency.officeCode}`);
+          if (agency.agencyOrgCode) metaParts.push(`조직 ${agency.agencyOrgCode}`);
+          return `
+            <article class="agency">
+              <div class="agency-head">
+                <div>
+                  <strong>${escapeHtml(agency.name)}</strong>
+                  <small>${escapeHtml(metaParts.join(" · "))}</small>
+                </div>
+                <span class="status ${confirmed ? "done" : "wait"}">${confirmed ? "확정" : "협의중"}</span>
+              </div>
+              ${confirmed ? `
+                <div class="agency-actions">
+                  <button class="button primary preview-btn" type="button" data-index="${index}">미리보기</button>
+                  <button class="button row-jpg-btn" type="button" data-index="${index}">JPG 받기</button>
+                </div>` : ""}
+            </article>
+          `;
+        }).join("")
+        : '<div class="empty">해당 조건의 대리점이 없습니다.</div>';
+
+      agencyList.querySelectorAll(".preview-btn").forEach((button) => {
+        button.addEventListener("click", () => updatePreview(agencies[Number(button.dataset.index)]));
+      });
+
+      agencyList.querySelectorAll(".row-jpg-btn").forEach((button) => {
+        button.addEventListener("click", () => {
+          downloadAgencyJpg(agencies[Number(button.dataset.index)]).catch((error) => {
+            if (error?.name === "AbortError") return;
+            window.alert("JPG 저장 중 오류가 발생했습니다.");
+          });
+        });
+      });
+
+      updatePreview(agencies.find((agency) => agency.status === "confirmed"));
+    }
+
+    statButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        activeFilter = button.dataset.filter;
+        statButtons.forEach((item) => item.classList.toggle("active", item === button));
+        render();
+      });
+    });
+
+    monthSelect.addEventListener("change", async () => {
+      await loadMonthFromSupabase(monthSelect.value);
+      populateBranches(branchSelect.value);
+      render();
+    });
+    regionSelect.addEventListener("change", () => {
+      const branches = getRegionHierarchy()[regionSelect.value] || [];
+      populateBranches(branches[0]?.value || "", regionSelect.value);
+      render();
+    });
+    branchSelect.addEventListener("change", render);
+
+    adminButton.addEventListener("click", () => {
+      if (document.body.classList.contains("admin-mode")) return;
+      adminPanel.classList.toggle("active");
+      adminPassword.value = "";
+      if (adminPanel.classList.contains("active")) adminPassword.focus();
+    });
+
+    adminLogin.addEventListener("click", () => {
+      if (adminPassword.value === "1111") {
+        adminSessionPassword = adminPassword.value;
+        document.body.classList.add("admin-mode");
+        adminPanel.classList.remove("active");
+        adminButton.textContent = "관리자 ON";
+        adminButton.classList.add("active");
+      } else {
+        adminPassword.value = "";
+        adminPassword.placeholder = "비밀번호 오류";
+      }
+    });
+
+    adminPassword.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") adminLogin.click();
+      if (event.key === "Escape") adminCancel.click();
+    });
+
+    adminCancel.addEventListener("click", () => adminPanel.classList.remove("active"));
+
+    async function handlePromotionWorkbookUpload(file) {
+      if (!file) return;
+      mobileUploadStatus.textContent = `${file.name} 읽는 중...`;
+      try {
+        const sheets = await window.XlsxLite.readWorkbook(file);
+        promotionRowsData = buildPromotionRowsFromWorkbook(sheets).map(({ _matchIndex, ...row }) => row);
+        data = buildBranchStatsFromPromotionRows(promotionRowsData, officeMap);
+        localStorage.setItem(storageKey("promotionRows"), JSON.stringify(promotionRowsData));
+        localStorage.setItem(storageKey("branchData"), JSON.stringify(data));
+        populateBranches(branchSelect.value);
+        render();
+        const agencyCount = Object.values(data).reduce((sum, item) => sum + item.total, 0);
+        mobileUploadStatus.textContent = `총괄판 반영 완료: ${Object.keys(data).length}개 지점 / ${agencyCount}개 행`;
+        try {
+          await saveMonthToSupabase({
+            files: [{ kind: "workbook", file }],
+            sourceMeta: { workbook: file.name }
+          });
+          mobileUploadStatus.textContent += " · Supabase 저장 완료";
+        } catch (cloudError) {
+          mobileUploadStatus.textContent += ` · Supabase 저장 실패: ${cloudError.message || cloudError}`;
+        }
+      } catch (error) {
+        mobileUploadStatus.textContent = error.message || "총괄판 업로드 중 오류가 발생했습니다.";
+      }
+    }
+
+    async function handleOfficeWorkbookUpload(file) {
+      if (!file) return;
+      mobileUploadStatus.textContent = `${file.name} 읽는 중...`;
+      try {
+        const sheets = await window.XlsxLite.readWorkbook(file);
+        officeMap = buildOfficeMapFromWorkbook(sheets);
+        localStorage.setItem(storageKey("officeMap"), JSON.stringify(officeMap));
+        if (!promotionRowsData.length) {
+          promotionRowsData = Object.entries(data).flatMap(([promoBranch, stats]) =>
+            (stats.agencies || []).map((agency) => ({ ...agency, promoBranch }))
+          );
+        }
+        data = buildBranchStatsFromPromotionRows(promotionRowsData, officeMap);
+        localStorage.setItem(storageKey("branchData"), JSON.stringify(data));
+        populateBranches(branchSelect.value);
+        render();
+        const agencyCount = Object.values(data).reduce((sum, item) => sum + item.total, 0);
+        mobileUploadStatus.textContent = `점포현황 반영 완료: 점포현황 ${officeMap.branchCount}개 지점 / ${officeMap.agencyCount}개 대리점 기준, 화면 ${Object.keys(data).length}개 지점 / ${agencyCount}개 행`;
+        try {
+          await saveMonthToSupabase({
+            files: [{ kind: "office", file }],
+            sourceMeta: { office: file.name }
+          });
+          mobileUploadStatus.textContent += " · Supabase 저장 완료";
+        } catch (cloudError) {
+          mobileUploadStatus.textContent += ` · Supabase 저장 실패: ${cloudError.message || cloudError}`;
+        }
+      } catch (error) {
+        mobileUploadStatus.textContent = error.message || "점포현황 업로드 중 오류가 발생했습니다.";
+      }
+    }
+
+    monthlyUpload.addEventListener("change", () => {
+      handlePromotionWorkbookUpload(monthlyUpload.files?.[0]);
+    });
+
+    officeStatusUpload.addEventListener("change", () => {
+      handleOfficeWorkbookUpload(officeStatusUpload.files?.[0]);
+    });
+
+    async function saveBlobToDevice(blob, filename) {
+      if (!blob || !blob.size) throw new Error("JPG 파일 생성에 실패했습니다.");
+      if (typeof File === "function" && navigator.share) {
+        try {
+          const file = new File([blob], filename, { type: blob.type || "image/jpeg" });
+          if (!navigator.canShare || navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              files: [file],
+              title: filename,
+              text: "GA프로모션 ON JPG 파일"
+            });
+            return;
+          }
+        } catch (error) {
+          if (error?.name === "AbortError") throw error;
+        }
+      }
+
+      const downloadUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = filename;
+      link.target = "_blank";
+      link.rel = "noopener";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
+    }
+
+    async function downloadElementAsJpg(element, filename) {
+      const rect = element.getBoundingClientRect();
+      const width = Math.ceil(rect.width);
+      const height = Math.ceil(rect.height);
+      const styleText = Array.from(document.styleSheets)
+        .map((sheet) => {
+          try {
+            return Array.from(sheet.cssRules).map((rule) => rule.cssText).join("\n");
+          } catch {
+            return "";
+          }
+        }).join("\n");
+      const markup = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
+          <foreignObject width="100%" height="100%">
+            <div xmlns="http://www.w3.org/1999/xhtml">
+              <style>${styleText}</style>
+              ${element.outerHTML}
+            </div>
+          </foreignObject>
+        </svg>`;
+      const image = new Image();
+      const svgUrl = URL.createObjectURL(new Blob([markup], { type: "image/svg+xml;charset=utf-8" }));
+      await new Promise((resolve, reject) => {
+        image.onload = resolve;
+        image.onerror = reject;
+        image.src = svgUrl;
+      });
+      const canvas = document.createElement("canvas");
+      canvas.width = width * 2;
+      canvas.height = height * 2;
+      const context = canvas.getContext("2d");
+      context.fillStyle = "#ffffff";
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.scale(2, 2);
+      context.drawImage(image, 0, 0);
+      URL.revokeObjectURL(svgUrl);
+      const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.95));
+      await saveBlobToDevice(blob, filename);
+    }
+
+    async function downloadAgencyJpg(agency) {
+      if (!agency || agency.status !== "confirmed") return;
+      updatePreview(agency);
+      await new Promise((resolve) => window.requestAnimationFrame(resolve));
+      const agencyName = agency.name.trim().replace(/[\\/:*?"<>|]/g, "_") || "프로모션";
+      await downloadElementAsJpg(
+        document.querySelector(".preview"),
+        `GA프로모션ON_${agencyName}_모바일미리보기.jpg`
+      );
+    }
+
+    downloadPreviewJpg.addEventListener("click", () => {
+      const agencyName = previewAgency.textContent.trim().replace(/[\\/:*?"<>|]/g, "_") || "프로모션";
+      downloadElementAsJpg(
+        document.querySelector(".preview"),
+        `GA프로모션ON_${agencyName}_모바일미리보기.jpg`
+      ).catch((error) => {
+        if (error?.name === "AbortError") return;
+        window.alert("JPG 저장 중 오류가 발생했습니다.");
+      });
+    });
+
+    (async () => {
+      await loadMonthFromSupabase(monthSelect.value || "6");
+      populateBranches(branchSelect.value);
+      render();
+    })();
+  </script>
+</body>
+</html>
