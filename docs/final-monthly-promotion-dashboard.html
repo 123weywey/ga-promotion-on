@@ -1115,6 +1115,15 @@
       line-height: 1.1;
     }
 
+    .poster-template-box.rate.textual strong {
+      font-size: clamp(18px, 2.3vw, 34px);
+      letter-spacing: -.01em;
+      line-height: 1.15;
+      white-space: pre-line;
+      word-break: keep-all;
+      overflow-wrap: anywhere;
+    }
+
     .poster-template-box.main-rate {
       left: 2.6%;
       width: 19.45%;
@@ -1131,6 +1140,40 @@
       left: 72.5%;
       width: 24.1%;
       color: #0066ff;
+    }
+
+    .poster-frame[data-template-month="5"] .poster-template-mask.main-rate,
+    .poster-frame[data-template-month="5"] .poster-template-mask.sub-rate,
+    .poster-frame[data-template-month="5"] .poster-template-mask.extra-rate,
+    .poster-frame[data-template-month="5"] .poster-template-box.rate {
+      top: 15.6%;
+      height: 7.4%;
+    }
+
+    .poster-frame[data-template-month="5"] .poster-template-mask.main-rate,
+    .poster-frame[data-template-month="5"] .poster-template-box.main-rate {
+      left: 2.7%;
+      width: 18.2%;
+    }
+
+    .poster-frame[data-template-month="5"] .poster-template-mask.sub-rate,
+    .poster-frame[data-template-month="5"] .poster-template-box.sub-rate {
+      left: 35.8%;
+      width: 15.5%;
+    }
+
+    .poster-frame[data-template-month="5"] .poster-template-mask.extra-rate,
+    .poster-frame[data-template-month="5"] .poster-template-box.extra-rate {
+      left: 72.6%;
+      width: 23.5%;
+    }
+
+    .poster-frame[data-template-month="5"] .poster-template-box.sub-rate strong {
+      font-size: clamp(18px, 2vw, 30px);
+    }
+
+    .poster-frame[data-template-month="5"] .poster-template-box.sub-rate span {
+      font-size: clamp(9px, 0.92vw, 13px);
     }
 
     .slide-logo,
@@ -1748,17 +1791,17 @@
                 <div class="poster-template-mask main-rate"></div>
                 <div class="poster-template-box rate main-rate">
                   <strong id="templatePreviewMainRate">450%</strong>
-                  <span>주력 건강</span>
+                  <span id="templatePreviewMainLabel">주력 건강</span>
                 </div>
                 <div class="poster-template-mask sub-rate"></div>
                 <div class="poster-template-box rate sub-rate">
                   <strong id="templatePreviewSubRate">350%</strong>
-                  <span>보장성 상품</span>
+                  <span id="templatePreviewSubLabel">보장성 상품</span>
                 </div>
                 <div class="poster-template-mask extra-rate"></div>
                 <div class="poster-template-box rate extra-rate">
                   <strong id="templatePreviewExtraRate">100%</strong>
-                  <span>유지회차</span>
+                  <span id="templatePreviewExtraLabel">유지회차</span>
                 </div>
               </div>
               <div class="slide-logo">삼성생명</div>
@@ -2135,6 +2178,7 @@
     let branchStats = {};
     let activeFilter = statusSelect?.value || "all";
     let agencySearchTerm = "";
+    let currentPreviewAgency = null;
     let uploadedMonthlyUrl = "";
     let uploadedPptTemplateUrl = "";
     let pptTemplateHref = "../26.6월 프로모션 포스터_1P용-1.pptx";
@@ -2368,17 +2412,55 @@
 
     function syncPosterTemplateOverlay() {
       if (!templatePreviewAgency || !templatePreviewMonth) return;
+      const month = String(selectedMonthKey || "");
+      const agency = currentPreviewAgency || null;
+      const defaultLabels = {
+        mainLabel: "주력 건강",
+        subLabel: "보장성 상품",
+        extraLabel: "유지회차",
+        mainValue: previewMainRate.textContent.trim() || "미확정",
+        subValue: previewSubRate.textContent.trim() || "미확정",
+        extraValue: previewExtraRate.textContent.trim() || "미확정",
+        subTextual: false
+      };
+
+      function normalizeMonthSpecificValue(value) {
+        const text = cellText(value).replace(/\s+/g, "");
+        if (!text || text === "0" || text === "X" || text === "x") return "-";
+        if (text.includes("현금")) return "현금";
+        if (text.includes("○") || text === "O") return "적용";
+        return cellText(value).replace(/\s+/g, " ").trim() || "-";
+      }
+
+      const config = month === "5" && agency
+        ? {
+            mainLabel: "순수3종 기본",
+            subLabel: "3~5월 여행",
+            extraLabel: "지사장",
+            mainValue: agency.main || "미확정",
+            subValue: normalizeMonthSpecificValue(agency.travelBenefit),
+            extraValue: agency.extra || "미확정",
+            subTextual: true
+          }
+        : defaultLabels;
+
       templatePreviewAgency.textContent = previewAgencyTag.textContent.trim() || "대리점";
       templatePreviewMonth.textContent = `${previewMonthLabel.textContent.trim() || "26.6월"} 프로모션`;
-      templatePreviewMainRate.textContent = previewMainRate.textContent.trim() || "미확정";
-      templatePreviewSubRate.textContent = previewSubRate.textContent.trim() || "미확정";
-      templatePreviewExtraRate.textContent = previewExtraRate.textContent.trim() || "미확정";
+      templatePreviewMainRate.textContent = config.mainValue;
+      templatePreviewSubRate.textContent = config.subValue;
+      templatePreviewExtraRate.textContent = config.extraValue;
+      templatePreviewMainLabel.textContent = config.mainLabel;
+      templatePreviewSubLabel.textContent = config.subLabel;
+      templatePreviewExtraLabel.textContent = config.extraLabel;
+      templatePreviewSubRate.parentElement?.classList.toggle("textual", Boolean(config.subTextual));
     }
 
     async function refreshPosterTemplatePreview(month) {
       posterFrame.classList.remove("template-image-mode");
       posterTemplateLayer.hidden = true;
       posterTemplateImage.removeAttribute("src");
+      posterFrame.dataset.templateMonth = String(month || "");
+      templatePreviewSubRate.parentElement?.classList.remove("textual");
 
       const source = await resolveTemplateSourceFile(month);
       if (!source) {
@@ -3659,8 +3741,19 @@
         const finalConfirmCol = finalConfirm?.colIndex ?? -1;
         const typeCol = type?.colIndex ?? agencyCol + 1;
         const mainCol = pureRate?.colIndex ?? 12;
-        const subCol = mainCol + 1;
-        const extraCol = mainCol + 2;
+        const pureAdvance = findColumn(rows, (text, rowIndex, colIndex) =>
+          rowIndex >= Math.max(0, pureRate?.rowIndex ?? 0)
+          && colIndex >= mainCol
+          && text.includes("선지급")
+        );
+        const pureManager = findColumn(rows, (text, rowIndex, colIndex) =>
+          rowIndex >= Math.max(0, pureRate?.rowIndex ?? 0)
+          && colIndex >= mainCol
+          && text.includes("지사장")
+        );
+        const travelBenefit = findColumn(rows, (text) => text.includes("3~5월") && text.includes("여행"));
+        const subCol = pureAdvance?.colIndex ?? (mainCol + 1);
+        const extraCol = pureManager?.colIndex ?? (mainCol + 2);
         const rateStartCol = Math.max(0, mainCol - 6);
         const rateEndCol = Math.max(extraCol, 14);
         const startRow = Math.max(agency.rowIndex, branch.rowIndex) + 1;
@@ -3693,6 +3786,7 @@
             selectedBranchMatched: sheetSelectedBranchName ? isSelectedBranchFlag(branchFlagValue) : false,
             finalFlag,
             hasPromoContent: hasContent,
+            travelBenefit: travelBenefit?.colIndex >= 0 ? cellText(row[travelBenefit.colIndex]) : "",
             sourceSheet: sheet.name,
             sourceSheetMode: sheetMode
           });
@@ -3950,6 +4044,7 @@
 
     function updatePreview(agency) {
       if (!agency || agency.status !== "confirmed") return;
+      currentPreviewAgency = agency;
       previewAgencyTag.textContent = agency.name;
       previewAgencyPill.textContent = agency.name;
       previewMainRate.textContent = agency.main;
@@ -4453,8 +4548,11 @@
     const templatePreviewAgency = document.getElementById("templatePreviewAgency");
     const templatePreviewMonth = document.getElementById("templatePreviewMonth");
     const templatePreviewMainRate = document.getElementById("templatePreviewMainRate");
+    const templatePreviewMainLabel = document.getElementById("templatePreviewMainLabel");
     const templatePreviewSubRate = document.getElementById("templatePreviewSubRate");
+    const templatePreviewSubLabel = document.getElementById("templatePreviewSubLabel");
     const templatePreviewExtraRate = document.getElementById("templatePreviewExtraRate");
+    const templatePreviewExtraLabel = document.getElementById("templatePreviewExtraLabel");
     const accessGate = document.getElementById("accessGate");
     const accessEmployeeInput = document.getElementById("accessEmployeeInput");
     const accessLoginButton = document.getElementById("accessLoginButton");
