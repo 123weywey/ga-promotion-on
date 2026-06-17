@@ -440,128 +440,6 @@
       box-shadow: 0 18px 38px rgba(23, 32, 51, .12);
     }
 
-    .employee-badge {
-      display: inline-flex;
-      align-items: center;
-      min-height: 38px;
-      border: 1px solid #111827;
-      border-radius: 12px;
-      background: #fff;
-      color: #111827;
-      padding: 0 14px;
-      font-size: 14px;
-      font-weight: 900;
-      letter-spacing: .01em;
-      box-shadow: 0 6px 18px rgba(17, 24, 39, .08);
-    }
-
-    .employee-badge[hidden] {
-      display: none !important;
-    }
-
-    body.admin-mode .employee-badge {
-      display: none !important;
-    }
-
-    .top-access-upload {
-      display: none;
-    }
-
-    body.admin-mode .top-access-upload {
-      display: inline-flex;
-    }
-
-    .access-gate {
-      position: fixed;
-      inset: 0;
-      z-index: 200;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      background: rgba(236, 243, 252, .92);
-      backdrop-filter: blur(8px);
-    }
-
-    .access-gate[hidden] {
-      display: none !important;
-    }
-
-    .access-gate-card {
-      width: min(100%, 420px);
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      background: #fff;
-      padding: 24px;
-      box-shadow: 0 24px 54px rgba(23, 32, 51, .18);
-    }
-
-    .access-gate-card h2 {
-      margin: 0 0 10px;
-      color: var(--ink);
-      font-size: 24px;
-      font-weight: 1000;
-    }
-
-    .access-gate-card p {
-      margin: 0;
-      color: #5f6f94;
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    .access-gate-form {
-      display: grid;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .access-gate-form label {
-      color: var(--blue-dark);
-      font-size: 13px;
-      font-weight: 900;
-    }
-
-    .access-gate-form input {
-      width: 100%;
-      border: 1px solid #d8e2f2;
-      border-radius: 14px;
-      background: #f9fbff;
-      padding: 14px 16px;
-      color: var(--ink);
-      font: inherit;
-      font-size: 16px;
-      font-weight: 800;
-    }
-
-    .access-gate-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      margin-top: 6px;
-    }
-
-    .access-gate-status,
-    .access-gate-error {
-      margin-top: 10px;
-      font-size: 13px;
-      font-weight: 700;
-      line-height: 1.5;
-    }
-
-    .access-gate-status {
-      color: #5f6f94;
-    }
-
-    .access-gate-error {
-      color: var(--red);
-      display: none;
-    }
-
-    .access-gate-error.active {
-      display: block;
-    }
-
     .admin-login.active {
       display: block;
     }
@@ -983,199 +861,6 @@
     .poster-frame::before,
     .poster-frame::after { display: none; }
 
-    .poster-frame.template-image-mode {
-      padding: 0;
-      background: #ffffff;
-      box-shadow: none;
-    }
-
-    .poster-frame.template-image-mode > :not(.poster-template-layer) {
-      display: none !important;
-    }
-
-    .poster-template-layer {
-      position: relative;
-      display: none;
-      width: 100%;
-      aspect-ratio: 1080 / 1333;
-      overflow: hidden;
-      background: #ffffff;
-    }
-
-    .poster-frame.template-image-mode .poster-template-layer {
-      display: block;
-    }
-
-    .poster-template-image {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .poster-template-mask,
-    .poster-template-box {
-      position: absolute;
-      z-index: 2;
-    }
-
-    .poster-template-mask.month {
-      left: 23.2%;
-      top: 1.4%;
-      width: 34%;
-      height: 5.8%;
-      background: #076dff;
-    }
-
-    .poster-template-box.month {
-      left: 24.2%;
-      top: 1.8%;
-      color: #ffff00;
-      font-size: clamp(24px, 3.1vw, 41px);
-      font-weight: 1000;
-      letter-spacing: -.03em;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, .15);
-    }
-
-    .poster-template-mask.agency {
-      left: 70.8%;
-      top: .8%;
-      width: 27%;
-      height: 7.2%;
-      background: #ffffff;
-      border-radius: 4px;
-    }
-
-    .poster-template-box.agency {
-      left: 72.2%;
-      top: 1.5%;
-      width: 24.2%;
-      height: 5.7%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #172033;
-      text-align: center;
-      font-size: clamp(11px, 1.45vw, 22px);
-      font-weight: 800;
-      line-height: 1.15;
-      word-break: keep-all;
-      overflow-wrap: anywhere;
-    }
-
-    .poster-template-mask.main-rate,
-    .poster-template-mask.sub-rate,
-    .poster-template-mask.extra-rate {
-      top: 14.78%;
-      height: 6.45%;
-    }
-
-    .poster-template-mask.main-rate {
-      left: 2.6%;
-      width: 19.45%;
-      background: #076dff;
-    }
-
-    .poster-template-mask.sub-rate {
-      left: 34.05%;
-      width: 19.45%;
-      background: #ffffff;
-    }
-
-    .poster-template-mask.extra-rate {
-      left: 72.5%;
-      width: 24.1%;
-      background: #ffffff;
-    }
-
-    .poster-template-box.rate {
-      top: 14.78%;
-      height: 6.45%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      gap: 4px;
-    }
-
-    .poster-template-box.rate strong {
-      display: block;
-      font-size: clamp(28px, 4vw, 56px);
-      font-weight: 1000;
-      letter-spacing: -.03em;
-      line-height: 1;
-    }
-
-    .poster-template-box.rate span {
-      display: block;
-      font-size: clamp(10px, 1.05vw, 16px);
-      font-weight: 900;
-      line-height: 1.1;
-    }
-
-    .poster-template-box.rate.textual strong {
-      font-size: clamp(18px, 2.3vw, 34px);
-      letter-spacing: -.01em;
-      line-height: 1.15;
-      white-space: pre-line;
-      word-break: keep-all;
-      overflow-wrap: anywhere;
-    }
-
-    .poster-template-box.main-rate {
-      left: 2.6%;
-      width: 19.45%;
-      color: #ffff00;
-    }
-
-    .poster-template-box.sub-rate {
-      left: 34.05%;
-      width: 19.45%;
-      color: #0066ff;
-    }
-
-    .poster-template-box.extra-rate {
-      left: 72.5%;
-      width: 24.1%;
-      color: #0066ff;
-    }
-
-    .poster-frame[data-template-month="5"] .poster-template-mask.main-rate,
-    .poster-frame[data-template-month="5"] .poster-template-mask.sub-rate,
-    .poster-frame[data-template-month="5"] .poster-template-mask.extra-rate,
-    .poster-frame[data-template-month="5"] .poster-template-box.rate {
-      top: 15.6%;
-      height: 7.4%;
-    }
-
-    .poster-frame[data-template-month="5"] .poster-template-mask.main-rate,
-    .poster-frame[data-template-month="5"] .poster-template-box.main-rate {
-      left: 2.7%;
-      width: 18.2%;
-    }
-
-    .poster-frame[data-template-month="5"] .poster-template-mask.sub-rate,
-    .poster-frame[data-template-month="5"] .poster-template-box.sub-rate {
-      left: 35.8%;
-      width: 15.5%;
-    }
-
-    .poster-frame[data-template-month="5"] .poster-template-mask.extra-rate,
-    .poster-frame[data-template-month="5"] .poster-template-box.extra-rate {
-      left: 72.6%;
-      width: 23.5%;
-    }
-
-    .poster-frame[data-template-month="5"] .poster-template-box.sub-rate strong {
-      font-size: clamp(18px, 2vw, 30px);
-    }
-
-    .poster-frame[data-template-month="5"] .poster-template-box.sub-rate span {
-      font-size: clamp(9px, 0.92vw, 13px);
-    }
-
     .slide-logo,
     .slide-title,
     .agency-pill,
@@ -1567,8 +1252,6 @@
         <h1><span class="brand-main">프로모션</span><span class="brand-on">ON</span></h1>
       </div>
       <div class="top-actions">
-        <span class="employee-badge" id="loggedInEmployeeBadge" hidden>29780</span>
-        <button class="button small top-access-upload" id="topAccessUploadButton" type="button">접속자업로드</button>
         <button class="button small" id="adminModeButton" type="button">관리자모드</button>
         <div class="admin-login" id="adminLoginPanel">
           <label for="adminPassword">관리자 비밀번호</label>
@@ -1633,7 +1316,6 @@
                   <input id="monthlyUpload" class="admin-only" type="file" accept=".xlsx" hidden />
                   <label class="button small admin-only" for="officeStepUpload">점포현황 업로드</label>
                   <input id="officeStepUpload" class="admin-only" type="file" accept=".xlsx" hidden />
-                  <label class="button small admin-only" for="adminAccessUpload">접속자 업로드</label>
                 </div>
               </div>
             </div>
@@ -1687,7 +1369,7 @@
                 </select>
               </div>
               <p class="small admin-bundle-status" id="adminBundleStatus">2026.06 저장 현황을 불러오는 중입니다.</p>
-              <p class="small admin-db-note" id="adminDbNote">월별 운영 파일은 ① 프로모션 총괄판 ② PPT 프로모션 장표 템플릿 ③ 점포현황 ④ 접속자 사번 파일을 사용합니다.</p>
+              <p class="small admin-db-note" id="adminDbNote">월별 운영 파일은 ① 프로모션 총괄판 ② PPT 프로모션 장표 템플릿 ③ 점포현황 3개만 사용합니다.</p>
               <div class="admin-save-row">
                 <span class="admin-save-note" id="adminSaveNote">파일 선택 후 저장을 눌러야 Supabase에 반영됩니다.</span>
                 <button class="button small primary" id="adminSaveUploads" type="button">선택 파일 저장</button>
@@ -1708,11 +1390,6 @@
                 <label for="adminPptTemplateUpload">월별 PPT 템플릿 업로드</label>
                 <input id="adminPptTemplateUpload" type="file" accept=".ppt,.pptx" />
                 <p class="small" id="pptUploadStatus">PPT 템플릿을 업로드하면 해당 월 최종 프로모션 미리보기의 배경 기준으로 저장됩니다.</p>
-              </div>
-              <div class="admin-upload-field">
-                <label for="adminAccessUpload">접속자 업로드</label>
-                <input id="adminAccessUpload" type="file" accept=".xlsx" />
-                <p class="small" id="accessUploadStatus">접속자 사번 엑셀을 업로드하면 해당 목록에 있는 사번만 로그인할 수 있습니다.</p>
               </div>
             </div>
           </div>
@@ -1782,28 +1459,6 @@
             </div>
             <p class="reference-note" id="previewReferenceNote">6월 총괄판 숫자 + 6월 PPT 템플릿 기준</p>
             <div class="poster-frame">
-              <div class="poster-template-layer" id="posterTemplateLayer" hidden>
-                <img class="poster-template-image" id="posterTemplateImage" alt="월별 프로모션 포스터 템플릿" />
-                <div class="poster-template-mask month"></div>
-                <div class="poster-template-box month" id="templatePreviewMonth">26.6월 프로모션</div>
-                <div class="poster-template-mask agency"></div>
-                <div class="poster-template-box agency" id="templatePreviewAgency">더금융서비스</div>
-                <div class="poster-template-mask main-rate"></div>
-                <div class="poster-template-box rate main-rate">
-                  <strong id="templatePreviewMainRate">450%</strong>
-                  <span id="templatePreviewMainLabel">주력 건강</span>
-                </div>
-                <div class="poster-template-mask sub-rate"></div>
-                <div class="poster-template-box rate sub-rate">
-                  <strong id="templatePreviewSubRate">350%</strong>
-                  <span id="templatePreviewSubLabel">보장성 상품</span>
-                </div>
-                <div class="poster-template-mask extra-rate"></div>
-                <div class="poster-template-box rate extra-rate">
-                  <strong id="templatePreviewExtraRate">100%</strong>
-                  <span id="templatePreviewExtraLabel">유지회차</span>
-                </div>
-              </div>
               <div class="slide-logo">삼성생명</div>
               <div class="agency-pill" id="previewAgencyPill">더금융서비스</div>
               <div class="slide-title"><span class="month" id="previewMonthLabel">26.6월</span> 프로모션</div>
@@ -2028,21 +1683,6 @@
       </section>
     </section>
   </main>
-  <div class="access-gate" id="accessGate">
-    <div class="access-gate-card">
-      <h2>사번 로그인</h2>
-      <p>접속자 엑셀에 등록된 사번만 로그인할 수 있습니다. 사번을 입력해야 화면을 확인할 수 있습니다.</p>
-      <div class="access-gate-form">
-        <label for="accessEmployeeInput">사번 입력</label>
-        <input id="accessEmployeeInput" type="password" inputmode="numeric" placeholder="사번 숫자 입력" />
-      </div>
-      <div class="access-gate-actions">
-        <button class="button small primary" id="accessLoginButton" type="button">로그인</button>
-      </div>
-      <div class="access-gate-status" id="accessGateStatus">접속 가능한 사번 목록을 불러오는 중입니다.</div>
-      <div class="access-gate-error" id="accessGateError">사번이 접속 목록에 없습니다.</div>
-    </div>
-  </div>
   <script src="./xlsx-lite.js"></script>
   <script src="../data/branch-promotion-data.js?v=20260616-june-default"></script>
   <script>
@@ -2062,30 +1702,6 @@
       }
     }
 
-    function safeSessionStorageSetItem(key, value) {
-      try {
-        sessionStorage.setItem(key, value);
-      } catch (error) {
-        console.warn("Session cache skipped:", error);
-      }
-    }
-
-    function safeSessionStorageGetItem(key) {
-      try {
-        return sessionStorage.getItem(key);
-      } catch {
-        return "";
-      }
-    }
-
-    function safeSessionStorageRemoveItem(key) {
-      try {
-        sessionStorage.removeItem(key);
-      } catch (error) {
-        console.warn("Session cache clear skipped:", error);
-      }
-    }
-
     const branchInput = document.getElementById("branchInput");
     const branchList = document.getElementById("branchList");
     const totalLabel = document.getElementById("totalLabel");
@@ -2095,8 +1711,6 @@
     const promotionRows = document.getElementById("promotionRows");
     const metricButtons = document.querySelectorAll(".metric[data-filter]");
     const adminModeButton = document.getElementById("adminModeButton");
-    const loggedInEmployeeBadge = document.getElementById("loggedInEmployeeBadge");
-    const topAccessUploadButton = document.getElementById("topAccessUploadButton");
     const adminLoginPanel = document.getElementById("adminLoginPanel");
     const adminPassword = document.getElementById("adminPassword");
     const adminLoginButton = document.getElementById("adminLoginButton");
@@ -2114,8 +1728,6 @@
     const officeUploadStatus = document.getElementById("officeUploadStatus");
     const adminPptTemplateUpload = document.getElementById("adminPptTemplateUpload");
     const pptUploadStatus = document.getElementById("pptUploadStatus");
-    const adminAccessUpload = document.getElementById("adminAccessUpload");
-    const accessUploadStatus = document.getElementById("accessUploadStatus");
     const monthlyPromoSelect = document.getElementById("monthlyPromoSelect");
     const monthlyDownload = document.getElementById("monthlyDownload");
     const masterDownload = monthlyDownload;
@@ -2178,21 +1790,19 @@
     let branchStats = {};
     let activeFilter = statusSelect?.value || "all";
     let agencySearchTerm = "";
-    let currentPreviewAgency = null;
     let uploadedMonthlyUrl = "";
     let uploadedPptTemplateUrl = "";
     let pptTemplateHref = "../26.6월 프로모션 포스터_1P용-1.pptx";
     let selectedMonthKey = getOperatingMonthKey();
     let adminSessionPassword = "1111";
     let adminSaveInProgress = false;
-    const pendingAdminFiles = { workbook: null, office: null, template: null, access: null };
+    const pendingAdminFiles = { workbook: null, office: null, template: null };
     const officeFallbackMeta = {};
     const templateFallbackMeta = {};
     const defaultSeedMonthKey = "6";
     const savedWorkbookMeta = loadSavedMap("monthlyWorkbookMeta");
     const savedOfficeMeta = loadSavedMap("monthlyOfficeMeta");
     const savedPptTemplateMeta = loadSavedMap("monthlyTemplateMeta");
-    const savedAccessMeta = loadSavedMap("monthlyAccessMeta");
     const basePromotionRowsData = JSON.parse(JSON.stringify(promotionRowsData));
     const baseOfficeMap = JSON.parse(JSON.stringify(officeMap || { regions: [] }));
     const monthlyFiles = {
@@ -2225,10 +1835,6 @@
     };
     const parsedWorkbookCache = {};
     const parsedOfficeCache = {};
-    const templatePreviewCache = {};
-    let accessControlState = loadSavedMap("accessControlState");
-    let allowedEmployeeIds = Array.isArray(accessControlState.employeeIds) ? accessControlState.employeeIds.map((item) => String(item)) : [];
-    let authenticatedEmployeeId = "";
 
     function requestToPromise(request) {
       return new Promise((resolve, reject) => {
@@ -2314,178 +1920,6 @@
       }
     }
 
-    function inferImageMimeType(path = "") {
-      const lower = String(path).toLowerCase();
-      if (lower.endsWith(".png")) return "image/png";
-      if (lower.endsWith(".webp")) return "image/webp";
-      return "image/jpeg";
-    }
-
-    function templateCacheKey(month, name = "", href = "", version = "") {
-      return `${month}::${name}::${href}::${version}`;
-    }
-
-    async function extractPosterTemplateAsset(file) {
-      if (!file || !/\.pptx$/i.test(file.name || "")) return null;
-      const entries = await window.XlsxLite.readZipEntries(file);
-      let entryPath = [
-        "docProps/thumbnail.jpeg",
-        "docProps/thumbnail.jpg",
-        "docProps/thumbnail.png",
-        "docProps/thumbnail.webp"
-      ].find((path) => entries.has(path));
-      if (!entryPath) {
-        entryPath = [...entries.keys()].find((path) => /^ppt\/media\/.+\.(png|jpe?g|webp)$/i.test(path));
-      }
-      if (!entryPath) throw new Error("PPT 템플릿에서 미리보기 이미지를 찾지 못했습니다.");
-      const bytes = entries.get(entryPath);
-      const mimeType = inferImageMimeType(entryPath);
-      const url = URL.createObjectURL(new Blob([bytes], { type: mimeType }));
-      return { url, mimeType, entryPath, fileName: file.name };
-    }
-
-    async function resolveTemplateSourceFile(month) {
-      const savedMeta = savedPptTemplateMeta[month];
-      if (savedMeta) {
-        const localFile = await loadMonthFile("template", month);
-        if (localFile) {
-          return {
-            cacheKey: templateCacheKey(month, localFile.name, savedMeta.cloudUrl || "", savedMeta.updatedAt || localFile.lastModified || ""),
-            file: localFile,
-            name: localFile.name,
-            sourceMonth: month
-          };
-        }
-        if (savedMeta.cloudUrl) {
-          const remoteFile = await fetchRemoteFile(
-            savedMeta.cloudUrl,
-            savedMeta.name || `${monthLabel(month)} PPT 템플릿.pptx`,
-            "application/vnd.openxmlformats-officedocument.presentationml.presentation"
-          );
-          if (remoteFile) {
-            return {
-              cacheKey: templateCacheKey(month, remoteFile.name, savedMeta.cloudUrl, savedMeta.updatedAt || ""),
-              file: remoteFile,
-              name: remoteFile.name,
-              sourceMonth: month
-            };
-          }
-        }
-      }
-
-      const explicitHref = pptTemplateFiles[month]?.href;
-      if (explicitHref) {
-        const remoteFile = await fetchRemoteFile(
-          explicitHref,
-          pptTemplateFiles[month]?.label ? `${pptTemplateFiles[month].label} 템플릿.pptx` : `${monthLabel(month)} PPT 템플릿.pptx`,
-          "application/vnd.openxmlformats-officedocument.presentationml.presentation"
-        );
-        if (remoteFile) {
-          return {
-            cacheKey: templateCacheKey(month, remoteFile.name, explicitHref, pptTemplateFiles[month]?.updatedAt || ""),
-            file: remoteFile,
-            name: remoteFile.name,
-            sourceMonth: month
-          };
-        }
-      }
-
-      const fallback = templateFallbackMeta[month];
-      if (fallback?.href) {
-        const fallbackFile = await fetchRemoteFile(
-          fallback.href,
-          fallback.templateName || `${monthLabel(fallback.month)} PPT 템플릿.pptx`,
-          "application/vnd.openxmlformats-officedocument.presentationml.presentation"
-        );
-        if (fallbackFile) {
-          return {
-            cacheKey: templateCacheKey(month, fallbackFile.name, fallback.href, fallback.month || ""),
-            file: fallbackFile,
-            name: fallbackFile.name,
-            sourceMonth: fallback.month || month
-          };
-        }
-      }
-
-      return null;
-    }
-
-    function syncPosterTemplateOverlay() {
-      if (!templatePreviewAgency || !templatePreviewMonth) return;
-      const month = String(selectedMonthKey || "");
-      const agency = currentPreviewAgency || null;
-      const defaultLabels = {
-        mainLabel: "주력 건강",
-        subLabel: "보장성 상품",
-        extraLabel: "유지회차",
-        mainValue: previewMainRate.textContent.trim() || "미확정",
-        subValue: previewSubRate.textContent.trim() || "미확정",
-        extraValue: previewExtraRate.textContent.trim() || "미확정",
-        subTextual: false
-      };
-
-      function normalizeMonthSpecificValue(value) {
-        const text = cellText(value).replace(/\s+/g, "");
-        if (!text || text === "0" || text === "X" || text === "x") return "-";
-        if (text.includes("현금")) return "현금";
-        if (text.includes("○") || text === "O") return "적용";
-        return cellText(value).replace(/\s+/g, " ").trim() || "-";
-      }
-
-      const config = month === "5" && agency
-        ? {
-            mainLabel: "순수3종 기본",
-            subLabel: "3~5월 여행",
-            extraLabel: "지사장",
-            mainValue: agency.main || "미확정",
-            subValue: normalizeMonthSpecificValue(agency.travelBenefit),
-            extraValue: agency.extra || "미확정",
-            subTextual: true
-          }
-        : defaultLabels;
-
-      templatePreviewAgency.textContent = previewAgencyTag.textContent.trim() || "대리점";
-      templatePreviewMonth.textContent = `${previewMonthLabel.textContent.trim() || "26.6월"} 프로모션`;
-      templatePreviewMainRate.textContent = config.mainValue;
-      templatePreviewSubRate.textContent = config.subValue;
-      templatePreviewExtraRate.textContent = config.extraValue;
-      templatePreviewMainLabel.textContent = config.mainLabel;
-      templatePreviewSubLabel.textContent = config.subLabel;
-      templatePreviewExtraLabel.textContent = config.extraLabel;
-      templatePreviewSubRate.parentElement?.classList.toggle("textual", Boolean(config.subTextual));
-    }
-
-    async function refreshPosterTemplatePreview(month) {
-      posterFrame.classList.remove("template-image-mode");
-      posterTemplateLayer.hidden = true;
-      posterTemplateImage.removeAttribute("src");
-      posterFrame.dataset.templateMonth = String(month || "");
-      templatePreviewSubRate.parentElement?.classList.remove("textual");
-
-      const source = await resolveTemplateSourceFile(month);
-      if (!source) {
-        syncPosterTemplateOverlay();
-        return;
-      }
-
-      try {
-        if (!templatePreviewCache[source.cacheKey]) {
-          templatePreviewCache[source.cacheKey] = await extractPosterTemplateAsset(source.file);
-        }
-        const asset = templatePreviewCache[source.cacheKey];
-        if (!asset?.url) {
-          syncPosterTemplateOverlay();
-          return;
-        }
-        posterTemplateImage.src = asset.url;
-        posterTemplateLayer.hidden = false;
-        posterFrame.classList.add("template-image-mode");
-      } catch (error) {
-        console.warn("Poster template preview skipped:", error);
-      }
-      syncPosterTemplateOverlay();
-    }
-
     function fileToBase64(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -2526,17 +1960,9 @@
           cloudUrl: byKind.template.public_url
         };
       }
-      if (byKind.access?.public_url) {
-        savedAccessMeta[month] = {
-          name: byKind.access.file_name,
-          updatedAt: Date.parse(byKind.access.updated_at || "") || Date.now(),
-          cloudUrl: byKind.access.public_url
-        };
-      }
       saveMetaMap("monthlyWorkbookMeta", savedWorkbookMeta);
       saveMetaMap("monthlyOfficeMeta", savedOfficeMeta);
       saveMetaMap("monthlyTemplateMeta", savedPptTemplateMeta);
-      saveMetaMap("monthlyAccessMeta", savedAccessMeta);
     }
 
     function clearMonthStoredState(month, kind) {
@@ -2559,13 +1985,9 @@
           href: ""
         };
       }
-      if (kind === "access") {
-        delete savedAccessMeta[month];
-      }
       saveMetaMap("monthlyWorkbookMeta", savedWorkbookMeta);
       saveMetaMap("monthlyOfficeMeta", savedOfficeMeta);
       saveMetaMap("monthlyTemplateMeta", savedPptTemplateMeta);
-      saveMetaMap("monthlyAccessMeta", savedAccessMeta);
     }
 
     function hasOfficeMapData(map) {
@@ -3046,8 +2468,7 @@
       const pendingNames = [
         pendingAdminFiles.workbook ? `총괄판 ${pendingAdminFiles.workbook.name}` : "",
         pendingAdminFiles.office ? `점포현황 ${pendingAdminFiles.office.name}` : "",
-        pendingAdminFiles.template ? `PPT ${pendingAdminFiles.template.name}` : "",
-        pendingAdminFiles.access ? `접속자 ${pendingAdminFiles.access.name}` : ""
+        pendingAdminFiles.template ? `PPT ${pendingAdminFiles.template.name}` : ""
       ].filter(Boolean);
       adminSaveNote.textContent = pendingNames.length
         ? `저장 대기: ${pendingNames.join(" / ")}`
@@ -3063,14 +2484,11 @@
       const templateFallback = templateFallbackMeta[month];
       const templateLabel = savedPptTemplateMeta[month]?.name
         || (templateFallback ? `${templateFallback.templateName} (${monthDisplay(templateFallback.month)} 기준)` : "미업로드");
-      const accessLabel = savedAccessMeta[month]?.name
-        || (accessControlState.month === String(month) ? accessControlState.fileName || "미업로드" : "미업로드");
       const displayMonth = monthDisplay(month);
       adminBundleStatus.innerHTML = `${displayMonth} 저장 현황 · `
         + uploadBadge("총괄판", savedWorkbookMeta[month]?.name || "", pendingAdminFiles.workbook)
         + uploadBadge("점포현황", officeLabel === "미업로드" ? "" : officeLabel, pendingAdminFiles.office)
-        + uploadBadge("PPT", savedPptTemplateMeta[month]?.name || "", pendingAdminFiles.template)
-        + uploadBadge("접속자", accessLabel === "미업로드" ? "" : accessLabel, pendingAdminFiles.access);
+        + uploadBadge("PPT", savedPptTemplateMeta[month]?.name || "", pendingAdminFiles.template);
       adminDbNote.textContent = `월별 원본 파일과 변환 데이터는 Supabase 월별 저장소에 저장되고, 브라우저 로컬 DB(${MONTH_FILE_DB_NAME})는 임시 캐시로 사용됩니다.`;
       uploadStatus.textContent = pendingAdminFiles.workbook
         ? `${displayMonth} 총괄판 저장 대기: ${pendingAdminFiles.workbook.name}`
@@ -3091,13 +2509,6 @@
           : templateFallback
             ? `${displayMonth} PPT 템플릿 미업로드: ${templateFallback.templateName} (${monthDisplay(templateFallback.month)} 기준)을 임시 배경 기준으로 사용합니다.`
             : `${displayMonth} PPT 템플릿을 업로드하면 해당 월 최종 프로모션 미리보기의 배경 기준으로 저장됩니다.`;
-      accessUploadStatus.textContent = pendingAdminFiles.access
-        ? `${displayMonth} 접속자 저장 대기: ${pendingAdminFiles.access.name}`
-        : savedAccessMeta[month]?.name
-          ? `${displayMonth} 접속자 저장됨: ${savedAccessMeta[month].name}`
-          : accessControlState.month === String(month) && accessControlState.fileName
-            ? `${displayMonth} 접속자 기준 사용 중: ${accessControlState.fileName}`
-            : `${displayMonth} 접속자 사번 엑셀을 업로드하면 등록된 사번만 로그인할 수 있습니다.`;
       updateAdminSaveNote();
     }
 
@@ -3220,7 +2631,6 @@
       selectedMonthKey = month;
       listMonthSelect.value = monthDisplay(month);
       previewMonthLabel.textContent = `26.${month}월`;
-      syncPosterTemplateOverlay();
       updateMonthNavigation(month);
       const restoredOfficeName = await restoreMonthOfficeData(month);
       if (requestId !== monthSelectionRequestId) return;
@@ -3239,8 +2649,6 @@
         ]);
         if (requestId !== monthSelectionRequestId) return;
       }
-      await refreshPosterTemplatePreview(month);
-      if (requestId !== monthSelectionRequestId) return;
       updatePreviewReference(
         month,
         cloudMonth?.workbookName || restoredWorkbookName || downloadWorkbookName,
@@ -3253,7 +2661,6 @@
       branchInput.value = restoredPreferredBranch;
       branchSelect.value = restoredPreferredBranch;
       updateBranchStats();
-      syncPosterTemplateOverlay();
     }
 
     function escapeHtml(value) {
@@ -3290,11 +2697,6 @@
         .replace(/보험대리점$/g, "")
         .replaceAll("주식회사", "(주)")
         .toLowerCase();
-    }
-
-    function normalizeEmployeeId(value) {
-      const digits = cellText(value).replace(/[^\d]/g, "");
-      return digits;
     }
 
     function cleanOfficeAgencyName(value) {
@@ -3741,19 +3143,8 @@
         const finalConfirmCol = finalConfirm?.colIndex ?? -1;
         const typeCol = type?.colIndex ?? agencyCol + 1;
         const mainCol = pureRate?.colIndex ?? 12;
-        const pureAdvance = findColumn(rows, (text, rowIndex, colIndex) =>
-          rowIndex >= Math.max(0, pureRate?.rowIndex ?? 0)
-          && colIndex >= mainCol
-          && text.includes("선지급")
-        );
-        const pureManager = findColumn(rows, (text, rowIndex, colIndex) =>
-          rowIndex >= Math.max(0, pureRate?.rowIndex ?? 0)
-          && colIndex >= mainCol
-          && text.includes("지사장")
-        );
-        const travelBenefit = findColumn(rows, (text) => text.includes("3~5월") && text.includes("여행"));
-        const subCol = pureAdvance?.colIndex ?? (mainCol + 1);
-        const extraCol = pureManager?.colIndex ?? (mainCol + 2);
+        const subCol = mainCol + 1;
+        const extraCol = mainCol + 2;
         const rateStartCol = Math.max(0, mainCol - 6);
         const rateEndCol = Math.max(extraCol, 14);
         const startRow = Math.max(agency.rowIndex, branch.rowIndex) + 1;
@@ -3786,7 +3177,6 @@
             selectedBranchMatched: sheetSelectedBranchName ? isSelectedBranchFlag(branchFlagValue) : false,
             finalFlag,
             hasPromoContent: hasContent,
-            travelBenefit: travelBenefit?.colIndex >= 0 ? cellText(row[travelBenefit.colIndex]) : "",
             sourceSheet: sheet.name,
             sourceSheetMode: sheetMode
           });
@@ -3802,30 +3192,6 @@
         sheetName: parsedSheetNames.join(", "),
         selectedBranchName,
         selectedBranchMatchCount
-      };
-    }
-
-    function buildAccessControlFromWorkbook(sheets) {
-      const targetSheet = sheets.find((sheet) =>
-        (sheet.rows || []).some((row) => row.some((cell) => compactText(cell) === "사번"))
-      );
-      if (!targetSheet) throw new Error("접속자 엑셀에서 `사번` 열을 찾지 못했습니다.");
-      const rows = targetSheet.rows || [];
-      const headerRowIndex = rows.findIndex((row) => row.some((cell) => compactText(cell) === "사번"));
-      const header = rows[headerRowIndex] || [];
-      const employeeIdCol = header.findIndex((cell) => compactText(cell) === "사번");
-      if (employeeIdCol < 0) throw new Error("접속자 엑셀에서 `사번` 열을 찾지 못했습니다.");
-
-      const employeeIds = [...new Set(
-        rows.slice(headerRowIndex + 1)
-          .map((row) => normalizeEmployeeId(row[employeeIdCol]))
-          .filter(Boolean)
-      )];
-
-      if (!employeeIds.length) throw new Error("접속자 엑셀에서 사용할 사번 데이터를 찾지 못했습니다.");
-      return {
-        sheetName: targetSheet.name,
-        employeeIds
       };
     }
 
@@ -3854,131 +3220,6 @@
       if (activeFilter === "confirmed") return agencies.filter((agency) => agency.status === "confirmed");
       if (activeFilter === "pending") return agencies.filter((agency) => agency.status === "pending");
       return agencies;
-    }
-
-    function getSessionEmployeeStorageKey() {
-      return storageKey("sessionEmployeeId");
-    }
-
-    function setAccessGateLocked(message = "사번을 입력해야 접속할 수 있습니다.", isError = false) {
-      accessGate.hidden = false;
-      accessGateStatus.textContent = message;
-      accessGateError.classList.toggle("active", Boolean(isError));
-      if (isError) accessGateError.textContent = message;
-      else accessGateError.classList.remove("active");
-    }
-
-    function setAccessGateReady(message = "사번을 입력해주세요.") {
-      accessGate.hidden = false;
-      accessGateStatus.textContent = message;
-      accessGateError.classList.remove("active");
-    }
-
-    function completeEmployeeLogin(employeeId) {
-      authenticatedEmployeeId = employeeId;
-      safeSessionStorageSetItem(getSessionEmployeeStorageKey(), employeeId);
-      accessGate.hidden = true;
-      accessGateError.classList.remove("active");
-      accessEmployeeInput.value = "";
-      loggedInEmployeeBadge.hidden = false;
-      loggedInEmployeeBadge.textContent = employeeId;
-      if (employeeId === "29780") {
-        adminSessionPassword = "1111";
-        activateAdminMode();
-      }
-    }
-
-    function logoutEmployeeAccess(message = "사번을 다시 입력해주세요.") {
-      authenticatedEmployeeId = "";
-      safeSessionStorageRemoveItem(getSessionEmployeeStorageKey());
-      if (document.body.classList.contains("admin-mode")) deactivateAdminMode();
-      loggedInEmployeeBadge.hidden = true;
-      loggedInEmployeeBadge.textContent = "";
-      setAccessGateReady(message);
-    }
-
-    function applyAccessControl(employeeIds, meta = {}) {
-      allowedEmployeeIds = [...new Set((employeeIds || []).map((item) => normalizeEmployeeId(item)).filter(Boolean))];
-      accessControlState = {
-        employeeIds: allowedEmployeeIds,
-        fileName: meta.fileName || accessControlState.fileName || "",
-        month: String(meta.month || accessControlState.month || ""),
-        updatedAt: meta.updatedAt || Date.now()
-      };
-      safeLocalStorageSetItem(storageKey("accessControlState"), JSON.stringify(accessControlState));
-      if (authenticatedEmployeeId && !allowedEmployeeIds.includes(authenticatedEmployeeId)) {
-        logoutEmployeeAccess("접속 권한이 변경되었습니다. 사번을 다시 확인해주세요.");
-      }
-    }
-
-    async function loadLatestAccessControlFromSupabase() {
-      for (const candidateMonth of monthFallbackOrder()) {
-        try {
-          const response = await fetch(`${SUPABASE_DATA_ENDPOINT}?month=${encodeURIComponent(candidateMonth)}`, {
-            method: "GET",
-            cache: "no-store"
-          });
-          if (!response.ok) continue;
-          const payload = await response.json();
-          const sourceMeta = payload.bundle?.source_meta || {};
-          const employeeIds = Array.isArray(sourceMeta.access_ids)
-            ? sourceMeta.access_ids.map((item) => normalizeEmployeeId(item)).filter(Boolean)
-            : [];
-          if (!employeeIds.length) continue;
-          const accessFile = (payload.files || []).find((file) => file.kind === "access");
-          savedAccessMeta[candidateMonth] = {
-            name: sourceMeta.access || accessFile?.file_name || `${monthLabel(candidateMonth)} 접속자 사번.xlsx`,
-            updatedAt: Date.parse(accessFile?.updated_at || "") || Date.now(),
-            cloudUrl: accessFile?.public_url || ""
-          };
-          saveMetaMap("monthlyAccessMeta", savedAccessMeta);
-          applyAccessControl(employeeIds, {
-            fileName: savedAccessMeta[candidateMonth].name,
-            month: candidateMonth,
-            updatedAt: savedAccessMeta[candidateMonth].updatedAt
-          });
-          return true;
-        } catch (error) {
-          console.warn("Latest access control fallback skipped:", error);
-        }
-      }
-      return false;
-    }
-
-    async function initializeAccessGate() {
-      setAccessGateLocked("접속 가능한 사번 목록을 불러오는 중입니다.");
-      let loaded = await loadLatestAccessControlFromSupabase();
-      if (!loaded && Array.isArray(accessControlState.employeeIds) && accessControlState.employeeIds.length) {
-        applyAccessControl(accessControlState.employeeIds, accessControlState);
-        loaded = true;
-      }
-      if (!loaded || !allowedEmployeeIds.length) {
-        setAccessGateLocked("접속자 사번 목록이 아직 업로드되지 않았습니다. 관리자에게 문의해주세요.", true);
-        return;
-      }
-      const sessionEmployeeId = normalizeEmployeeId(safeSessionStorageGetItem(getSessionEmployeeStorageKey()));
-      if (sessionEmployeeId && allowedEmployeeIds.includes(sessionEmployeeId)) {
-        completeEmployeeLogin(sessionEmployeeId);
-        return;
-      }
-      setAccessGateReady(`${accessControlState.fileName || "최신 접속자 목록"} 기준 사번을 입력해주세요.`);
-    }
-
-    function tryEmployeeLogin() {
-      const input = normalizeEmployeeId(accessEmployeeInput.value);
-      if (!input) {
-        setAccessGateLocked("사번을 입력해주세요.", true);
-        return;
-      }
-      if (!allowedEmployeeIds.length) {
-        setAccessGateLocked("접속자 사번 목록이 아직 준비되지 않았습니다.", true);
-        return;
-      }
-      if (!allowedEmployeeIds.includes(input)) {
-        setAccessGateLocked("사번이 접속 목록에 없습니다.", true);
-        return;
-      }
-      completeEmployeeLogin(input);
     }
 
     function getSearchBaseAgencies(branchName) {
@@ -4044,7 +3285,6 @@
 
     function updatePreview(agency) {
       if (!agency || agency.status !== "confirmed") return;
-      currentPreviewAgency = agency;
       previewAgencyTag.textContent = agency.name;
       previewAgencyPill.textContent = agency.name;
       previewMainRate.textContent = agency.main;
@@ -4052,7 +3292,6 @@
       previewExtraRate.textContent = agency.extra;
       previewMainTableRate.textContent = agency.main;
       previewSubTableRate.textContent = agency.sub;
-      syncPosterTemplateOverlay();
     }
 
     function renderPromotionRows(branchName) {
@@ -4188,25 +3427,13 @@
       adminUploadPanel.classList.add("active");
       adminLoginPanel.classList.remove("active");
       adminError.classList.remove("active");
-      adminModeButton.textContent = "관리자모드 OFF";
+      adminModeButton.textContent = "관리자모드 ON";
       adminModeButton.classList.add("primary");
       adminMonthSelect.focus();
     }
 
-    function deactivateAdminMode() {
-      document.body.classList.remove("admin-mode");
-      adminUploadPanel.classList.remove("active");
-      adminLoginPanel.classList.remove("active");
-      adminError.classList.remove("active");
-      adminModeButton.textContent = "관리자모드";
-      adminModeButton.classList.remove("primary");
-    }
-
     adminModeButton.addEventListener("click", () => {
-      if (document.body.classList.contains("admin-mode")) {
-        deactivateAdminMode();
-        return;
-      }
+      if (document.body.classList.contains("admin-mode")) return;
       adminLoginPanel.classList.toggle("active");
       adminError.classList.remove("active");
       adminPassword.value = "";
@@ -4232,10 +3459,6 @@
       adminPassword.value = "";
     });
 
-    topAccessUploadButton.addEventListener("click", () => {
-      adminAccessUpload.click();
-    });
-
     function updateUploadedDownload(file) {
       if (uploadedMonthlyUrl) URL.revokeObjectURL(uploadedMonthlyUrl);
       uploadedMonthlyUrl = URL.createObjectURL(file);
@@ -4259,7 +3482,6 @@
       pendingAdminFiles.workbook = null;
       pendingAdminFiles.office = null;
       pendingAdminFiles.template = null;
-      pendingAdminFiles.access = null;
       updateAdminSaveNote();
     }
 
@@ -4334,7 +3556,6 @@
         saveMetaMap("monthlyTemplateMeta", savedPptTemplateMeta);
         await saveMonthFile("template", selectedMonthKey, file);
         await refreshPptTemplateLink(selectedMonthKey);
-        await refreshPosterTemplatePreview(selectedMonthKey);
         updatePreviewReference(
           selectedMonthKey,
           savedWorkbookMeta[selectedMonthKey]?.name || "",
@@ -4410,48 +3631,6 @@
       }
     }
 
-    async function handleAccessWorkbookUpload(file, sourceLabel) {
-      if (!file) return;
-      if (/\.zip$/i.test(file.name)) {
-        accessUploadStatus.textContent = "ZIP 파일은 접속자 업로드 대상이 아니어서 무시했습니다. 엑셀(.xlsx) 파일을 올려주세요.";
-        return;
-      }
-      accessUploadStatus.textContent = `${file.name} 읽는 중...`;
-      try {
-        const sheets = await window.XlsxLite.readWorkbook(file);
-        const parsed = buildAccessControlFromWorkbook(sheets);
-        savedAccessMeta[selectedMonthKey] = {
-          name: file.name,
-          updatedAt: Date.now()
-        };
-        saveMetaMap("monthlyAccessMeta", savedAccessMeta);
-        await saveMonthFile("access", selectedMonthKey, file);
-        applyAccessControl(parsed.employeeIds, {
-          fileName: file.name,
-          month: selectedMonthKey,
-          updatedAt: Date.now()
-        });
-        updateMonthBundleSummary(selectedMonthKey);
-        accessUploadStatus.textContent = `${sourceLabel}: ${file.name} 반영 완료. 사용 시트: ${parsed.sheetName}, 접속 가능 사번 ${parsed.employeeIds.length}개`;
-        try {
-          await saveMonthToSupabase({
-            files: [{ kind: "access", file }],
-            sourceMeta: { access: file.name, access_ids: parsed.employeeIds },
-            includeBundle: false
-          });
-          accessUploadStatus.textContent += " · Supabase 저장 완료";
-        } catch (cloudError) {
-          accessUploadStatus.textContent += ` · Supabase 저장 실패: ${cloudError.message || cloudError}`;
-        }
-        const sessionEmployeeId = normalizeEmployeeId(safeSessionStorageGetItem(getSessionEmployeeStorageKey()));
-        if (!sessionEmployeeId) {
-          setAccessGateReady(`${file.name} 기준 사번을 입력해주세요.`);
-        }
-      } catch (error) {
-        accessUploadStatus.textContent = error.message || "접속자 사번 엑셀을 읽는 중 오류가 발생했습니다.";
-      }
-    }
-
     masterUpload.addEventListener("change", () => {
       stageAdminFile("workbook", masterUpload.files?.[0], uploadStatus, "총괄판");
     });
@@ -4496,19 +3675,13 @@
       stageAdminFile("template", file, pptUploadStatus, "PPT 템플릿");
     });
 
-    adminAccessUpload.addEventListener("change", () => {
-      const file = adminAccessUpload.files?.[0];
-      stageAdminFile("access", file, accessUploadStatus, "접속자");
-    });
-
     adminSaveUploads.addEventListener("click", async () => {
       const stagedFiles = {
         workbook: pendingAdminFiles.workbook,
         office: pendingAdminFiles.office,
-        template: pendingAdminFiles.template,
-        access: pendingAdminFiles.access
+        template: pendingAdminFiles.template
       };
-      if (!stagedFiles.workbook && !stagedFiles.office && !stagedFiles.template && !stagedFiles.access) {
+      if (!stagedFiles.workbook && !stagedFiles.office && !stagedFiles.template) {
         adminSaveNote.textContent = "저장할 파일이 없습니다. 먼저 파일을 선택해주세요.";
         return;
       }
@@ -4519,7 +3692,6 @@
         if (stagedFiles.office) await handleOfficeWorkbookUpload(stagedFiles.office, "관리자 저장");
         if (stagedFiles.workbook) await handlePromotionWorkbookUpload(stagedFiles.workbook, "관리자 저장");
         if (stagedFiles.template) await handlePptTemplateUpload(stagedFiles.template, pptUploadStatus, "관리자 저장");
-        if (stagedFiles.access) await handleAccessWorkbookUpload(stagedFiles.access, "관리자 저장");
         clearPendingAdminFiles();
         updateMonthBundleSummary(selectedMonthKey);
         adminSaveNote.textContent = `${monthDisplay(selectedMonthKey)} 선택 파일 저장 완료`;
@@ -4542,22 +3714,6 @@
     const previewSubTableRate = document.getElementById("previewSubTableRate");
     const downloadPreviewPpt = document.getElementById("downloadPreviewPpt");
     const downloadPreviewJpg = document.getElementById("downloadPreviewJpg");
-    const posterFrame = document.querySelector(".poster-frame");
-    const posterTemplateLayer = document.getElementById("posterTemplateLayer");
-    const posterTemplateImage = document.getElementById("posterTemplateImage");
-    const templatePreviewAgency = document.getElementById("templatePreviewAgency");
-    const templatePreviewMonth = document.getElementById("templatePreviewMonth");
-    const templatePreviewMainRate = document.getElementById("templatePreviewMainRate");
-    const templatePreviewMainLabel = document.getElementById("templatePreviewMainLabel");
-    const templatePreviewSubRate = document.getElementById("templatePreviewSubRate");
-    const templatePreviewSubLabel = document.getElementById("templatePreviewSubLabel");
-    const templatePreviewExtraRate = document.getElementById("templatePreviewExtraRate");
-    const templatePreviewExtraLabel = document.getElementById("templatePreviewExtraLabel");
-    const accessGate = document.getElementById("accessGate");
-    const accessEmployeeInput = document.getElementById("accessEmployeeInput");
-    const accessLoginButton = document.getElementById("accessLoginButton");
-    const accessGateStatus = document.getElementById("accessGateStatus");
-    const accessGateError = document.getElementById("accessGateError");
 
     setSelectedMonth(selectedMonthKey);
 
@@ -5364,97 +4520,12 @@
       return canvas;
     }
 
-    async function legacyRenderPreviewCanvasToJpgBlob() {
+    async function renderElementToJpgBlob() {
       if (document.fonts?.ready) await document.fonts.ready;
       const canvas = createPreviewCanvas(2);
       const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.95));
       if (!blob) throw new Error("JPG 파일 생성에 실패했습니다.");
       return { blob, width: canvas.width, height: canvas.height };
-    }
-
-    async function blobToUint8Array(blob) {
-      return new Uint8Array(await blob.arrayBuffer());
-    }
-
-    function createImagePreviewPptx(imageBytes, imageExtension, imageMimeType, width, height) {
-      const slideCx = 9144000;
-      const slideCy = Math.round(slideCx * (height / Math.max(width, 1)));
-      const mediaName = `image1.${imageExtension}`;
-      const contentTypes = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
-  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
-  <Default Extension="xml" ContentType="application/xml"/>
-  <Default Extension="${xmlEscape(imageExtension)}" ContentType="${xmlEscape(imageMimeType)}"/>
-  <Override PartName="/ppt/presentation.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml"/>
-  <Override PartName="/ppt/slides/slide1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slide+xml"/>
-</Types>`;
-      const rootRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="ppt/presentation.xml"/>
-</Relationships>`;
-      const presentation = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<p:presentation xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
-  <p:sldIdLst><p:sldId id="256" r:id="rId1"/></p:sldIdLst>
-  <p:sldSz cx="${slideCx}" cy="${slideCy}" type="custom"/>
-  <p:notesSz cx="6858000" cy="9144000"/>
-</p:presentation>`;
-      const presentationRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide" Target="slides/slide1.xml"/>
-</Relationships>`;
-      const slide = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<p:sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
-  <p:cSld>
-    <p:spTree>
-      <p:nvGrpSpPr>
-        <p:cNvPr id="1" name=""/>
-        <p:cNvGrpSpPr/>
-        <p:nvPr/>
-      </p:nvGrpSpPr>
-      <p:grpSpPr>
-        <a:xfrm>
-          <a:off x="0" y="0"/>
-          <a:ext cx="${slideCx}" cy="${slideCy}"/>
-          <a:chOff x="0" y="0"/>
-          <a:chExt cx="${slideCx}" cy="${slideCy}"/>
-        </a:xfrm>
-      </p:grpSpPr>
-      <p:pic>
-        <p:nvPicPr>
-          <p:cNvPr id="2" name="preview image"/>
-          <p:cNvPicPr/>
-          <p:nvPr/>
-        </p:nvPicPr>
-        <p:blipFill>
-          <a:blip r:embed="rId1"/>
-          <a:stretch><a:fillRect/></a:stretch>
-        </p:blipFill>
-        <p:spPr>
-          <a:xfrm>
-            <a:off x="0" y="0"/>
-            <a:ext cx="${slideCx}" cy="${slideCy}"/>
-          </a:xfrm>
-          <a:prstGeom prst="rect"><a:avLst/></a:prstGeom>
-        </p:spPr>
-      </p:pic>
-    </p:spTree>
-  </p:cSld>
-  <p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr>
-</p:sld>`;
-      const slideRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/${xmlEscape(mediaName)}"/>
-</Relationships>`;
-
-      return new Blob([createZip([
-        { name: "[Content_Types].xml", content: contentTypes },
-        { name: "_rels/.rels", content: rootRels },
-        { name: "ppt/presentation.xml", content: presentation },
-        { name: "ppt/_rels/presentation.xml.rels", content: presentationRels },
-        { name: "ppt/slides/slide1.xml", content: slide },
-        { name: "ppt/slides/_rels/slide1.xml.rels", content: slideRels },
-        { name: `ppt/media/${mediaName}`, content: imageBytes }
-      ])], { type: "application/vnd.openxmlformats-officedocument.presentationml.presentation" });
     }
 
     function downloadCurrentPreviewAsJpg(agency) {
@@ -5474,9 +4545,7 @@
           "PowerPoint 프레젠테이션",
           "application/vnd.openxmlformats-officedocument.presentationml.presentation"
         );
-        const rendered = await renderElementToJpgBlob(document.querySelector(".poster-frame"));
-        const imageBytes = await blobToUint8Array(rendered.blob);
-        const pptx = createImagePreviewPptx(imageBytes, "jpg", "image/jpeg", rendered.width, rendered.height);
+        const pptx = createEditablePreviewPptx();
         await saveBlob(pptx, filename, "PowerPoint 프레젠테이션", saveHandle);
       } catch (error) {
         window.alert(`PPT 다운로드 중 오류가 발생했습니다.\n${error.message || ""}`);
@@ -5491,16 +4560,7 @@
       downloadCurrentPreviewAsPpt();
     });
 
-    accessLoginButton.addEventListener("click", () => {
-      tryEmployeeLogin();
-    });
-
-    accessEmployeeInput.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") tryEmployeeLogin();
-    });
-
     updateBranchStats();
-    initializeAccessGate();
   </script>
 </body>
 </html>
