@@ -1301,7 +1301,13 @@
                     <option value="3">3월 총괄판</option>
                     <option value="4">4월 총괄판</option>
                     <option value="5">5월 총괄판</option>
-                    <option value="6" selected>6월 총괄판</option>
+                    <option value="6">6월 총괄판</option>
+                    <option value="7">7월 총괄판</option>
+                    <option value="8">8월 총괄판</option>
+                    <option value="9">9월 총괄판</option>
+                    <option value="10">10월 총괄판</option>
+                    <option value="11">11월 총괄판</option>
+                    <option value="12">12월 총괄판</option>
                   </select>
                 </div>
                 <div class="control-actions">
@@ -1324,7 +1330,13 @@
                     <option value="3">3월 템플릿</option>
                     <option value="4">4월 템플릿</option>
                     <option value="5">5월 템플릿</option>
-                    <option value="6" selected>6월 템플릿</option>
+                    <option value="6">6월 템플릿</option>
+                    <option value="7">7월 템플릿</option>
+                    <option value="8">8월 템플릿</option>
+                    <option value="9">9월 템플릿</option>
+                    <option value="10">10월 템플릿</option>
+                    <option value="11">11월 템플릿</option>
+                    <option value="12">12월 템플릿</option>
                   </select>
                 </div>
                 <div class="control-actions">
@@ -1347,7 +1359,13 @@
                   <option value="3">2026.03</option>
                   <option value="4">2026.04</option>
                   <option value="5">2026.05</option>
-                  <option value="6" selected>2026.06</option>
+                  <option value="6">2026.06</option>
+                  <option value="7">2026.07</option>
+                  <option value="8">2026.08</option>
+                  <option value="9">2026.09</option>
+                  <option value="10">2026.10</option>
+                  <option value="11">2026.11</option>
+                  <option value="12">2026.12</option>
                 </select>
               </div>
               <p class="small admin-bundle-status" id="adminBundleStatus">2026.06 저장 현황을 불러오는 중입니다.</p>
@@ -1396,7 +1414,13 @@
                 <option value="2026.03">2026.03</option>
                 <option value="2026.04">2026.04</option>
                 <option value="2026.05">2026.05</option>
-                <option value="2026.06" selected>2026.06</option>
+                <option value="2026.06">2026.06</option>
+                <option value="2026.07">2026.07</option>
+                <option value="2026.08">2026.08</option>
+                <option value="2026.09">2026.09</option>
+                <option value="2026.10">2026.10</option>
+                <option value="2026.11">2026.11</option>
+                <option value="2026.12">2026.12</option>
               </select>
               <select class="filter" id="regionSelect" aria-label="지역단 선택"></select>
               <select class="filter" id="branchSelect" aria-label="지점 선택"></select>
@@ -1755,6 +1779,12 @@
       }
     }
 
+    function getOperatingMonthKey() {
+      const today = new Date();
+      const month = today.getMonth() + 1;
+      return String(Math.min(12, Math.max(1, month)));
+    }
+
     let officeMap = loadSavedOfficeMap() || window.branchOfficeMap || null;
     let promotionRowsData = loadSavedPromotionRows() || window.branchPromotionRows || [];
     let branchStats = {};
@@ -1763,10 +1793,11 @@
     let uploadedMonthlyUrl = "";
     let uploadedPptTemplateUrl = "";
     let pptTemplateHref = "../26.6월 프로모션 포스터_1P용-1.pptx";
-    let selectedMonthKey = "6";
+    let selectedMonthKey = getOperatingMonthKey();
     let adminSessionPassword = "1111";
     let adminSaveInProgress = false;
     const pendingAdminFiles = { workbook: null, office: null, template: null };
+    const officeFallbackMeta = {};
     const templateFallbackMeta = {};
     const defaultSeedMonthKey = "6";
     const savedWorkbookMeta = loadSavedMap("monthlyWorkbookMeta");
@@ -1780,7 +1811,13 @@
       "3": { label: "3월", href: "" },
       "4": { label: "4월", href: "" },
       "5": { label: "5월", href: "" },
-      "6": { label: "6월", href: "../6월 프로모션 총괄판(260529)_공지.xlsx" }
+      "6": { label: "6월", href: "../6월 프로모션 총괄판(260529)_공지.xlsx" },
+      "7": { label: "7월", href: "" },
+      "8": { label: "8월", href: "" },
+      "9": { label: "9월", href: "" },
+      "10": { label: "10월", href: "" },
+      "11": { label: "11월", href: "" },
+      "12": { label: "12월", href: "" }
     };
     const pptTemplateFiles = {
       "1": { label: "1월", href: "" },
@@ -1788,7 +1825,13 @@
       "3": { label: "3월", href: "" },
       "4": { label: "4월", href: "" },
       "5": { label: "5월", href: "" },
-      "6": { label: "6월", href: "../26.6월 프로모션 포스터_1P용-1.pptx" }
+      "6": { label: "6월", href: "../26.6월 프로모션 포스터_1P용-1.pptx" },
+      "7": { label: "7월", href: "" },
+      "8": { label: "8월", href: "" },
+      "9": { label: "9월", href: "" },
+      "10": { label: "10월", href: "" },
+      "11": { label: "11월", href: "" },
+      "12": { label: "12월", href: "" }
     };
     const parsedWorkbookCache = {};
     const parsedOfficeCache = {};
@@ -2002,8 +2045,7 @@
           method: "GET",
           cache: "no-store"
         });
-        if (!response.ok) throw new Error(`Supabase 불러오기 실패(${response.status})`);
-        const payload = await response.json();
+        const payload = response.ok ? await response.json() : { files: [], bundle: null };
         const uploadedFiles = payload.files || [];
         const uploadedOfficeFile = uploadedFiles.find((file) => file.kind === "office" && file.public_url);
         const hasUploadedOfficeFile = Boolean(uploadedOfficeFile);
@@ -2040,6 +2082,7 @@
             monthHasOfficeMap = true;
           }
         }
+        if (monthHasOfficeMap) delete officeFallbackMeta[month];
         if (!monthHasTemplate) {
           usedFallbackTemplate = await loadLatestTemplateFromSupabase(month);
           if (usedFallbackTemplate) {
@@ -2058,7 +2101,10 @@
             safeLocalStorageSetItem(storageKey("officeMap"), JSON.stringify(officeMap));
             safeLocalStorageSetItem(storageKey("officeMapSource"), `${usedFallbackOffice.officeName} (${monthDisplay(usedFallbackOffice.month)} 기준)`);
             officeName = `${usedFallbackOffice.officeName} (${monthDisplay(usedFallbackOffice.month)} 기준)`;
+            officeFallbackMeta[month] = usedFallbackOffice;
           }
+        } else {
+          delete officeFallbackMeta[month];
         }
         let rebuiltFromWorkbook = false;
         if (uploadedWorkbookFile?.public_url) {
@@ -2086,10 +2132,10 @@
           window.branchPromotionRows = promotionRowsData;
           safeLocalStorageSetItem(storageKey("promotionRows"), JSON.stringify(promotionRowsData));
         }
-        const canRebuildStats = Array.isArray(promotionRowsData) && promotionRowsData.length && (hasOfficeMapData(officeMap) || hasOfficeMapData(baseOfficeMap));
+        const canRebuildStats = hasOfficeMapData(officeMap) || hasOfficeMapData(baseOfficeMap);
         const hasBranchData = bundle?.branch_data && Object.keys(bundle.branch_data).length;
         branchStats = canRebuildStats
-          ? buildBranchStatsFromPromotionRows(promotionRowsData, officeMap || baseOfficeMap)
+          ? buildBranchStatsFromPromotionRows(Array.isArray(promotionRowsData) ? promotionRowsData : [], officeMap || baseOfficeMap)
           : hasBranchData
             ? JSON.parse(JSON.stringify(bundle.branch_data))
             : {};
@@ -2384,14 +2430,16 @@
 
     function updateMonthBundleSummary(month) {
       const workbookLabel = savedWorkbookMeta[month]?.name || "미업로드";
-      const officeLabel = savedOfficeMeta[month]?.name || "미업로드";
+      const officeFallback = officeFallbackMeta[month];
+      const officeLabel = savedOfficeMeta[month]?.name
+        || (officeFallback ? `${officeFallback.officeName} (${monthDisplay(officeFallback.month)} 기준)` : "미업로드");
       const templateFallback = templateFallbackMeta[month];
       const templateLabel = savedPptTemplateMeta[month]?.name
         || (templateFallback ? `${templateFallback.templateName} (${monthDisplay(templateFallback.month)} 기준)` : "미업로드");
       const displayMonth = monthDisplay(month);
       adminBundleStatus.innerHTML = `${displayMonth} 저장 현황 · `
         + uploadBadge("총괄판", savedWorkbookMeta[month]?.name || "", pendingAdminFiles.workbook)
-        + uploadBadge("점포현황", savedOfficeMeta[month]?.name || "", pendingAdminFiles.office)
+        + uploadBadge("점포현황", officeLabel === "미업로드" ? "" : officeLabel, pendingAdminFiles.office)
         + uploadBadge("PPT", savedPptTemplateMeta[month]?.name || "", pendingAdminFiles.template);
       adminDbNote.textContent = `월별 원본 파일과 변환 데이터는 Supabase 월별 저장소에 저장되고, 브라우저 로컬 DB(${MONTH_FILE_DB_NAME})는 임시 캐시로 사용됩니다.`;
       uploadStatus.textContent = pendingAdminFiles.workbook
@@ -2403,6 +2451,8 @@
         ? `${displayMonth} 점포현황 저장 대기: ${pendingAdminFiles.office.name}`
         : savedOfficeMeta[month]?.name
           ? `${displayMonth} 점포현황 저장됨: ${savedOfficeMeta[month].name}`
+          : officeFallback
+            ? `${displayMonth} 점포현황 미업로드: ${officeFallback.officeName} (${monthDisplay(officeFallback.month)} 기준)을 편제 기준으로 사용합니다.`
           : `${displayMonth} 점포현황을 업로드하면 지역단/지점/대리점 편제가 해당 월 기준으로 반영됩니다.`;
       pptUploadStatus.textContent = pendingAdminFiles.template
         ? `${displayMonth} PPT 템플릿 저장 대기: ${pendingAdminFiles.template.name}`
