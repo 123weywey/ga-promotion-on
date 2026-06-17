@@ -1952,6 +1952,7 @@
     let adminSaveInProgress = false;
     let activeEmployeeId = "";
     let allowedEmployeeIds = new Set(["29780"]);
+    let accessControlRefreshPromise = null;
     const pendingAdminFiles = { workbook: null, office: null, template: null, access: null };
     const officeFallbackMeta = {};
     const templateFallbackMeta = {};
@@ -2224,18 +2225,35 @@
       });
     }
 
-    async function initializeAccessGate() {
-      employeeLoginButton.disabled = true;
-      employeeLoginInput.disabled = true;
-      await loadLatestAccessControlFromSupabase();
-      employeeLoginButton.disabled = false;
-      employeeLoginInput.disabled = false;
+    function refreshAccessControlInBackground() {
+      if (accessControlRefreshPromise) return accessControlRefreshPromise;
+      accessControlRefreshPromise = loadLatestAccessControlFromSupabase()
+        .catch((error) => {
+          console.warn("Access control refresh skipped:", error);
+        })
+        .finally(() => {
+          accessControlRefreshPromise = null;
+        });
+      return accessControlRefreshPromise;
+    }
+
+    function initializeAccessGate() {
       activeEmployeeId = "";
       employeeBadge.hidden = true;
       employeeBadge.textContent = "사번 -";
       employeeLoginInput.value = "";
+      employeeLoginError.classList.remove("active");
+      employeeLoginButton.disabled = false;
+      employeeLoginInput.disabled = false;
+      const cachedFileName = localStorage.getItem(storageKey("allowedEmployeeFileName"))
+        || savedAccessMeta[selectedMonthKey]?.name
+        || "업로드된 접속자 사번";
+      employeeLoginMeta.textContent = allowedEmployeeIds.size > 1
+        ? `${cachedFileName} 기준 사번만 로그인할 수 있습니다.`
+        : "허용 사번 목록을 불러오는 중입니다.";
       accessGate.classList.add("active");
       employeeLoginInput.focus();
+      refreshAccessControlInBackground();
     }
 
     function applySupabaseFiles(month, files = []) {
@@ -4945,10 +4963,8 @@
 
     (async () => {
       updateBranchStats();
-      await Promise.all([
-        setSelectedMonth(selectedMonthKey),
-        initializeAccessGate()
-      ]);
+      initializeAccessGate();
+      await setSelectedMonth(selectedMonthKey);
     })();
   </script>
 </body>
