@@ -4,15 +4,6 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>프로모션 ON 최종 JPG 생성 대시보드</title>
-  <script>
-    (() => {
-      const isMobileDevice = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
-      const isNarrowScreen = window.matchMedia("(max-width: 760px)").matches;
-      if (isMobileDevice || isNarrowScreen) {
-        window.location.replace("mobile-promotion-dashboard.html");
-      }
-    })();
-  </script>
   <style>
     :root {
       --bg: #f7f9fc;
@@ -774,7 +765,9 @@
     }
 
     .agency-search-wrap {
+      position: relative;
       width: min(320px, 100%);
+      z-index: 30;
     }
 
     .agency-search-input {
@@ -782,12 +775,21 @@
     }
 
     .agency-search-suggestions {
-      margin-top: 7px;
+      position: absolute;
+      top: calc(100% + 7px);
+      left: 0;
+      right: 0;
       border: 1px solid var(--line);
       border-radius: 12px;
       background: #fff;
       box-shadow: 0 8px 20px rgba(15, 23, 42, .08);
       overflow: hidden;
+      max-height: 360px;
+      overflow-y: auto;
+    }
+
+    .agency-search-suggestions:empty {
+      display: none;
     }
 
     .agency-search-hint,
@@ -3075,14 +3077,16 @@
       const matches = getAgencySearchMatches(branchName);
       const keyword = normalizeAgencyName(agencySearchTerm);
       if (!agencySearchSuggestions) return;
+      if (!keyword) {
+        agencySearchSuggestions.innerHTML = "";
+        return;
+      }
       if (!matches.length) {
         agencySearchSuggestions.innerHTML = '<div class="agency-search-empty">일치하는 대리점이 없습니다.</div>';
         return;
       }
 
-      const hint = keyword
-        ? `<div class="agency-search-hint">검색 결과 예시 ${matches.length}건</div>`
-        : '<div class="agency-search-hint">현재 지점의 대리점 예시</div>';
+      const hint = `<div class="agency-search-hint">검색 결과 예시 ${matches.length}건</div>`;
 
       agencySearchSuggestions.innerHTML = `${hint}${matches.map((agency, index) => {
         const statusLabel = agency.status === "confirmed" ? "확정" : "협의중";
