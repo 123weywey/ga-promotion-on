@@ -262,97 +262,313 @@
       margin-top: 10px;
     }
 
-    .preview {
-      overflow: hidden;
-      border-radius: 16px;
-      background:
-        radial-gradient(circle at 8% 6%, rgba(255,255,255,.24), transparent 16%),
-        linear-gradient(135deg, #0066ff 0%, #0a63eb 44%, #0649b8 100%);
-      color: #fff;
-      padding: 16px;
+    .preview-shell {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+      padding: 12px;
       box-shadow: var(--shadow);
     }
 
-    .preview-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 10px;
+    .preview-viewport {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
     }
 
-    .logo {
-      display: inline-flex;
-      background: #000;
+    .preview-stage {
+      width: 860px;
+      transform-origin: top left;
+      will-change: transform;
+    }
+
+    .preview {
+      position: relative;
+      width: 860px;
+      overflow: hidden;
+      border-radius: 4px;
+      background: #076dff;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.28);
       color: #fff;
-      border-radius: 3px;
-      padding: 5px 10px;
+      padding: 14px 14px 12px;
+    }
+
+    .preview::before,
+    .preview::after { display: none; }
+
+    .slide-logo,
+    .slide-title,
+    .agency-pill,
+    .rate-band,
+    .slide-main,
+    .promo-grid,
+    .notice-box {
+      position: relative;
+      z-index: 1;
+    }
+
+    .slide-logo {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      color: #fff;
+      border-radius: 2px;
+      padding: 0;
       font-weight: 1000;
+      font-size: 42px;
       letter-spacing: -.08em;
+      line-height: 1;
     }
 
     .agency-pill {
-      border-radius: 999px;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      min-width: 170px;
+      width: 230px;
+      max-height: 56px;
+      border-radius: 4px;
       background: #fff;
-      color: var(--ink);
-      padding: 7px 10px;
-      font-size: 12px;
+      color: #172033;
+      padding: 6px 8px;
+      text-align: center;
       font-weight: 900;
-      text-align: right;
-      max-width: 52%;
+      font-size: 13px;
+      line-height: 1.15;
+      box-shadow: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      overflow-wrap: anywhere;
+      word-break: keep-all;
     }
 
-    .preview-title {
-      margin: 18px 0 12px;
+    .slide-title {
+      display: inline-block;
+      margin: 0 0 0 14px;
+      max-width: calc(100% - 270px);
       color: #ffff00;
-      font-size: 36px;
+      text-shadow: 0 3px 10px rgba(0, 0, 0, .28);
+      font-size: 40px;
       line-height: .98;
+      font-weight: 900;
+      letter-spacing: -.06em;
+      vertical-align: top;
+      white-space: nowrap;
+    }
+
+    .slide-title .month {
+      font-size: 1em;
+    }
+
+    .promo-subtitle {
+      margin: 10px 0 12px;
+      color: #ffff00;
+      font-size: 21px;
+      line-height: 1.12;
       font-weight: 1000;
-      letter-spacing: -.07em;
-      text-shadow: 0 3px 10px rgba(0,0,0,.25);
-    }
-
-    .rate-row {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 8px;
-    }
-
-    .rate {
-      border: 2px solid #ffff00;
-      border-radius: 12px;
-      background: rgba(255,255,255,.96);
-      color: #0066ff;
-      padding: 12px;
       text-align: center;
     }
 
-    .rate:first-child {
+    .rate-band {
+      display: grid;
+      grid-template-columns: 1.25fr .55fr 1.25fr .38fr .55fr 1.25fr;
+      border: 2px solid #ffff00;
+      border-radius: 0;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .rate-cell {
+      background: #fff;
+      color: #0066ff;
+      min-height: 58px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      border-right: 2px solid #ffff00;
+      padding: 6px 4px;
+    }
+
+    .rate-cell:first-child {
       background: #076dff;
       color: #ffff00;
     }
 
-    .rate strong {
+    .rate-cell:last-child { border-right: 0; }
+
+    .rate-cell strong {
+      font-size: 46px;
+      line-height: .9;
+      font-weight: 1000;
+      text-shadow: 0 2px 3px rgba(0, 0, 0, .22);
+    }
+
+    .rate-cell span {
       display: block;
-      font-size: 32px;
+      margin-top: 4px;
+      color: inherit;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .rate-pill,
+    .rate-plus {
+      background: #fff;
+      color: #0f172a;
+      display: grid;
+      place-items: center;
+      border-right: 2px solid #ffff00;
+      padding: 2px;
+      font-weight: 1000;
+    }
+
+    .rate-pill span {
+      display: inline-block;
+      min-width: 52px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #ffffff, #8b8b8b);
+      color: #111827;
+      padding: 4px 10px;
+      font-size: 11px;
+      line-height: 1;
+    }
+
+    .rate-pill.green span {
+      background: #10a34a;
+      color: #fff;
+    }
+
+    .rate-plus {
+      color: #e11d48;
+      font-size: 28px;
+    }
+
+    .slide-main {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .section-card {
+      border-radius: 0;
+      background: rgba(255,255,255,.96);
+      color: #172033;
+      overflow: hidden;
+    }
+
+    .section-bar {
+      background: #076dff;
+      color: #ffff00;
+      text-align: right;
+      font-weight: 1000;
+      font-size: 19px;
+      padding: 4px 8px;
+      border-bottom: 2px solid #ffff00;
+    }
+
+    .section-table-wrap {
+      display: grid;
+      grid-template-columns: 104px 1fr;
+      border: 2px solid #ffff00;
+      border-top: 0;
+      background: #fff;
+    }
+
+    .max-cell {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      background: #076dff;
+      color: #ffff00;
+      border-right: 2px solid #ffff00;
+      padding: 8px 6px;
       font-weight: 1000;
       line-height: 1;
     }
 
-    .rate span {
-      display: block;
-      margin-top: 5px;
+    .max-cell span {
+      color: #fff;
       font-size: 12px;
+      text-align: left;
+    }
+
+    .max-cell strong {
+      font-size: 44px;
+      letter-spacing: -.06em;
+    }
+
+    .mini-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      background: #fff;
+    }
+
+    .mini-table th,
+    .mini-table td {
+      border: 1px solid #8ea0b5;
+      padding: 4px 5px;
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    .mini-table th {
+      background: #fff;
+      color: #172033;
       font-weight: 900;
     }
 
-    .notice {
-      margin-top: 10px;
-      border-radius: 12px;
-      background: rgba(255,255,255,.95);
-      color: var(--ink);
-      padding: 10px;
+    .mini-table td strong {
+      color: #0066ff;
+      font-size: 18px;
+      font-weight: 1000;
+    }
+
+    .mini-table .blue {
+      color: #0066ff;
+      font-weight: 1000;
+    }
+
+    .mini-table .red {
+      color: #ff1d1d;
+      font-weight: 1000;
+    }
+
+    .compact-table th,
+    .compact-table td {
+      padding: 3px 4px;
       font-size: 11px;
-      line-height: 1.45;
+    }
+
+    .gold-heading {
+      margin-top: 8px;
+      background: #076dff;
+      color: #ffff00;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 1000;
+      line-height: 1.12;
+    }
+
+    .promo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .notice-box {
+      margin-top: 8px;
+      background: #fff;
+      color: #172033;
+      font-size: 10px;
+      line-height: 1.15;
+      padding: 4px 6px;
     }
 
     .empty {
@@ -435,28 +651,230 @@
         <p class="label">최종 JPG 미리보기</p>
         <button class="button primary" id="downloadPreviewJpg" type="button">JPG 받기</button>
       </div>
-      <div class="preview">
-        <div class="preview-top">
-          <div class="logo">삼성생명</div>
-          <div class="agency-pill" id="previewAgency">대리점 선택</div>
-        </div>
-        <div class="preview-title"><span id="previewMonth">26.6월</span><br />프로모션</div>
-        <div class="rate-row">
-          <div class="rate">
-            <strong id="previewMain">-</strong>
-            <span>주력 건강</span>
+      <div class="preview-shell">
+        <div class="preview-viewport" id="previewViewport">
+          <div class="preview-stage" id="previewStage">
+            <div class="preview">
+              <div class="slide-logo">삼성생명</div>
+              <div class="agency-pill" id="previewAgency">대리점 선택</div>
+              <div class="slide-title"><span class="month" id="previewMonth">26.6월</span> 프로모션</div>
+              <div class="promo-subtitle">
+                『대상상품』 가족대표/인생대표/청춘대표/The라이트/간편다모은<br />
+                정규 시상 (6/1 ~ 30) [익월]
+              </div>
+
+              <div class="rate-band" aria-label="프로모션 핵심 지급률">
+                <div class="rate-cell">
+                  <div>
+                    <strong id="previewMain">-</strong>
+                    <span>주력 건강</span>
+                  </div>
+                </div>
+                <div class="rate-pill green"><span>익월</span></div>
+                <div class="rate-cell">
+                  <div>
+                    <strong id="previewSub">-</strong>
+                    <span>보장성 상품</span>
+                  </div>
+                </div>
+                <div class="rate-plus">+</div>
+                <div class="rate-pill"><span>13회</span></div>
+                <div class="rate-cell">
+                  <div>
+                    <strong id="previewExtra">-</strong>
+                    <span>유지회차</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="slide-main">
+                <div class="section-card">
+                  <div class="section-bar">기본 가동 시상 [13회]</div>
+                  <div class="section-table-wrap">
+                    <div class="max-cell"><span>최대</span><strong>500%</strong></div>
+                    <table class="mini-table compact-table">
+                      <thead>
+                        <tr>
+                          <th>실적</th>
+                          <th>5만↑</th>
+                          <th>10만↑</th>
+                          <th>20만↑</th>
+                          <th>30만↑</th>
+                          <th>50만↑</th>
+                          <th>100만↑</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td class="blue">1~12일</td>
+                          <td><strong>5만</strong></td>
+                          <td><strong>30만</strong></td>
+                          <td><strong>60만</strong></td>
+                          <td><strong>120만</strong></td>
+                          <td><strong>250만</strong></td>
+                          <td><strong>500만</strong></td>
+                        </tr>
+                        <tr>
+                          <td class="blue">13~19일</td>
+                          <td>-</td>
+                          <td><strong>20만</strong></td>
+                          <td><strong>40만</strong></td>
+                          <td><strong>120만</strong></td>
+                          <td><strong>250만</strong></td>
+                          <td><strong>500만</strong></td>
+                        </tr>
+                        <tr>
+                          <td class="blue">20~30일</td>
+                          <td>-</td>
+                          <td><strong>10만</strong></td>
+                          <td><strong>20만</strong></td>
+                          <td><strong>90만</strong></td>
+                          <td><strong>200만</strong></td>
+                          <td><strong>400만</strong></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div class="section-card">
+                  <div class="section-bar">주력 상품 추가 시상 [13회]</div>
+                  <div class="section-table-wrap">
+                    <div class="max-cell"><span>최대</span><strong>300%</strong></div>
+                    <table class="mini-table compact-table">
+                      <thead>
+                        <tr>
+                          <th>실적</th>
+                          <th>10만↑</th>
+                          <th>20만↑</th>
+                          <th>30만↑</th>
+                          <th>50만↑</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td class="blue">1~12일</td>
+                          <td><strong>30만</strong></td>
+                          <td><strong>60만</strong></td>
+                          <td><strong>90만</strong></td>
+                          <td><strong>150만</strong></td>
+                        </tr>
+                        <tr>
+                          <td class="blue">13~30일</td>
+                          <td><strong>30만</strong></td>
+                          <td><strong>60만</strong></td>
+                          <td><strong>90만</strong></td>
+                          <td><strong>150만</strong></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div class="gold-heading">(5월+6월) &amp; (6월+7월) 주간 연속가동 시상 [13회]</div>
+              <div class="promo-grid">
+                <table class="mini-table compact-table">
+                  <tbody>
+                    <tr>
+                      <th>5/16~31</th>
+                      <th class="red">6/1~12</th>
+                      <th>시상</th>
+                    </tr>
+                    <tr>
+                      <td>10만↑</td>
+                      <td></td>
+                      <td><strong>100만</strong></td>
+                    </tr>
+                    <tr>
+                      <td>20만↑</td>
+                      <td class="red" rowspan="2">10만↑</td>
+                      <td><strong>150만</strong></td>
+                    </tr>
+                    <tr>
+                      <td>30만↑</td>
+                      <td><strong>200만</strong></td>
+                    </tr>
+                    <tr>
+                      <td>50만↑</td>
+                      <td></td>
+                      <td><strong>300만</strong></td>
+                    </tr>
+                  </tbody>
+                </table>
+                <table class="mini-table compact-table">
+                  <tbody>
+                    <tr>
+                      <th class="red">6/13~30</th>
+                      <th>7/1~10</th>
+                      <th>시상</th>
+                    </tr>
+                    <tr>
+                      <td class="red">10만↑</td>
+                      <td></td>
+                      <td><strong>100만</strong></td>
+                    </tr>
+                    <tr>
+                      <td class="red">20만↑</td>
+                      <td rowspan="2">10만↑</td>
+                      <td><strong>150만</strong></td>
+                    </tr>
+                    <tr>
+                      <td class="red">30만↑</td>
+                      <td><strong>200만</strong></td>
+                    </tr>
+                    <tr>
+                      <td class="red">50만↑</td>
+                      <td></td>
+                      <td><strong>300만</strong></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="gold-heading">Summer (6~8월) 연속 가동 Gold 시상 [13회]</div>
+              <table class="mini-table compact-table">
+                <tbody>
+                  <tr>
+                    <th>지원</th>
+                    <th>기준</th>
+                    <th>6월</th>
+                    <th>7월</th>
+                    <th>8월</th>
+                    <th>합산</th>
+                  </tr>
+                  <tr>
+                    <td class="blue">금 0.5돈</td>
+                    <td>①</td>
+                    <td><strong>5만</strong></td>
+                    <td><strong>5만</strong></td>
+                    <td><strong>5만</strong></td>
+                    <td>-</td>
+                  </tr>
+                  <tr>
+                    <td class="blue">금 2돈</td>
+                    <td>②</td>
+                    <td><strong>5만</strong></td>
+                    <td><strong>10만</strong></td>
+                    <td><strong>10만</strong></td>
+                    <td><strong>70만</strong></td>
+                  </tr>
+                  <tr>
+                    <td class="blue">금 4돈</td>
+                    <td>③</td>
+                    <td><strong>10만</strong></td>
+                    <td><strong>20만</strong></td>
+                    <td><strong>20만</strong></td>
+                    <td><strong>120만</strong></td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div class="notice-box">
+                ※ 조건: 가족대표, 1540청춘대표, 4180인생대표, The라이트건강 상품 + 주력담보 10종 중 특정 1가지 이상 부가건
+              </div>
+            </div>
           </div>
-          <div class="rate">
-            <strong id="previewSub">-</strong>
-            <span>보장성 상품</span>
-          </div>
-          <div class="rate">
-            <strong id="previewExtra">-</strong>
-            <span>익월 / 유지회차</span>
-          </div>
-        </div>
-        <div class="notice">
-          총괄판 지급률 숫자가 확정된 대리점만 미리보기와 JPG 받기가 활성화되며, 모바일에서는 저장/공유 창으로 바로 전달됩니다.
         </div>
       </div>
     </section>
@@ -525,6 +943,8 @@
     const previewSub = document.getElementById("previewSub");
     const previewExtra = document.getElementById("previewExtra");
     const downloadPreviewJpg = document.getElementById("downloadPreviewJpg");
+    const previewViewport = document.getElementById("previewViewport");
+    const previewStage = document.getElementById("previewStage");
     const statButtons = document.querySelectorAll(".stat");
     const adminButton = document.getElementById("adminButton");
     const adminPanel = document.getElementById("adminPanel");
@@ -536,6 +956,16 @@
     const mobileUploadStatus = document.getElementById("mobileUploadStatus");
     let activeFilter = "all";
     let adminSessionPassword = "1111";
+
+    function syncPreviewScale() {
+      if (!previewViewport || !previewStage) return;
+      previewStage.style.transform = "none";
+      const baseWidth = previewStage.offsetWidth || 860;
+      const baseHeight = previewStage.offsetHeight || 1;
+      const scale = Math.min(1, previewViewport.clientWidth / baseWidth);
+      previewStage.style.transform = `scale(${scale})`;
+      previewViewport.style.height = `${Math.ceil(baseHeight * scale)}px`;
+    }
 
     function fileToBase64(file) {
       return new Promise((resolve, reject) => {
@@ -1320,6 +1750,7 @@
       previewMain.textContent = agency.main;
       previewSub.textContent = agency.sub;
       previewExtra.textContent = agency.extra;
+      window.requestAnimationFrame(syncPreviewScale);
     }
 
     function render() {
@@ -1377,6 +1808,7 @@
       });
 
       updatePreview(agencies.find((agency) => agency.status === "confirmed"));
+      window.requestAnimationFrame(syncPreviewScale);
     }
 
     statButtons.forEach((button) => {
@@ -1398,6 +1830,7 @@
       render();
     });
     branchSelect.addEventListener("change", render);
+    window.addEventListener("resize", () => window.requestAnimationFrame(syncPreviewScale));
 
     adminButton.addEventListener("click", () => {
       if (document.body.classList.contains("admin-mode")) return;
@@ -1493,6 +1926,15 @@
       handleOfficeWorkbookUpload(officeStatusUpload.files?.[0]);
     });
 
+    function blobToDataUrl(blob) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(String(reader.result || ""));
+        reader.onerror = () => reject(reader.error || new Error("이미지 변환에 실패했습니다."));
+        reader.readAsDataURL(blob);
+      });
+    }
+
     async function saveBlobToDevice(blob, filename) {
       if (!blob || !blob.size) throw new Error("JPG 파일 생성에 실패했습니다.");
       if (typeof File === "function" && navigator.share) {
@@ -1511,22 +1953,27 @@
         }
       }
 
-      const downloadUrl = URL.createObjectURL(blob);
+      const downloadDataUrl = await blobToDataUrl(blob);
       const link = document.createElement("a");
-      link.href = downloadUrl;
+      link.href = downloadDataUrl;
       link.download = filename;
       link.target = "_blank";
       link.rel = "noopener";
       document.body.appendChild(link);
       link.click();
       link.remove();
-      window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
+
+      if (/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)) {
+        window.setTimeout(() => {
+          const fallbackWindow = window.open(downloadDataUrl, "_blank", "noopener");
+          if (fallbackWindow) fallbackWindow.focus();
+        }, 120);
+      }
     }
 
     async function downloadElementAsJpg(element, filename) {
-      const rect = element.getBoundingClientRect();
-      const width = Math.ceil(rect.width);
-      const height = Math.ceil(rect.height);
+      const width = Math.ceil(element.offsetWidth || element.scrollWidth);
+      const height = Math.ceil(element.offsetHeight || element.scrollHeight);
       const styleText = Array.from(document.styleSheets)
         .map((sheet) => {
           try {
@@ -1555,6 +2002,7 @@
       canvas.width = width * 2;
       canvas.height = height * 2;
       const context = canvas.getContext("2d");
+      if (!context) throw new Error("이미지 캔버스를 생성하지 못했습니다.");
       context.fillStyle = "#ffffff";
       context.fillRect(0, 0, canvas.width, canvas.height);
       context.scale(2, 2);
