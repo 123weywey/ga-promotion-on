@@ -459,6 +459,18 @@
       display: none !important;
     }
 
+    body.admin-mode .employee-badge {
+      display: none !important;
+    }
+
+    .top-access-upload {
+      display: none;
+    }
+
+    body.admin-mode .top-access-upload {
+      display: inline-flex;
+    }
+
     .access-gate {
       position: fixed;
       inset: 0;
@@ -1513,6 +1525,7 @@
       </div>
       <div class="top-actions">
         <span class="employee-badge" id="loggedInEmployeeBadge" hidden>29780</span>
+        <button class="button small top-access-upload" id="topAccessUploadButton" type="button">접속자업로드</button>
         <button class="button small" id="adminModeButton" type="button">관리자모드</button>
         <div class="admin-login" id="adminLoginPanel">
           <label for="adminPassword">관리자 비밀번호</label>
@@ -2040,6 +2053,7 @@
     const metricButtons = document.querySelectorAll(".metric[data-filter]");
     const adminModeButton = document.getElementById("adminModeButton");
     const loggedInEmployeeBadge = document.getElementById("loggedInEmployeeBadge");
+    const topAccessUploadButton = document.getElementById("topAccessUploadButton");
     const adminLoginPanel = document.getElementById("adminLoginPanel");
     const adminPassword = document.getElementById("adminPassword");
     const adminLoginButton = document.getElementById("adminLoginButton");
@@ -3774,11 +3788,16 @@
       accessEmployeeInput.value = "";
       loggedInEmployeeBadge.hidden = false;
       loggedInEmployeeBadge.textContent = employeeId;
+      if (employeeId === "29780") {
+        adminSessionPassword = "1111";
+        activateAdminMode();
+      }
     }
 
     function logoutEmployeeAccess(message = "사번을 다시 입력해주세요.") {
       authenticatedEmployeeId = "";
       safeSessionStorageRemoveItem(getSessionEmployeeStorageKey());
+      if (document.body.classList.contains("admin-mode")) deactivateAdminMode();
       loggedInEmployeeBadge.hidden = true;
       loggedInEmployeeBadge.textContent = "";
       setAccessGateReady(message);
@@ -4074,13 +4093,25 @@
       adminUploadPanel.classList.add("active");
       adminLoginPanel.classList.remove("active");
       adminError.classList.remove("active");
-      adminModeButton.textContent = "관리자모드 ON";
+      adminModeButton.textContent = "관리자모드 OFF";
       adminModeButton.classList.add("primary");
       adminMonthSelect.focus();
     }
 
+    function deactivateAdminMode() {
+      document.body.classList.remove("admin-mode");
+      adminUploadPanel.classList.remove("active");
+      adminLoginPanel.classList.remove("active");
+      adminError.classList.remove("active");
+      adminModeButton.textContent = "관리자모드";
+      adminModeButton.classList.remove("primary");
+    }
+
     adminModeButton.addEventListener("click", () => {
-      if (document.body.classList.contains("admin-mode")) return;
+      if (document.body.classList.contains("admin-mode")) {
+        deactivateAdminMode();
+        return;
+      }
       adminLoginPanel.classList.toggle("active");
       adminError.classList.remove("active");
       adminPassword.value = "";
@@ -4104,6 +4135,10 @@
       adminLoginPanel.classList.remove("active");
       adminError.classList.remove("active");
       adminPassword.value = "";
+    });
+
+    topAccessUploadButton.addEventListener("click", () => {
+      adminAccessUpload.click();
     });
 
     function updateUploadedDownload(file) {
