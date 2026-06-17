@@ -1758,7 +1758,7 @@
     let officeMap = loadSavedOfficeMap() || window.branchOfficeMap || null;
     let promotionRowsData = loadSavedPromotionRows() || window.branchPromotionRows || [];
     let branchStats = {};
-    let activeFilter = "all";
+    let activeFilter = statusSelect?.value || "all";
     let agencySearchTerm = "";
     let uploadedMonthlyUrl = "";
     let uploadedPptTemplateUrl = "";
@@ -2647,10 +2647,14 @@
       });
     }
 
-    function resolvePromotionStatus(finalFlagValue, rateValues = []) {
+    function resolvePromotionStatus(finalFlagValue, rateValues = [], options = {}) {
+      const {
+        fallbackConfirmed = false
+      } = options;
       const finalText = compactText(finalFlagValue);
       if (isConfirmedStatusFlag(finalFlagValue)) return "confirmed";
       if (finalText) return "pending";
+      if (fallbackConfirmed && hasPromotionContent(rateValues)) return "confirmed";
       return hasPromotionContent(rateValues) ? "pending" : "pending";
     }
 
@@ -2664,17 +2668,32 @@
       })[0];
     }
 
-    function choosePromotionSheet(sheets) {
-      const fullSheets = sheets.filter((sheet) =>
-        sheet.name.includes("지점별 담당 분류") && sheet.name.includes("전체")
+    function choosePromotionSheets(sheets, month = selectedMonthKey) {
+      const monthLabelText = `${Number(month)}월`;
+      const candidates = sheets.filter((sheet) =>
+        (sheet.rows || []).some((row) => {
+          const normalized = row.map((cell) => compactText(cell));
+          return normalized.some((cell) => cell.includes("GA명"))
+            && normalized.some((cell) =>
+              cell.includes("담당지점")
+              || cell.includes("지점별담당여부")
+              || cell.includes("확정여부")
+              || cell.includes("안내가능여부")
+            );
+        })
       );
-      if (fullSheets.length) return fullSheets[fullSheets.length - 1];
-      return sheets.find((sheet) =>
-        sheet.rows.some((row) =>
-          row.some((cell) => compactText(cell).includes("GA명")) &&
-          row.some((cell) => compactText(cell).includes("담당지점"))
-        )
-      ) || sheets[0];
+      if (!candidates.length) return sheets.length ? [sheets[0]] : [];
+      const monthSpecific = candidates.filter((sheet) => compactText(sheet.name).includes(monthLabelText));
+      if (monthSpecific.length) return monthSpecific;
+      return candidates;
+    }
+
+    function getPromotionSheetMode(sheetName = "") {
+      const normalized = compactText(sheetName);
+      if (normalized.includes("사전확정") || normalized.includes("협의완료")) return "preconfirmed";
+      if (normalized.includes("확인필요")) return "review";
+      if (normalized.includes("별도형대상")) return "separate";
+      return "generic";
     }
 
     function findColumn(rows, predicate, maxRows = 20) {
@@ -2876,22 +2895,52 @@
       });
       if (map?.offices?.length) {
         const promosByKey = {};
+        const promosByRegistration = {};
         const promosByName = {};
         rows.forEach((row, index) => {
-          row._matchIndex = index;
-          const key = officeKey(row.agencyCode, row.officeCode);
-          if (key) (promosByKey[key] ||= []).push(row);
-          const nameKey = normalizeAgencyName(row.name);
-          if (nameKey) (promosByName[nameKey] ||= []).push(row);
+          const normalizedRateValues = [row.main, row.sub, row.extra];
+          const normalizedHasContent = Boolean(
+            row.hasPromoContent
+            || normalizedRateValues.some((value) => {
+              const text = cellText(value);
+              return text && text !== "미확정";
+            })
+          );
+          const normalizedStatus = resolvePromotionStatus(row.finalFlag, normalizedRateValues, {
+            fallbackConfirmed: row.sourceSheetMode === "preconfirmed"
+              || (Number(selectedMonthKey) <= 2 && !compactText(row.finalFlag) && normalizedHasContent)
+          });
+          const normalizedRow = {
+            ...row,
+            _matchIndex: index,
+            status: normalizedStatus,
+            download: normalizedStatus === "confirmed" ? "ready" : "pending",
+            hasPromoContent: normalizedHasContent
+          };
+          const key = officeKey(normalizedRow.agencyCode, normalizedRow.officeCode);
+          if (key) (promosByKey[key] ||= []).push(normalizedRow);
+          const registrationKey = cellText(normalizedRow.agencyCode);
+          if (registrationKey) (promosByRegistration[registrationKey] ||= []).push(normalizedRow);
+          const nameKey = normalizeAgencyName(normalizedRow.name);
+          if (nameKey) (promosByName[nameKey] ||= []).push(normalizedRow);
         });
         const used = new Set();
 
         map.offices.forEach((office) => {
-          const matches = promosByKey[office.promotionKey || office.key] || promosByName[office.nameKey] || [];
+          const keyMatches = promosByKey[office.promotionKey || office.key] || [];
+          const registrationMatches = promosByRegistration[office.registrationNo] || [];
+          const nameMatches = promosByName[office.nameKey] || [];
+          const matches = keyMatches.length ? keyMatches : registrationMatches.length ? registrationMatches : nameMatches;
           if (matches.length) {
             matches.forEach((promo) => used.add(promo._matchIndex));
             const promo = pickBestPromotionMatch(matches);
-            const matchSource = officeKey(promo.agencyCode, promo.officeCode) === (office.promotionKey || office.key) ? "대리점등록번호+본점코드 매칭" : "대리점명 매칭";
+            const promotionKey = office.promotionKey || office.key;
+            const promoKey = officeKey(promo.agencyCode, promo.officeCode);
+            const matchSource = promoKey && promoKey === promotionKey
+              ? "대리점등록번호+본점코드 매칭"
+              : cellText(promo.agencyCode) === office.registrationNo
+                ? "대리점등록번호 매칭"
+                : "대리점명 매칭";
             (grouped[office.branchName] ||= []).push({
               ...promo,
               name: cleanOfficeAgencyName(office.name),
@@ -2955,66 +3004,79 @@
       return result;
     }
 
-    function buildBranchDataFromWorkbook(sheets) {
-      const sheet = choosePromotionSheet(sheets);
-      if (!sheet) throw new Error("총괄판 시트를 찾지 못했습니다.");
-      const rows = sheet.rows || [];
-      const selectedBranchName = findSelectedBranchName(rows);
-      const agency = findColumn(rows, (text) => text === "GA명" || text.includes("GA명"));
-      const code = findColumn(rows, (text) => text === "코드");
-      const branchFlag = findColumn(rows, (text) => text.includes("지점별") && text.includes("담당여부"));
-      const branch = findColumn(rows, (text) => text.includes("담당지점") && !text.includes("담당지점수"));
-      const finalConfirm = findColumn(rows, (text) => text.includes("최종확정") && text.includes("여부"));
-      const type = findColumn(rows, (text) => text.includes("순수3종") && text.includes("유형"));
-      const pureRate = findColumn(rows, (text) => text.includes("순수3종지급률"));
-
-      if (!agency || !branch) {
-        throw new Error("총괄판에서 `GA명` 또는 `담당 지점` 열을 찾지 못했습니다.");
-      }
-
-      const agencyCol = agency.colIndex;
-      const codeCol = code?.colIndex ?? agencyCol - 2;
-      const officeCodeCol = codeCol + 1;
-      const branchFlagCol = branchFlag?.colIndex ?? -1;
-      const branchCol = branch.colIndex;
-      const finalConfirmCol = finalConfirm?.colIndex ?? -1;
-      const typeCol = type?.colIndex ?? agencyCol + 1;
-      const mainCol = pureRate?.colIndex ?? 12;
-      const subCol = mainCol + 1;
-      const extraCol = mainCol + 2;
-      const rateStartCol = Math.max(0, mainCol - 6);
-      const rateEndCol = Math.max(extraCol, 14);
-      const startRow = Math.max(agency.rowIndex, branch.rowIndex) + 1;
+    function buildBranchDataFromWorkbook(sheets, month = selectedMonthKey) {
+      const candidateSheets = choosePromotionSheets(sheets, month);
+      if (!candidateSheets.length) throw new Error("총괄판 시트를 찾지 못했습니다.");
       const promotionRows = [];
+      const parsedSheetNames = [];
+      let selectedBranchName = "";
       let selectedBranchMatchCount = 0;
 
-      rows.slice(startRow).forEach((row) => {
-        const agencyName = cellText(row[agencyCol]);
-        const directBranchName = normalizeBranchName(row[branchCol]);
-        if (!agencyName || compactText(agencyName).includes("GA명")) return;
-        const rateValues = row.slice(rateStartCol, rateEndCol + 1);
-        const hasContent = hasPromotionContent(rateValues);
-        const branchFlagValue = branchFlagCol >= 0 ? cellText(row[branchFlagCol]) : "";
-        const finalFlag = finalConfirmCol >= 0 ? cellText(row[finalConfirmCol]) : "";
-        const status = resolvePromotionStatus(finalFlag, rateValues);
-        if (selectedBranchName && directBranchName === selectedBranchName) selectedBranchMatchCount += 1;
-        promotionRows.push({
-          name: agencyName,
-          status,
-          type: cellText(row[typeCol]) || "총괄판 기준",
-          main: hasContent ? formatRate(row[mainCol]) : "",
-          sub: hasContent ? formatRate(row[subCol]) : "",
-          extra: hasContent ? formatRate(row[extraCol]) : "",
-          download: status === "confirmed" ? "ready" : "pending",
-          agencyCode: cellText(row[codeCol]),
-          officeCode: cellText(row[officeCodeCol]),
-          promoBranch: directBranchName,
-          promoBranchCode: getBranchCodeFromMap(directBranchName),
-          originalBranch: directBranchName,
-          branchFlag: branchFlagValue,
-          selectedBranchMatched: selectedBranchName ? isSelectedBranchFlag(branchFlagValue) : false,
-          finalFlag,
-          hasPromoContent: hasContent
+      candidateSheets.forEach((sheet) => {
+        const rows = sheet.rows || [];
+        const sheetSelectedBranchName = findSelectedBranchName(rows);
+        if (!selectedBranchName && sheetSelectedBranchName) selectedBranchName = sheetSelectedBranchName;
+        const agency = findColumn(rows, (text) => text === "GA명" || text.includes("GA명"));
+        const code = findColumn(rows, (text) => text === "코드");
+        const officeCodeHeader = findColumn(rows, (text) => text.includes("본점코드"));
+        const branchFlag = findColumn(rows, (text) => text.includes("지점별") && text.includes("담당여부"));
+        const branch = findColumn(rows, (text) => text.includes("담당지점") && !text.includes("담당지점수"));
+        const finalConfirm = findColumn(rows, (text) =>
+          (text.includes("최종확정") && text.includes("여부"))
+          || (text.includes("확정") && text.includes("여부"))
+          || text === "확정여부"
+        );
+        const type = findColumn(rows, (text) => text.includes("순수3종") && text.includes("유형"));
+        const pureRate = findColumn(rows, (text) => text.includes("순수3종지급률"));
+        if (!agency || !branch) return;
+
+        parsedSheetNames.push(sheet.name);
+        const sheetMode = getPromotionSheetMode(sheet.name);
+        const agencyCol = agency.colIndex;
+        const codeCol = code?.colIndex ?? Math.max(0, agencyCol - 1);
+        const officeCodeCol = officeCodeHeader?.colIndex ?? -1;
+        const branchFlagCol = branchFlag?.colIndex ?? -1;
+        const branchCol = branch.colIndex;
+        const finalConfirmCol = finalConfirm?.colIndex ?? -1;
+        const typeCol = type?.colIndex ?? agencyCol + 1;
+        const mainCol = pureRate?.colIndex ?? 12;
+        const subCol = mainCol + 1;
+        const extraCol = mainCol + 2;
+        const rateStartCol = Math.max(0, mainCol - 6);
+        const rateEndCol = Math.max(extraCol, 14);
+        const startRow = Math.max(agency.rowIndex, branch.rowIndex) + 1;
+        const shouldFallbackConfirm = sheetMode === "preconfirmed" || (Number(month) <= 2 && sheetMode !== "review" && finalConfirmCol < 0);
+
+        rows.slice(startRow).forEach((row) => {
+          const agencyName = cellText(row[agencyCol]);
+          const directBranchName = normalizeBranchName(row[branchCol]) || sheetSelectedBranchName;
+          if (!agencyName || compactText(agencyName).includes("GA명")) return;
+          const rateValues = row.slice(rateStartCol, rateEndCol + 1);
+          const hasContent = hasPromotionContent(rateValues);
+          const branchFlagValue = branchFlagCol >= 0 ? cellText(row[branchFlagCol]) : "";
+          const finalFlag = finalConfirmCol >= 0 ? cellText(row[finalConfirmCol]) : "";
+          const status = resolvePromotionStatus(finalFlag, rateValues, { fallbackConfirmed: shouldFallbackConfirm });
+          if (sheetSelectedBranchName && directBranchName === sheetSelectedBranchName) selectedBranchMatchCount += 1;
+          promotionRows.push({
+            name: agencyName,
+            status,
+            type: cellText(row[typeCol]) || "총괄판 기준",
+            main: hasContent ? formatRate(row[mainCol]) : "",
+            sub: hasContent ? formatRate(row[subCol]) : "",
+            extra: hasContent ? formatRate(row[extraCol]) : "",
+            download: status === "confirmed" ? "ready" : "pending",
+            agencyCode: cellText(row[codeCol]),
+            officeCode: officeCodeCol >= 0 ? cellText(row[officeCodeCol]) : "",
+            promoBranch: directBranchName,
+            promoBranchCode: getBranchCodeFromMap(directBranchName),
+            originalBranch: directBranchName,
+            branchFlag: branchFlagValue,
+            selectedBranchMatched: sheetSelectedBranchName ? isSelectedBranchFlag(branchFlagValue) : false,
+            finalFlag,
+            hasPromoContent: hasContent,
+            sourceSheet: sheet.name,
+            sourceSheetMode: sheetMode
+          });
         });
       });
 
@@ -3024,7 +3086,7 @@
       return {
         data: buildBranchStatsFromPromotionRows(promotionRows, officeMap),
         promotionRows,
-        sheetName: sheet.name,
+        sheetName: parsedSheetNames.join(", "),
         selectedBranchName,
         selectedBranchMatchCount
       };
