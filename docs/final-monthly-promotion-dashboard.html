@@ -764,6 +764,74 @@
       cursor: pointer;
     }
 
+    .list-title-tools {
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-left: auto;
+      flex-wrap: wrap;
+    }
+
+    .agency-search-wrap {
+      width: min(320px, 100%);
+    }
+
+    .agency-search-input {
+      width: 100%;
+    }
+
+    .agency-search-suggestions {
+      margin-top: 7px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, .08);
+      overflow: hidden;
+    }
+
+    .agency-search-hint,
+    .agency-search-empty {
+      padding: 10px 12px;
+      color: #64748b;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .agency-search-item {
+      width: 100%;
+      border: 0;
+      border-top: 1px solid #edf2f7;
+      background: #fff;
+      padding: 10px 12px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .agency-search-item:first-of-type {
+      border-top: 0;
+    }
+
+    .agency-search-item strong {
+      display: block;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .agency-search-item span {
+      display: block;
+      margin-top: 3px;
+      color: #64748b;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .agency-search-item:hover {
+      background: #f8fbff;
+    }
+
     .poster {
       position: static;
       align-self: start;
@@ -1156,6 +1224,15 @@
       .metrics,
       .flow { grid-template-columns: 1fr 1fr; }
       .filters { grid-template-columns: 1fr; }
+      .list-title-tools {
+        width: 100%;
+        margin-left: 0;
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .agency-search-wrap {
+        width: 100%;
+      }
       table { min-width: 720px; }
       .table-wrap { overflow-x: auto; }
     }
@@ -1302,7 +1379,13 @@
           <div class="panel pad">
             <div class="section-title">
               <h2>지점별 프로모션 현황</h2>
-              <span class="tag">월/대리점/상태별 확인</span>
+              <div class="list-title-tools">
+                <div class="agency-search-wrap">
+                  <input class="filter agency-search-input" id="agencySearchInput" type="search" placeholder="대리점명 검색" aria-label="대리점명 검색" />
+                  <div class="agency-search-suggestions" id="agencySearchSuggestions"></div>
+                </div>
+                <span class="tag">월/대리점/상태별 확인</span>
+              </div>
             </div>
             <div class="filters" aria-label="프로모션 검색 필터">
               <select class="filter" id="listMonthSelect" aria-label="월 선택">
@@ -1632,6 +1715,8 @@
     const regionSelect = document.getElementById("regionSelect");
     const branchSelect = document.getElementById("branchSelect");
     const statusSelect = document.getElementById("statusSelect");
+    const agencySearchInput = document.getElementById("agencySearchInput");
+    const agencySearchSuggestions = document.getElementById("agencySearchSuggestions");
     function loadSavedBranchStats() {
       try {
         const saved = localStorage.getItem(storageKey("branchData"));
@@ -1672,6 +1757,7 @@
     let promotionRowsData = loadSavedPromotionRows() || window.branchPromotionRows || [];
     let branchStats = {};
     let activeFilter = "all";
+    let agencySearchTerm = "";
     let uploadedMonthlyUrl = "";
     let uploadedPptTemplateUrl = "";
     let pptTemplateHref = "../26.6월 프로모션 포스터_1P용-1.pptx";
@@ -2962,11 +3048,66 @@
       };
     }
 
-    function getFilteredAgencies(branchName) {
+    function getStatusFilteredAgencies(branchName) {
       const agencies = getBranchSummary(branchName).agencies || [];
       if (activeFilter === "confirmed") return agencies.filter((agency) => agency.status === "confirmed");
       if (activeFilter === "pending") return agencies.filter((agency) => agency.status === "pending");
       return agencies;
+    }
+
+    function getFilteredAgencies(branchName) {
+      const agencies = getStatusFilteredAgencies(branchName);
+      const keyword = normalizeAgencyName(agencySearchTerm);
+      if (!keyword) return agencies;
+      return agencies.filter((agency) => normalizeAgencyName(agency.name).includes(keyword));
+    }
+
+    function getAgencySearchMatches(branchName) {
+      const agencies = getStatusFilteredAgencies(branchName);
+      const keyword = normalizeAgencyName(agencySearchTerm);
+      const matches = keyword
+        ? agencies.filter((agency) => normalizeAgencyName(agency.name).includes(keyword))
+        : agencies;
+      return matches.slice(0, keyword ? 8 : 6);
+    }
+
+    function renderAgencySearchSuggestions(branchName) {
+      const matches = getAgencySearchMatches(branchName);
+      const keyword = normalizeAgencyName(agencySearchTerm);
+      if (!agencySearchSuggestions) return;
+      if (!matches.length) {
+        agencySearchSuggestions.innerHTML = '<div class="agency-search-empty">일치하는 대리점이 없습니다.</div>';
+        return;
+      }
+
+      const hint = keyword
+        ? `<div class="agency-search-hint">검색 결과 예시 ${matches.length}건</div>`
+        : '<div class="agency-search-hint">현재 지점의 대리점 예시</div>';
+
+      agencySearchSuggestions.innerHTML = `${hint}${matches.map((agency, index) => {
+        const statusLabel = agency.status === "confirmed" ? "확정" : "협의중";
+        const branchLabel = branchName === "전체" && agency.sourceBranch ? `${agency.sourceBranch} · ` : "";
+        return `
+          <button class="agency-search-item" type="button" data-match-index="${index}">
+            <strong>${escapeHtml(agency.name)}</strong>
+            <span>${escapeHtml(`${branchLabel}${statusLabel}`)}</span>
+          </button>
+        `;
+      }).join("")}`;
+
+      agencySearchSuggestions.querySelectorAll(".agency-search-item").forEach((button) => {
+        button.addEventListener("click", () => {
+          const agency = matches[Number(button.dataset.matchIndex)];
+          agencySearchTerm = agency?.name || "";
+          agencySearchInput.value = agencySearchTerm;
+          updateBranchStats();
+        });
+      });
+    }
+
+    function clearAgencySearch() {
+      agencySearchTerm = "";
+      if (agencySearchInput) agencySearchInput.value = "";
     }
 
     function updatePreview(agency) {
@@ -2984,6 +3125,7 @@
       const agencies = getFilteredAgencies(branchName);
       if (agencies.length === 0) {
         promotionRows.innerHTML = '<tr><td colspan="6"><span class="small">해당 조건의 대리점이 없습니다.</span></td></tr>';
+        renderAgencySearchSuggestions(branchName);
         return;
       }
 
@@ -3043,6 +3185,7 @@
 
       const firstConfirmed = agencies.find((agency) => agency.status === "confirmed");
       updatePreview(firstConfirmed);
+      renderAgencySearchSuggestions(branchName);
     }
 
     function updateBranchStats() {
@@ -3067,16 +3210,26 @@
       }
       updateBranchStats();
     });
+    agencySearchInput.addEventListener("input", () => {
+      agencySearchTerm = agencySearchInput.value.trim();
+      updateBranchStats();
+    });
+    agencySearchInput.addEventListener("search", () => {
+      agencySearchTerm = agencySearchInput.value.trim();
+      updateBranchStats();
+    });
     regionSelect.addEventListener("change", () => {
       const branches = regionSelect.value === "전체"
         ? Object.keys(branchStats).sort((a, b) => a.localeCompare(b, "ko"))
         : (getRegionHierarchy()[regionSelect.value] || []).map((branch) => branch.value);
       const nextBranch = branches.includes(branchSelect.value) ? branchSelect.value : branches[0] || "전체";
+      clearAgencySearch();
       populateBranchOptions(nextBranch, regionSelect.value);
       branchInput.value = nextBranch;
       updateBranchStats();
     });
     branchSelect.addEventListener("change", () => {
+      clearAgencySearch();
       branchInput.value = branchSelect.value;
       updateBranchStats();
     });

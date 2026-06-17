@@ -142,6 +142,60 @@
       font-weight: 800;
     }
 
+    .agency-search-card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, .96);
+      box-shadow: var(--shadow);
+      padding: 12px;
+    }
+
+    .agency-search-suggestions {
+      margin-top: 8px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .agency-search-hint,
+    .agency-search-empty {
+      padding: 10px 12px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .agency-search-item {
+      width: 100%;
+      border: 0;
+      border-top: 1px solid #edf2f7;
+      background: #fff;
+      padding: 10px 12px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .agency-search-item:first-of-type {
+      border-top: 0;
+    }
+
+    .agency-search-item strong {
+      display: block;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .agency-search-item span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
     .stats {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -642,6 +696,14 @@
     </section>
 
     <section class="section">
+      <div class="agency-search-card">
+        <p class="label">대리점 검색</p>
+        <input id="agencySearchInput" type="search" placeholder="대리점명 검색" aria-label="대리점명 검색" />
+        <div class="agency-search-suggestions" id="agencySearchSuggestions"></div>
+      </div>
+    </section>
+
+    <section class="section">
       <p class="label">대리점 목록</p>
       <div class="agency-list" id="agencyList"></div>
     </section>
@@ -931,6 +993,8 @@
     const monthSelect = document.getElementById("monthSelect");
     const regionSelect = document.getElementById("regionSelect");
     const branchSelect = document.getElementById("branchSelect");
+    const agencySearchInput = document.getElementById("agencySearchInput");
+    const agencySearchSuggestions = document.getElementById("agencySearchSuggestions");
     const monthlyDownload = document.getElementById("monthlyDownload");
     const agencyList = document.getElementById("agencyList");
     const branchTitle = document.getElementById("branchTitle");
@@ -955,6 +1019,7 @@
     const officeStatusUpload = document.getElementById("officeStatusUpload");
     const mobileUploadStatus = document.getElementById("mobileUploadStatus");
     let activeFilter = "all";
+    let agencySearchTerm = "";
     let adminSessionPassword = "1111";
 
     function syncPreviewScale() {
@@ -1736,12 +1801,63 @@
       return { source: officeSheet.name, regions, offices, byKey: Object.fromEntries(offices.map((office) => [office.key, office])), byName: Object.fromEntries(offices.map((office) => [office.nameKey, office])), branchCount: new Set(offices.map((office) => office.branchName)).size, agencyCount: offices.length };
     }
 
-    function filteredAgencies() {
+    function getStatusFilteredAgencies() {
       const branch = branchSelect.value;
       const agencies = data[branch]?.agencies || [];
       if (activeFilter === "confirmed") return agencies.filter((agency) => agency.status === "confirmed");
       if (activeFilter === "pending") return agencies.filter((agency) => agency.status === "pending");
       return agencies;
+    }
+
+    function filteredAgencies() {
+      const agencies = getStatusFilteredAgencies();
+      const keyword = normalizeAgencyName(agencySearchTerm);
+      if (!keyword) return agencies;
+      return agencies.filter((agency) => normalizeAgencyName(agency.name).includes(keyword));
+    }
+
+    function getAgencySearchMatches() {
+      const agencies = getStatusFilteredAgencies();
+      const keyword = normalizeAgencyName(agencySearchTerm);
+      const matches = keyword
+        ? agencies.filter((agency) => normalizeAgencyName(agency.name).includes(keyword))
+        : agencies;
+      return matches.slice(0, keyword ? 8 : 6);
+    }
+
+    function renderAgencySearchSuggestions() {
+      const matches = getAgencySearchMatches();
+      const keyword = normalizeAgencyName(agencySearchTerm);
+      if (!agencySearchSuggestions) return;
+      if (!matches.length) {
+        agencySearchSuggestions.innerHTML = '<div class="agency-search-empty">일치하는 대리점이 없습니다.</div>';
+        return;
+      }
+
+      const hint = keyword
+        ? `<div class="agency-search-hint">검색 결과 예시 ${matches.length}건</div>`
+        : '<div class="agency-search-hint">현재 지점의 대리점 예시</div>';
+
+      agencySearchSuggestions.innerHTML = `${hint}${matches.map((agency, index) => `
+        <button class="agency-search-item" type="button" data-match-index="${index}">
+          <strong>${escapeHtml(agency.name)}</strong>
+          <span>${escapeHtml(agency.status === "confirmed" ? "확정" : "협의중")}</span>
+        </button>
+      `).join("")}`;
+
+      agencySearchSuggestions.querySelectorAll(".agency-search-item").forEach((button) => {
+        button.addEventListener("click", () => {
+          const agency = matches[Number(button.dataset.matchIndex)];
+          agencySearchTerm = agency?.name || "";
+          agencySearchInput.value = agencySearchTerm;
+          render();
+        });
+      });
+    }
+
+    function clearAgencySearch() {
+      agencySearchTerm = "";
+      if (agencySearchInput) agencySearchInput.value = "";
     }
 
     function updatePreview(agency) {
@@ -1808,6 +1924,7 @@
       });
 
       updatePreview(agencies.find((agency) => agency.status === "confirmed"));
+      renderAgencySearchSuggestions();
       window.requestAnimationFrame(syncPreviewScale);
     }
 
@@ -1819,6 +1936,15 @@
       });
     });
 
+    agencySearchInput.addEventListener("input", () => {
+      agencySearchTerm = agencySearchInput.value.trim();
+      render();
+    });
+    agencySearchInput.addEventListener("search", () => {
+      agencySearchTerm = agencySearchInput.value.trim();
+      render();
+    });
+
     monthSelect.addEventListener("change", async () => {
       await loadMonthFromSupabase(monthSelect.value);
       populateBranches(branchSelect.value);
@@ -1826,10 +1952,14 @@
     });
     regionSelect.addEventListener("change", () => {
       const branches = getRegionHierarchy()[regionSelect.value] || [];
+      clearAgencySearch();
       populateBranches(branches[0]?.value || "", regionSelect.value);
       render();
     });
-    branchSelect.addEventListener("change", render);
+    branchSelect.addEventListener("change", () => {
+      clearAgencySearch();
+      render();
+    });
     window.addEventListener("resize", () => window.requestAnimationFrame(syncPreviewScale));
 
     adminButton.addEventListener("click", () => {
