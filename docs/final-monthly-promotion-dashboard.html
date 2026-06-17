@@ -1965,6 +1965,31 @@
       saveMetaMap("monthlyTemplateMeta", savedPptTemplateMeta);
     }
 
+    function clearMonthStoredState(month, kind) {
+      if (kind === "workbook") {
+        delete savedWorkbookMeta[month];
+        delete parsedWorkbookCache[month];
+        monthlyFiles[month] = {
+          ...(monthlyFiles[month] || { label: monthLabel(month) }),
+          href: ""
+        };
+      }
+      if (kind === "office") {
+        delete savedOfficeMeta[month];
+        delete parsedOfficeCache[month];
+      }
+      if (kind === "template") {
+        delete savedPptTemplateMeta[month];
+        pptTemplateFiles[month] = {
+          ...(pptTemplateFiles[month] || { label: monthLabel(month) }),
+          href: ""
+        };
+      }
+      saveMetaMap("monthlyWorkbookMeta", savedWorkbookMeta);
+      saveMetaMap("monthlyOfficeMeta", savedOfficeMeta);
+      saveMetaMap("monthlyTemplateMeta", savedPptTemplateMeta);
+    }
+
     function hasOfficeMapData(map) {
       return Boolean(map && Array.isArray(map.offices) && map.offices.length);
     }
@@ -2050,6 +2075,16 @@
         const uploadedOfficeFile = uploadedFiles.find((file) => file.kind === "office" && file.public_url);
         const hasUploadedOfficeFile = Boolean(uploadedOfficeFile);
         const uploadedWorkbookFile = uploadedFiles.find((file) => file.kind === "workbook" && file.public_url);
+        const uploadedTemplateFile = uploadedFiles.find((file) => file.kind === "template" && file.public_url);
+        if (!uploadedWorkbookFile && !Array.isArray(payload.bundle?.promotion_rows)) {
+          clearMonthStoredState(month, "workbook");
+        }
+        if (!uploadedOfficeFile && !hasOfficeMapData(payload.bundle?.office_map)) {
+          clearMonthStoredState(month, "office");
+        }
+        if (!uploadedTemplateFile) {
+          clearMonthStoredState(month, "template");
+        }
         applySupabaseFiles(month, uploadedFiles);
         const bundle = payload.bundle;
         let officeName = savedOfficeMeta[month]?.name || "";
@@ -2217,6 +2252,8 @@
     function monthLabel(month) {
       return monthlyFiles[month]?.label || `${month}월`;
     }
+
+    let monthSelectionRequestId = 0;
 
     function getBranchMeta(branchName) {
       for (const region of officeMap?.regions || []) {
@@ -2590,22 +2627,27 @@
     async function setSelectedMonth(month) {
       const file = monthlyFiles[month];
       if (!file) return;
+      const requestId = ++monthSelectionRequestId;
       selectedMonthKey = month;
       listMonthSelect.value = monthDisplay(month);
       previewMonthLabel.textContent = `26.${month}월`;
       updateMonthNavigation(month);
       const restoredOfficeName = await restoreMonthOfficeData(month);
+      if (requestId !== monthSelectionRequestId) return;
       const [downloadWorkbookName, templateName, restoredWorkbookName] = await Promise.all([
         refreshMonthlyDownloadLink(month),
         refreshPptTemplateLink(month),
         restoreMonthWorkbookData(month)
       ]);
+      if (requestId !== monthSelectionRequestId) return;
       const cloudMonth = await loadMonthFromSupabase(month);
+      if (requestId !== monthSelectionRequestId) return;
       if (cloudMonth) {
         await Promise.all([
           refreshMonthlyDownloadLink(month),
           refreshPptTemplateLink(month)
         ]);
+        if (requestId !== monthSelectionRequestId) return;
       }
       updatePreviewReference(
         month,
