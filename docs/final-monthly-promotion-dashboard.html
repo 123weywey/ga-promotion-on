@@ -82,6 +82,35 @@
       gap: 8px;
     }
 
+    .employee-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 8px 14px;
+      border: 1px solid #cbd9f0;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .94);
+      color: var(--blue-dark);
+      font-size: 13px;
+      font-weight: 800;
+      box-shadow: 0 4px 10px rgba(23, 32, 51, .04);
+      white-space: nowrap;
+    }
+
+    .top-access-upload {
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    body.admin-mode .top-access-upload {
+      display: inline-flex;
+    }
+
+    body.admin-mode #employeeBadge {
+      display: none !important;
+    }
+
     .button {
       border: 1px solid var(--line-strong);
       border-radius: 12px;
@@ -441,6 +470,90 @@
     }
 
     .admin-login.active {
+      display: block;
+    }
+
+    .access-gate {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(18, 28, 45, .46);
+      backdrop-filter: blur(8px);
+    }
+
+    .access-gate.active {
+      display: flex;
+    }
+
+    .access-gate-card {
+      width: min(460px, 100%);
+      border: 1px solid #dbe5f5;
+      border-radius: 24px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, .98) 0%, rgba(248, 251, 255, .98) 100%);
+      box-shadow: 0 28px 60px rgba(23, 32, 51, .18);
+      padding: 28px 24px 24px;
+    }
+
+    .access-gate-title {
+      margin: 0 0 10px;
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: -.05em;
+      color: var(--blue-dark);
+    }
+
+    .access-gate-copy {
+      margin: 0 0 18px;
+      color: #5f6f94;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .access-gate-form {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .access-gate-input {
+      width: 100%;
+      border: 1px solid #d7e0ee;
+      border-radius: 14px;
+      padding: 13px 14px;
+      font: inherit;
+      font-size: 15px;
+      font-weight: 700;
+      outline: none;
+      background: #fff;
+    }
+
+    .access-gate-input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 4px rgba(31, 98, 230, .12);
+    }
+
+    .access-gate-meta {
+      margin-top: 12px;
+      min-height: 20px;
+      color: #5f6f94;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .access-gate-error {
+      display: none;
+      margin-top: 10px;
+      color: var(--red);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .access-gate-error.active {
       display: block;
     }
 
@@ -1220,6 +1333,7 @@
       .shell { width: min(100% - 24px, 1480px); margin-top: 18px; }
       .topbar { align-items: flex-start; flex-direction: column; }
       .top-actions { justify-content: flex-start; }
+      .access-gate-form { grid-template-columns: 1fr; }
       .control-row { grid-template-columns: 1fr; }
       .control-card-head { align-items: flex-start; flex-direction: column; }
       .control-actions { justify-content: flex-start; }
@@ -1246,12 +1360,26 @@
   </style>
 </head>
 <body>
+  <div class="access-gate active" id="accessGate">
+    <div class="access-gate-card">
+      <h2 class="access-gate-title">사번 로그인</h2>
+      <p class="access-gate-copy">업로드된 접속자 사번 엑셀에 등록된 사번만 접속할 수 있습니다.</p>
+      <div class="access-gate-form">
+        <input class="access-gate-input" id="employeeLoginInput" type="password" inputmode="numeric" placeholder="사번 입력" />
+        <button class="button primary" id="employeeLoginButton" type="button">입장</button>
+      </div>
+      <p class="access-gate-meta" id="employeeLoginMeta">허용 사번 목록을 확인하는 중입니다.</p>
+      <div class="access-gate-error" id="employeeLoginError">허용되지 않은 사번입니다.</div>
+    </div>
+  </div>
   <main class="shell">
     <section class="topbar">
       <div>
         <h1><span class="brand-main">프로모션</span><span class="brand-on">ON</span></h1>
       </div>
       <div class="top-actions">
+        <div class="employee-badge" id="employeeBadge" hidden>사번 -</div>
+        <label class="button small top-access-upload" for="adminAccessUpload">접속자 업로드</label>
         <button class="button small" id="adminModeButton" type="button">관리자모드</button>
         <div class="admin-login" id="adminLoginPanel">
           <label for="adminPassword">관리자 비밀번호</label>
@@ -1390,6 +1518,11 @@
                 <label for="adminPptTemplateUpload">월별 PPT 템플릿 업로드</label>
                 <input id="adminPptTemplateUpload" type="file" accept=".ppt,.pptx" />
                 <p class="small" id="pptUploadStatus">PPT 템플릿을 업로드하면 해당 월 최종 프로모션 미리보기의 배경 기준으로 저장됩니다.</p>
+              </div>
+              <div class="admin-upload-field">
+                <label for="adminAccessUpload">접속자 사번 업로드</label>
+                <input id="adminAccessUpload" type="file" accept=".xlsx" />
+                <p class="small" id="accessUploadStatus">접속 허용 사번 엑셀을 업로드하면 로그인 가능 목록이 갱신됩니다.</p>
               </div>
             </div>
           </div>
@@ -1710,6 +1843,12 @@
     const pendingCount = document.getElementById("pendingCount");
     const promotionRows = document.getElementById("promotionRows");
     const metricButtons = document.querySelectorAll(".metric[data-filter]");
+    const accessGate = document.getElementById("accessGate");
+    const employeeLoginInput = document.getElementById("employeeLoginInput");
+    const employeeLoginButton = document.getElementById("employeeLoginButton");
+    const employeeLoginMeta = document.getElementById("employeeLoginMeta");
+    const employeeLoginError = document.getElementById("employeeLoginError");
+    const employeeBadge = document.getElementById("employeeBadge");
     const adminModeButton = document.getElementById("adminModeButton");
     const adminLoginPanel = document.getElementById("adminLoginPanel");
     const adminPassword = document.getElementById("adminPassword");
@@ -1728,6 +1867,8 @@
     const officeUploadStatus = document.getElementById("officeUploadStatus");
     const adminPptTemplateUpload = document.getElementById("adminPptTemplateUpload");
     const pptUploadStatus = document.getElementById("pptUploadStatus");
+    const adminAccessUpload = document.getElementById("adminAccessUpload");
+    const accessUploadStatus = document.getElementById("accessUploadStatus");
     const monthlyPromoSelect = document.getElementById("monthlyPromoSelect");
     const monthlyDownload = document.getElementById("monthlyDownload");
     const masterDownload = monthlyDownload;
@@ -1779,6 +1920,19 @@
       }
     }
 
+    function loadSavedEmployeeIds() {
+      try {
+        const saved = localStorage.getItem(storageKey("allowedEmployeeIds"));
+        return saved ? JSON.parse(saved) : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function normalizeEmployeeId(value) {
+      return String(value ?? "").replace(/\D/g, "").trim();
+    }
+
     function getOperatingMonthKey() {
       const today = new Date();
       const month = today.getMonth() + 1;
@@ -1796,13 +1950,20 @@
     let selectedMonthKey = getOperatingMonthKey();
     let adminSessionPassword = "1111";
     let adminSaveInProgress = false;
-    const pendingAdminFiles = { workbook: null, office: null, template: null };
+    let activeEmployeeId = "";
+    let allowedEmployeeIds = new Set(["29780"]);
+    const pendingAdminFiles = { workbook: null, office: null, template: null, access: null };
     const officeFallbackMeta = {};
     const templateFallbackMeta = {};
     const defaultSeedMonthKey = "6";
     const savedWorkbookMeta = loadSavedMap("monthlyWorkbookMeta");
     const savedOfficeMeta = loadSavedMap("monthlyOfficeMeta");
     const savedPptTemplateMeta = loadSavedMap("monthlyTemplateMeta");
+    const savedAccessMeta = loadSavedMap("monthlyAccessMeta");
+    const cachedEmployeeIds = loadSavedEmployeeIds();
+    if (cachedEmployeeIds.length) {
+      allowedEmployeeIds = new Set(["29780", ...cachedEmployeeIds.map(normalizeEmployeeId).filter(Boolean)]);
+    }
     const basePromotionRowsData = JSON.parse(JSON.stringify(promotionRowsData));
     const baseOfficeMap = JSON.parse(JSON.stringify(officeMap || { regions: [] }));
     const monthlyFiles = {
@@ -1929,6 +2090,154 @@
       });
     }
 
+    function buildAccessControlFromWorkbook(sheets) {
+      const sheet = sheets.find((item) => Array.isArray(item.rows) && item.rows.length) || sheets[0];
+      if (!sheet?.rows?.length) throw new Error("사번 엑셀에서 데이터를 찾지 못했습니다.");
+      const rows = sheet.rows;
+      let employeeColumn = -1;
+      let headerRowIndex = -1;
+      for (let rowIndex = 0; rowIndex < Math.min(rows.length, 10); rowIndex += 1) {
+        const row = rows[rowIndex] || [];
+        for (let colIndex = 0; colIndex < row.length; colIndex += 1) {
+          if (compactText(row[colIndex]) === "사번") {
+            employeeColumn = colIndex;
+            headerRowIndex = rowIndex;
+            break;
+          }
+        }
+        if (employeeColumn >= 0) break;
+      }
+      const ids = new Set(["29780"]);
+      if (employeeColumn >= 0) {
+        rows.slice(headerRowIndex + 1).forEach((row) => {
+          const employeeId = normalizeEmployeeId(row?.[employeeColumn]);
+          if (employeeId) ids.add(employeeId);
+        });
+      } else {
+        rows.forEach((row) => {
+          (row || []).forEach((cell) => {
+            const employeeId = normalizeEmployeeId(cell);
+            if (employeeId.length >= 4) ids.add(employeeId);
+          });
+        });
+      }
+      const employeeIds = [...ids];
+      if (!employeeIds.length) throw new Error("사번 엑셀에서 유효한 사번을 찾지 못했습니다.");
+      return {
+        sheetName: sheet.name || "Sheet1",
+        employeeIds
+      };
+    }
+
+    function applyAccessControl(employeeIds = [], meta = {}) {
+      const normalizedIds = [...new Set(["29780", ...employeeIds.map(normalizeEmployeeId).filter(Boolean)])];
+      allowedEmployeeIds = new Set(normalizedIds);
+      safeLocalStorageSetItem(storageKey("allowedEmployeeIds"), JSON.stringify(normalizedIds));
+      if (meta.fileName) safeLocalStorageSetItem(storageKey("allowedEmployeeFileName"), meta.fileName);
+      const currentFileName = meta.fileName || localStorage.getItem(storageKey("allowedEmployeeFileName")) || "업로드된 접속자 사번";
+      employeeLoginMeta.textContent = `${currentFileName} 기준 사번만 로그인할 수 있습니다.`;
+      if (activeEmployeeId && !allowedEmployeeIds.has(activeEmployeeId)) {
+        sessionStorage.removeItem(storageKey("employeeLogin"));
+        activeEmployeeId = "";
+        employeeBadge.hidden = true;
+        accessGate.classList.add("active");
+      }
+    }
+
+    function completeEmployeeLogin(employeeId) {
+      activeEmployeeId = employeeId;
+      employeeBadge.hidden = false;
+      employeeBadge.textContent = `사번 ${employeeId}`;
+      employeeLoginError.classList.remove("active");
+      accessGate.classList.remove("active");
+      if (employeeId === "29780") {
+        adminSessionPassword = "1111";
+        activateAdminMode();
+      }
+    }
+
+    function tryEmployeeLogin() {
+      const employeeId = normalizeEmployeeId(employeeLoginInput.value);
+      if (!employeeId) {
+        employeeLoginError.textContent = "사번을 입력해주세요.";
+        employeeLoginError.classList.add("active");
+        return;
+      }
+      if (!allowedEmployeeIds.has(employeeId)) {
+        employeeLoginError.textContent = "허용되지 않은 사번입니다.";
+        employeeLoginError.classList.add("active");
+        return;
+      }
+      completeEmployeeLogin(employeeId);
+    }
+
+    function deactivateAdminMode() {
+      document.body.classList.remove("admin-mode");
+      adminUploadPanel.classList.remove("active");
+      adminLoginPanel.classList.remove("active");
+      adminError.classList.remove("active");
+      adminPassword.value = "";
+      adminModeButton.textContent = "관리자모드";
+      adminModeButton.classList.remove("primary");
+    }
+
+    async function loadLatestAccessControlFromSupabase() {
+      for (const candidateMonth of monthFallbackOrder()) {
+        try {
+          const response = await fetch(`${SUPABASE_DATA_ENDPOINT}?month=${encodeURIComponent(candidateMonth)}`, {
+            method: "GET",
+            cache: "no-store"
+          });
+          if (!response.ok) continue;
+          const payload = await response.json();
+          const accessFile = (payload.files || []).find((file) => file.kind === "access");
+          let employeeIds = Array.isArray(payload.bundle?.source_meta?.access_ids)
+            ? payload.bundle.source_meta.access_ids.map(normalizeEmployeeId).filter(Boolean)
+            : [];
+          if (!employeeIds.length && accessFile?.public_url) {
+            try {
+              const remoteAccess = await fetchSupabaseStoredFile(candidateMonth, accessFile);
+              const sheets = await window.XlsxLite.readWorkbook(remoteAccess);
+              employeeIds = buildAccessControlFromWorkbook(sheets).employeeIds;
+            } catch (error) {
+              console.warn("Supabase access workbook rebuild skipped:", error);
+            }
+          }
+          if (!employeeIds.length) continue;
+          savedAccessMeta[candidateMonth] = {
+            name: accessFile?.file_name || payload.bundle?.source_meta?.access || `${monthLabel(candidateMonth)} 접속자 사번`,
+            updatedAt: Date.parse(accessFile?.updated_at || "") || Date.now(),
+            count: employeeIds.length,
+            cloudUrl: accessFile?.public_url || ""
+          };
+          saveMetaMap("monthlyAccessMeta", savedAccessMeta);
+          applyAccessControl(employeeIds, {
+            fileName: savedAccessMeta[candidateMonth].name
+          });
+          return;
+        } catch (error) {
+          console.warn("Latest access control fallback skipped:", error);
+        }
+      }
+      applyAccessControl([...allowedEmployeeIds], {
+        fileName: localStorage.getItem(storageKey("allowedEmployeeFileName")) || "기본 관리자 사번"
+      });
+    }
+
+    async function initializeAccessGate() {
+      employeeLoginButton.disabled = true;
+      employeeLoginInput.disabled = true;
+      await loadLatestAccessControlFromSupabase();
+      employeeLoginButton.disabled = false;
+      employeeLoginInput.disabled = false;
+      activeEmployeeId = "";
+      employeeBadge.hidden = true;
+      employeeBadge.textContent = "사번 -";
+      employeeLoginInput.value = "";
+      accessGate.classList.add("active");
+      employeeLoginInput.focus();
+    }
+
     function applySupabaseFiles(month, files = []) {
       const byKind = Object.fromEntries(files.map((file) => [file.kind, file]));
       if (byKind.workbook?.public_url) {
@@ -1960,9 +2269,17 @@
           cloudUrl: byKind.template.public_url
         };
       }
+      if (byKind.access) {
+        savedAccessMeta[month] = {
+          name: byKind.access.file_name,
+          updatedAt: Date.parse(byKind.access.updated_at || "") || Date.now(),
+          cloudUrl: byKind.access.public_url || ""
+        };
+      }
       saveMetaMap("monthlyWorkbookMeta", savedWorkbookMeta);
       saveMetaMap("monthlyOfficeMeta", savedOfficeMeta);
       saveMetaMap("monthlyTemplateMeta", savedPptTemplateMeta);
+      saveMetaMap("monthlyAccessMeta", savedAccessMeta);
     }
 
     function clearMonthStoredState(month, kind) {
@@ -1985,9 +2302,13 @@
           href: ""
         };
       }
+      if (kind === "access") {
+        delete savedAccessMeta[month];
+      }
       saveMetaMap("monthlyWorkbookMeta", savedWorkbookMeta);
       saveMetaMap("monthlyOfficeMeta", savedOfficeMeta);
       saveMetaMap("monthlyTemplateMeta", savedPptTemplateMeta);
+      saveMetaMap("monthlyAccessMeta", savedAccessMeta);
     }
 
     function hasOfficeMapData(map) {
@@ -2468,7 +2789,8 @@
       const pendingNames = [
         pendingAdminFiles.workbook ? `총괄판 ${pendingAdminFiles.workbook.name}` : "",
         pendingAdminFiles.office ? `점포현황 ${pendingAdminFiles.office.name}` : "",
-        pendingAdminFiles.template ? `PPT ${pendingAdminFiles.template.name}` : ""
+        pendingAdminFiles.template ? `PPT ${pendingAdminFiles.template.name}` : "",
+        pendingAdminFiles.access ? `접속자 ${pendingAdminFiles.access.name}` : ""
       ].filter(Boolean);
       adminSaveNote.textContent = pendingNames.length
         ? `저장 대기: ${pendingNames.join(" / ")}`
@@ -2488,7 +2810,8 @@
       adminBundleStatus.innerHTML = `${displayMonth} 저장 현황 · `
         + uploadBadge("총괄판", savedWorkbookMeta[month]?.name || "", pendingAdminFiles.workbook)
         + uploadBadge("점포현황", officeLabel === "미업로드" ? "" : officeLabel, pendingAdminFiles.office)
-        + uploadBadge("PPT", savedPptTemplateMeta[month]?.name || "", pendingAdminFiles.template);
+        + uploadBadge("PPT", savedPptTemplateMeta[month]?.name || "", pendingAdminFiles.template)
+        + uploadBadge("접속자", savedAccessMeta[month]?.name || "", pendingAdminFiles.access);
       adminDbNote.textContent = `월별 원본 파일과 변환 데이터는 Supabase 월별 저장소에 저장되고, 브라우저 로컬 DB(${MONTH_FILE_DB_NAME})는 임시 캐시로 사용됩니다.`;
       uploadStatus.textContent = pendingAdminFiles.workbook
         ? `${displayMonth} 총괄판 저장 대기: ${pendingAdminFiles.workbook.name}`
@@ -2509,6 +2832,11 @@
           : templateFallback
             ? `${displayMonth} PPT 템플릿 미업로드: ${templateFallback.templateName} (${monthDisplay(templateFallback.month)} 기준)을 임시 배경 기준으로 사용합니다.`
             : `${displayMonth} PPT 템플릿을 업로드하면 해당 월 최종 프로모션 미리보기의 배경 기준으로 저장됩니다.`;
+      accessUploadStatus.textContent = pendingAdminFiles.access
+        ? `${displayMonth} 접속자 사번 저장 대기: ${pendingAdminFiles.access.name}`
+        : savedAccessMeta[month]?.name
+          ? `${displayMonth} 접속자 사번 저장됨: ${savedAccessMeta[month].name}`
+          : `${displayMonth} 접속자 사번 엑셀을 업로드하면 로그인 가능한 사번 목록이 갱신됩니다.`;
       updateAdminSaveNote();
     }
 
@@ -3433,7 +3761,10 @@
     }
 
     adminModeButton.addEventListener("click", () => {
-      if (document.body.classList.contains("admin-mode")) return;
+      if (document.body.classList.contains("admin-mode")) {
+        deactivateAdminMode();
+        return;
+      }
       adminLoginPanel.classList.toggle("active");
       adminError.classList.remove("active");
       adminPassword.value = "";
@@ -3459,6 +3790,18 @@
       adminPassword.value = "";
     });
 
+    employeeLoginButton.addEventListener("click", () => {
+      tryEmployeeLogin();
+    });
+
+    employeeLoginInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") tryEmployeeLogin();
+    });
+
+    employeeLoginInput.addEventListener("input", () => {
+      employeeLoginError.classList.remove("active");
+    });
+
     function updateUploadedDownload(file) {
       if (uploadedMonthlyUrl) URL.revokeObjectURL(uploadedMonthlyUrl);
       uploadedMonthlyUrl = URL.createObjectURL(file);
@@ -3482,6 +3825,7 @@
       pendingAdminFiles.workbook = null;
       pendingAdminFiles.office = null;
       pendingAdminFiles.template = null;
+      pendingAdminFiles.access = null;
       updateAdminSaveNote();
     }
 
@@ -3583,6 +3927,41 @@
       }
     }
 
+    async function handleAccessWorkbookUpload(file, sourceLabel) {
+      if (!file) return;
+      if (/\.zip$/i.test(file.name)) {
+        accessUploadStatus.textContent = "ZIP 파일은 접속자 업로드 대상이 아니어서 무시했습니다. 엑셀(.xlsx) 파일을 올려주세요.";
+        return;
+      }
+      accessUploadStatus.textContent = `${file.name} 읽는 중...`;
+      try {
+        const sheets = await window.XlsxLite.readWorkbook(file);
+        const parsed = buildAccessControlFromWorkbook(sheets);
+        savedAccessMeta[selectedMonthKey] = {
+          name: file.name,
+          updatedAt: Date.now(),
+          count: parsed.employeeIds.length
+        };
+        saveMetaMap("monthlyAccessMeta", savedAccessMeta);
+        await saveMonthFile("access", selectedMonthKey, file);
+        applyAccessControl(parsed.employeeIds, { fileName: file.name });
+        updateMonthBundleSummary(selectedMonthKey);
+        accessUploadStatus.textContent = `${sourceLabel}: ${file.name} 반영 완료. 허용 사번 ${parsed.employeeIds.length}건`;
+        try {
+          await saveMonthToSupabase({
+            files: [{ kind: "access", file }],
+            sourceMeta: { access: file.name, access_ids: parsed.employeeIds },
+            includeBundle: false
+          });
+          accessUploadStatus.textContent += " · Supabase 저장 완료";
+        } catch (cloudError) {
+          accessUploadStatus.textContent += ` · Supabase 저장 실패: ${cloudError.message || cloudError}`;
+        }
+      } catch (error) {
+        accessUploadStatus.textContent = error.message || "접속자 사번 엑셀을 읽는 중 오류가 발생했습니다.";
+      }
+    }
+
     async function handleOfficeWorkbookUpload(file, sourceLabel) {
       if (!file) return;
       if (/\.zip$/i.test(file.name)) {
@@ -3675,13 +4054,18 @@
       stageAdminFile("template", file, pptUploadStatus, "PPT 템플릿");
     });
 
+    adminAccessUpload.addEventListener("change", () => {
+      stageAdminFile("access", adminAccessUpload.files?.[0], accessUploadStatus, "접속자 사번");
+    });
+
     adminSaveUploads.addEventListener("click", async () => {
       const stagedFiles = {
         workbook: pendingAdminFiles.workbook,
         office: pendingAdminFiles.office,
-        template: pendingAdminFiles.template
+        template: pendingAdminFiles.template,
+        access: pendingAdminFiles.access
       };
-      if (!stagedFiles.workbook && !stagedFiles.office && !stagedFiles.template) {
+      if (!stagedFiles.workbook && !stagedFiles.office && !stagedFiles.template && !stagedFiles.access) {
         adminSaveNote.textContent = "저장할 파일이 없습니다. 먼저 파일을 선택해주세요.";
         return;
       }
@@ -3692,6 +4076,7 @@
         if (stagedFiles.office) await handleOfficeWorkbookUpload(stagedFiles.office, "관리자 저장");
         if (stagedFiles.workbook) await handlePromotionWorkbookUpload(stagedFiles.workbook, "관리자 저장");
         if (stagedFiles.template) await handlePptTemplateUpload(stagedFiles.template, pptUploadStatus, "관리자 저장");
+        if (stagedFiles.access) await handleAccessWorkbookUpload(stagedFiles.access, "관리자 저장");
         clearPendingAdminFiles();
         updateMonthBundleSummary(selectedMonthKey);
         adminSaveNote.textContent = `${monthDisplay(selectedMonthKey)} 선택 파일 저장 완료`;
@@ -3714,8 +4099,6 @@
     const previewSubTableRate = document.getElementById("previewSubTableRate");
     const downloadPreviewPpt = document.getElementById("downloadPreviewPpt");
     const downloadPreviewJpg = document.getElementById("downloadPreviewJpg");
-
-    setSelectedMonth(selectedMonthKey);
 
     function inlineComputedStyles(source, target) {
       const computed = window.getComputedStyle(source);
@@ -4560,7 +4943,13 @@
       downloadCurrentPreviewAsPpt();
     });
 
-    updateBranchStats();
+    (async () => {
+      updateBranchStats();
+      await Promise.all([
+        setSelectedMonth(selectedMonthKey),
+        initializeAccessGate()
+      ]);
+    })();
   </script>
 </body>
 </html>
