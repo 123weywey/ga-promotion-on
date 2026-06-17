@@ -152,5 +152,9 @@
     }));
   }
 
-  window.XlsxLite = { readWorkbook };
+  async function readZipEntries(file) {
+    return unzipEntries(await file.arrayBuffer());
+  }
+
+  window.XlsxLite = { readWorkbook, readZipEntries };
 })();

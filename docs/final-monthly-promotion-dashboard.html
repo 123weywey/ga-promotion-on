@@ -861,6 +861,156 @@
     .poster-frame::before,
     .poster-frame::after { display: none; }
 
+    .poster-frame.template-image-mode {
+      padding: 0;
+      background: #ffffff;
+      box-shadow: none;
+    }
+
+    .poster-frame.template-image-mode > :not(.poster-template-layer) {
+      display: none !important;
+    }
+
+    .poster-template-layer {
+      position: relative;
+      display: none;
+      width: 100%;
+      aspect-ratio: 1080 / 1333;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    .poster-frame.template-image-mode .poster-template-layer {
+      display: block;
+    }
+
+    .poster-template-image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .poster-template-mask,
+    .poster-template-box {
+      position: absolute;
+      z-index: 2;
+    }
+
+    .poster-template-mask.month {
+      left: 23.2%;
+      top: 1.4%;
+      width: 34%;
+      height: 5.8%;
+      background: #076dff;
+    }
+
+    .poster-template-box.month {
+      left: 24.2%;
+      top: 1.8%;
+      color: #ffff00;
+      font-size: clamp(24px, 3.1vw, 41px);
+      font-weight: 1000;
+      letter-spacing: -.03em;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, .15);
+    }
+
+    .poster-template-mask.agency {
+      left: 70.8%;
+      top: .8%;
+      width: 27%;
+      height: 7.2%;
+      background: #ffffff;
+      border-radius: 4px;
+    }
+
+    .poster-template-box.agency {
+      left: 72.2%;
+      top: 1.5%;
+      width: 24.2%;
+      height: 5.7%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #172033;
+      text-align: center;
+      font-size: clamp(11px, 1.45vw, 22px);
+      font-weight: 800;
+      line-height: 1.15;
+      word-break: keep-all;
+      overflow-wrap: anywhere;
+    }
+
+    .poster-template-mask.main-rate,
+    .poster-template-mask.sub-rate,
+    .poster-template-mask.extra-rate {
+      top: 14.78%;
+      height: 6.45%;
+    }
+
+    .poster-template-mask.main-rate {
+      left: 2.6%;
+      width: 19.45%;
+      background: #076dff;
+    }
+
+    .poster-template-mask.sub-rate {
+      left: 34.05%;
+      width: 19.45%;
+      background: #ffffff;
+    }
+
+    .poster-template-mask.extra-rate {
+      left: 72.5%;
+      width: 24.1%;
+      background: #ffffff;
+    }
+
+    .poster-template-box.rate {
+      top: 14.78%;
+      height: 6.45%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 4px;
+    }
+
+    .poster-template-box.rate strong {
+      display: block;
+      font-size: clamp(28px, 4vw, 56px);
+      font-weight: 1000;
+      letter-spacing: -.03em;
+      line-height: 1;
+    }
+
+    .poster-template-box.rate span {
+      display: block;
+      font-size: clamp(10px, 1.05vw, 16px);
+      font-weight: 900;
+      line-height: 1.1;
+    }
+
+    .poster-template-box.main-rate {
+      left: 2.6%;
+      width: 19.45%;
+      color: #ffff00;
+    }
+
+    .poster-template-box.sub-rate {
+      left: 34.05%;
+      width: 19.45%;
+      color: #0066ff;
+    }
+
+    .poster-template-box.extra-rate {
+      left: 72.5%;
+      width: 24.1%;
+      color: #0066ff;
+    }
+
     .slide-logo,
     .slide-title,
     .agency-pill,
@@ -1459,6 +1609,28 @@
             </div>
             <p class="reference-note" id="previewReferenceNote">6월 총괄판 숫자 + 6월 PPT 템플릿 기준</p>
             <div class="poster-frame">
+              <div class="poster-template-layer" id="posterTemplateLayer" hidden>
+                <img class="poster-template-image" id="posterTemplateImage" alt="월별 프로모션 포스터 템플릿" />
+                <div class="poster-template-mask month"></div>
+                <div class="poster-template-box month" id="templatePreviewMonth">26.6월 프로모션</div>
+                <div class="poster-template-mask agency"></div>
+                <div class="poster-template-box agency" id="templatePreviewAgency">더금융서비스</div>
+                <div class="poster-template-mask main-rate"></div>
+                <div class="poster-template-box rate main-rate">
+                  <strong id="templatePreviewMainRate">450%</strong>
+                  <span>주력 건강</span>
+                </div>
+                <div class="poster-template-mask sub-rate"></div>
+                <div class="poster-template-box rate sub-rate">
+                  <strong id="templatePreviewSubRate">350%</strong>
+                  <span>보장성 상품</span>
+                </div>
+                <div class="poster-template-mask extra-rate"></div>
+                <div class="poster-template-box rate extra-rate">
+                  <strong id="templatePreviewExtraRate">100%</strong>
+                  <span>유지회차</span>
+                </div>
+              </div>
               <div class="slide-logo">삼성생명</div>
               <div class="agency-pill" id="previewAgencyPill">더금융서비스</div>
               <div class="slide-title"><span class="month" id="previewMonthLabel">26.6월</span> 프로모션</div>
@@ -1835,6 +2007,7 @@
     };
     const parsedWorkbookCache = {};
     const parsedOfficeCache = {};
+    const templatePreviewCache = {};
 
     function requestToPromise(request) {
       return new Promise((resolve, reject) => {
@@ -1918,6 +2091,140 @@
         console.warn("Supabase file proxy skipped:", error);
         return await fetchRemoteFile(file.public_url, fileName, mimeType);
       }
+    }
+
+    function inferImageMimeType(path = "") {
+      const lower = String(path).toLowerCase();
+      if (lower.endsWith(".png")) return "image/png";
+      if (lower.endsWith(".webp")) return "image/webp";
+      return "image/jpeg";
+    }
+
+    function templateCacheKey(month, name = "", href = "", version = "") {
+      return `${month}::${name}::${href}::${version}`;
+    }
+
+    async function extractPosterTemplateAsset(file) {
+      if (!file || !/\.pptx$/i.test(file.name || "")) return null;
+      const entries = await window.XlsxLite.readZipEntries(file);
+      let entryPath = [
+        "docProps/thumbnail.jpeg",
+        "docProps/thumbnail.jpg",
+        "docProps/thumbnail.png",
+        "docProps/thumbnail.webp"
+      ].find((path) => entries.has(path));
+      if (!entryPath) {
+        entryPath = [...entries.keys()].find((path) => /^ppt\/media\/.+\.(png|jpe?g|webp)$/i.test(path));
+      }
+      if (!entryPath) throw new Error("PPT 템플릿에서 미리보기 이미지를 찾지 못했습니다.");
+      const bytes = entries.get(entryPath);
+      const mimeType = inferImageMimeType(entryPath);
+      const url = URL.createObjectURL(new Blob([bytes], { type: mimeType }));
+      return { url, mimeType, entryPath, fileName: file.name };
+    }
+
+    async function resolveTemplateSourceFile(month) {
+      const savedMeta = savedPptTemplateMeta[month];
+      if (savedMeta) {
+        const localFile = await loadMonthFile("template", month);
+        if (localFile) {
+          return {
+            cacheKey: templateCacheKey(month, localFile.name, savedMeta.cloudUrl || "", savedMeta.updatedAt || localFile.lastModified || ""),
+            file: localFile,
+            name: localFile.name,
+            sourceMonth: month
+          };
+        }
+        if (savedMeta.cloudUrl) {
+          const remoteFile = await fetchRemoteFile(
+            savedMeta.cloudUrl,
+            savedMeta.name || `${monthLabel(month)} PPT 템플릿.pptx`,
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+          );
+          if (remoteFile) {
+            return {
+              cacheKey: templateCacheKey(month, remoteFile.name, savedMeta.cloudUrl, savedMeta.updatedAt || ""),
+              file: remoteFile,
+              name: remoteFile.name,
+              sourceMonth: month
+            };
+          }
+        }
+      }
+
+      const explicitHref = pptTemplateFiles[month]?.href;
+      if (explicitHref) {
+        const remoteFile = await fetchRemoteFile(
+          explicitHref,
+          pptTemplateFiles[month]?.label ? `${pptTemplateFiles[month].label} 템플릿.pptx` : `${monthLabel(month)} PPT 템플릿.pptx`,
+          "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+        );
+        if (remoteFile) {
+          return {
+            cacheKey: templateCacheKey(month, remoteFile.name, explicitHref, pptTemplateFiles[month]?.updatedAt || ""),
+            file: remoteFile,
+            name: remoteFile.name,
+            sourceMonth: month
+          };
+        }
+      }
+
+      const fallback = templateFallbackMeta[month];
+      if (fallback?.href) {
+        const fallbackFile = await fetchRemoteFile(
+          fallback.href,
+          fallback.templateName || `${monthLabel(fallback.month)} PPT 템플릿.pptx`,
+          "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+        );
+        if (fallbackFile) {
+          return {
+            cacheKey: templateCacheKey(month, fallbackFile.name, fallback.href, fallback.month || ""),
+            file: fallbackFile,
+            name: fallbackFile.name,
+            sourceMonth: fallback.month || month
+          };
+        }
+      }
+
+      return null;
+    }
+
+    function syncPosterTemplateOverlay() {
+      if (!templatePreviewAgency || !templatePreviewMonth) return;
+      templatePreviewAgency.textContent = previewAgencyTag.textContent.trim() || "대리점";
+      templatePreviewMonth.textContent = `${previewMonthLabel.textContent.trim() || "26.6월"} 프로모션`;
+      templatePreviewMainRate.textContent = previewMainRate.textContent.trim() || "미확정";
+      templatePreviewSubRate.textContent = previewSubRate.textContent.trim() || "미확정";
+      templatePreviewExtraRate.textContent = previewExtraRate.textContent.trim() || "미확정";
+    }
+
+    async function refreshPosterTemplatePreview(month) {
+      posterFrame.classList.remove("template-image-mode");
+      posterTemplateLayer.hidden = true;
+      posterTemplateImage.removeAttribute("src");
+
+      const source = await resolveTemplateSourceFile(month);
+      if (!source) {
+        syncPosterTemplateOverlay();
+        return;
+      }
+
+      try {
+        if (!templatePreviewCache[source.cacheKey]) {
+          templatePreviewCache[source.cacheKey] = await extractPosterTemplateAsset(source.file);
+        }
+        const asset = templatePreviewCache[source.cacheKey];
+        if (!asset?.url) {
+          syncPosterTemplateOverlay();
+          return;
+        }
+        posterTemplateImage.src = asset.url;
+        posterTemplateLayer.hidden = false;
+        posterFrame.classList.add("template-image-mode");
+      } catch (error) {
+        console.warn("Poster template preview skipped:", error);
+      }
+      syncPosterTemplateOverlay();
     }
 
     function fileToBase64(file) {
@@ -2631,6 +2938,7 @@
       selectedMonthKey = month;
       listMonthSelect.value = monthDisplay(month);
       previewMonthLabel.textContent = `26.${month}월`;
+      syncPosterTemplateOverlay();
       updateMonthNavigation(month);
       const restoredOfficeName = await restoreMonthOfficeData(month);
       if (requestId !== monthSelectionRequestId) return;
@@ -2649,6 +2957,8 @@
         ]);
         if (requestId !== monthSelectionRequestId) return;
       }
+      await refreshPosterTemplatePreview(month);
+      if (requestId !== monthSelectionRequestId) return;
       updatePreviewReference(
         month,
         cloudMonth?.workbookName || restoredWorkbookName || downloadWorkbookName,
@@ -2661,6 +2971,7 @@
       branchInput.value = restoredPreferredBranch;
       branchSelect.value = restoredPreferredBranch;
       updateBranchStats();
+      syncPosterTemplateOverlay();
     }
 
     function escapeHtml(value) {
@@ -3292,6 +3603,7 @@
       previewExtraRate.textContent = agency.extra;
       previewMainTableRate.textContent = agency.main;
       previewSubTableRate.textContent = agency.sub;
+      syncPosterTemplateOverlay();
     }
 
     function renderPromotionRows(branchName) {
@@ -3556,6 +3868,7 @@
         saveMetaMap("monthlyTemplateMeta", savedPptTemplateMeta);
         await saveMonthFile("template", selectedMonthKey, file);
         await refreshPptTemplateLink(selectedMonthKey);
+        await refreshPosterTemplatePreview(selectedMonthKey);
         updatePreviewReference(
           selectedMonthKey,
           savedWorkbookMeta[selectedMonthKey]?.name || "",
@@ -3714,6 +4027,14 @@
     const previewSubTableRate = document.getElementById("previewSubTableRate");
     const downloadPreviewPpt = document.getElementById("downloadPreviewPpt");
     const downloadPreviewJpg = document.getElementById("downloadPreviewJpg");
+    const posterFrame = document.querySelector(".poster-frame");
+    const posterTemplateLayer = document.getElementById("posterTemplateLayer");
+    const posterTemplateImage = document.getElementById("posterTemplateImage");
+    const templatePreviewAgency = document.getElementById("templatePreviewAgency");
+    const templatePreviewMonth = document.getElementById("templatePreviewMonth");
+    const templatePreviewMainRate = document.getElementById("templatePreviewMainRate");
+    const templatePreviewSubRate = document.getElementById("templatePreviewSubRate");
+    const templatePreviewExtraRate = document.getElementById("templatePreviewExtraRate");
 
     setSelectedMonth(selectedMonthKey);
 
@@ -4520,12 +4841,97 @@
       return canvas;
     }
 
-    async function renderElementToJpgBlob() {
+    async function legacyRenderPreviewCanvasToJpgBlob() {
       if (document.fonts?.ready) await document.fonts.ready;
       const canvas = createPreviewCanvas(2);
       const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.95));
       if (!blob) throw new Error("JPG 파일 생성에 실패했습니다.");
       return { blob, width: canvas.width, height: canvas.height };
+    }
+
+    async function blobToUint8Array(blob) {
+      return new Uint8Array(await blob.arrayBuffer());
+    }
+
+    function createImagePreviewPptx(imageBytes, imageExtension, imageMimeType, width, height) {
+      const slideCx = 9144000;
+      const slideCy = Math.round(slideCx * (height / Math.max(width, 1)));
+      const mediaName = `image1.${imageExtension}`;
+      const contentTypes = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Default Extension="${xmlEscape(imageExtension)}" ContentType="${xmlEscape(imageMimeType)}"/>
+  <Override PartName="/ppt/presentation.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml"/>
+  <Override PartName="/ppt/slides/slide1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slide+xml"/>
+</Types>`;
+      const rootRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="ppt/presentation.xml"/>
+</Relationships>`;
+      const presentation = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<p:presentation xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
+  <p:sldIdLst><p:sldId id="256" r:id="rId1"/></p:sldIdLst>
+  <p:sldSz cx="${slideCx}" cy="${slideCy}" type="custom"/>
+  <p:notesSz cx="6858000" cy="9144000"/>
+</p:presentation>`;
+      const presentationRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide" Target="slides/slide1.xml"/>
+</Relationships>`;
+      const slide = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<p:sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
+  <p:cSld>
+    <p:spTree>
+      <p:nvGrpSpPr>
+        <p:cNvPr id="1" name=""/>
+        <p:cNvGrpSpPr/>
+        <p:nvPr/>
+      </p:nvGrpSpPr>
+      <p:grpSpPr>
+        <a:xfrm>
+          <a:off x="0" y="0"/>
+          <a:ext cx="${slideCx}" cy="${slideCy}"/>
+          <a:chOff x="0" y="0"/>
+          <a:chExt cx="${slideCx}" cy="${slideCy}"/>
+        </a:xfrm>
+      </p:grpSpPr>
+      <p:pic>
+        <p:nvPicPr>
+          <p:cNvPr id="2" name="preview image"/>
+          <p:cNvPicPr/>
+          <p:nvPr/>
+        </p:nvPicPr>
+        <p:blipFill>
+          <a:blip r:embed="rId1"/>
+          <a:stretch><a:fillRect/></a:stretch>
+        </p:blipFill>
+        <p:spPr>
+          <a:xfrm>
+            <a:off x="0" y="0"/>
+            <a:ext cx="${slideCx}" cy="${slideCy}"/>
+          </a:xfrm>
+          <a:prstGeom prst="rect"><a:avLst/></a:prstGeom>
+        </p:spPr>
+      </p:pic>
+    </p:spTree>
+  </p:cSld>
+  <p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr>
+</p:sld>`;
+      const slideRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/${xmlEscape(mediaName)}"/>
+</Relationships>`;
+
+      return new Blob([createZip([
+        { name: "[Content_Types].xml", content: contentTypes },
+        { name: "_rels/.rels", content: rootRels },
+        { name: "ppt/presentation.xml", content: presentation },
+        { name: "ppt/_rels/presentation.xml.rels", content: presentationRels },
+        { name: "ppt/slides/slide1.xml", content: slide },
+        { name: "ppt/slides/_rels/slide1.xml.rels", content: slideRels },
+        { name: `ppt/media/${mediaName}`, content: imageBytes }
+      ])], { type: "application/vnd.openxmlformats-officedocument.presentationml.presentation" });
     }
 
     function downloadCurrentPreviewAsJpg(agency) {
@@ -4545,7 +4951,9 @@
           "PowerPoint 프레젠테이션",
           "application/vnd.openxmlformats-officedocument.presentationml.presentation"
         );
-        const pptx = createEditablePreviewPptx();
+        const rendered = await renderElementToJpgBlob(document.querySelector(".poster-frame"));
+        const imageBytes = await blobToUint8Array(rendered.blob);
+        const pptx = createImagePreviewPptx(imageBytes, "jpg", "image/jpeg", rendered.width, rendered.height);
         await saveBlob(pptx, filename, "PowerPoint 프레젠테이션", saveHandle);
       } catch (error) {
         window.alert(`PPT 다운로드 중 오류가 발생했습니다.\n${error.message || ""}`);
