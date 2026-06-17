@@ -3222,16 +3222,20 @@
       return agencies;
     }
 
+    function getSearchBaseAgencies(branchName) {
+      return getBranchSummary(branchName).agencies || [];
+    }
+
     function getFilteredAgencies(branchName) {
-      const agencies = getStatusFilteredAgencies(branchName);
       const keyword = normalizeAgencyName(agencySearchTerm);
+      const agencies = keyword ? getSearchBaseAgencies(branchName) : getStatusFilteredAgencies(branchName);
       if (!keyword) return agencies;
       return agencies.filter((agency) => normalizeAgencyName(agency.name).includes(keyword));
     }
 
     function getAgencySearchMatches(branchName) {
-      const agencies = getStatusFilteredAgencies(branchName);
       const keyword = normalizeAgencyName(agencySearchTerm);
+      const agencies = getSearchBaseAgencies(branchName);
       const matches = keyword
         ? agencies.filter((agency) => normalizeAgencyName(agency.name).includes(keyword))
         : agencies;
