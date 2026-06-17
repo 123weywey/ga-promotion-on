@@ -2132,6 +2132,17 @@
           window.branchPromotionRows = promotionRowsData;
           safeLocalStorageSetItem(storageKey("promotionRows"), JSON.stringify(promotionRowsData));
         }
+        const hasWorkbookDataForMonth = Boolean(
+          uploadedWorkbookFile?.public_url
+          || (Array.isArray(bundle?.promotion_rows) && bundle.promotion_rows.length)
+          || (Array.isArray(parsedWorkbookCache[month]?.promotionRows) && parsedWorkbookCache[month].promotionRows.length)
+          || savedWorkbookMeta[month]?.name
+        );
+        if (!hasWorkbookDataForMonth) {
+          promotionRowsData = [];
+          window.branchPromotionRows = [];
+          safeLocalStorageSetItem(storageKey("promotionRows"), JSON.stringify([]));
+        }
         const canRebuildStats = hasOfficeMapData(officeMap) || hasOfficeMapData(baseOfficeMap);
         const hasBranchData = bundle?.branch_data && Object.keys(bundle.branch_data).length;
         branchStats = canRebuildStats
