@@ -124,12 +124,18 @@
     }
 
     .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       border: 1px solid #d4def1;
       border-radius: 18px;
       background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
       color: #33415f;
       padding: 12px 18px;
-      font-weight: 800;
+      font-weight: 700;
+      letter-spacing: -.035em;
+      line-height: 1;
+      text-align: center;
       text-decoration: none;
       box-shadow: 0 10px 22px rgba(23, 32, 51, .05);
       cursor: pointer;
@@ -146,8 +152,9 @@
 
     .button.small {
       min-height: 52px;
-      padding: 0 22px;
-      font-size: 14px;
+      min-width: 126px;
+      padding: 0 24px;
+      font-size: 15px;
       box-shadow: 0 10px 22px rgba(23, 32, 51, .05);
     }
 
@@ -285,10 +292,10 @@
     }
 
     .control-card-head {
-      display: flex;
+      display: grid;
+      grid-template-columns: minmax(160px, 220px) minmax(0, 1fr);
       align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+      gap: 18px;
       min-width: 0;
       flex: 1;
     }
@@ -301,17 +308,19 @@
 
     .control-label {
       color: #2d57bf;
-      font-size: 13px;
-      font-weight: 800;
-      letter-spacing: -.01em;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -.04em;
     }
 
     .control-actions {
       display: flex;
       align-items: center;
       gap: 8px;
+      justify-self: center;
+      align-self: center;
       flex-wrap: wrap;
-      justify-content: flex-end;
+      justify-content: center;
     }
 
     .month-switcher {
@@ -549,18 +558,15 @@
     }
 
     .access-gate-title {
-      margin: 0 0 10px;
-      font-size: 28px;
+      margin: 0 0 14px;
+      font-size: 30px;
       font-weight: 900;
-      letter-spacing: -.05em;
+      letter-spacing: -.06em;
       color: var(--blue-dark);
     }
 
     .access-gate-copy {
-      margin: 0 0 18px;
-      color: #5f6f94;
-      font-size: 14px;
-      line-height: 1.7;
+      display: none;
     }
 
     .access-gate-form {
@@ -588,11 +594,7 @@
     }
 
     .access-gate-meta {
-      margin-top: 12px;
-      min-height: 20px;
-      color: #5f6f94;
-      font-size: 12px;
-      font-weight: 700;
+      display: none;
     }
 
     .access-gate-error {
@@ -808,7 +810,7 @@
 
     .metric strong {
       display: block;
-      font-size: 74px;
+      font-size: 59px;
       line-height: 1;
       color: #20469f;
       letter-spacing: -.06em;
@@ -1447,7 +1449,10 @@
       .button.small { min-height: 46px; }
       .access-gate-form { grid-template-columns: 1fr; }
       .control-row { grid-template-columns: 1fr; }
-      .control-card-head { align-items: flex-start; flex-direction: column; }
+      .control-card-head {
+        grid-template-columns: 1fr;
+        align-items: flex-start;
+      }
       .control-actions { justify-content: flex-start; }
       .metrics,
       .flow { grid-template-columns: 1fr 1fr; }
