@@ -13,3 +13,4 @@ data/
 *.png
 ~$*
 attach(1).txt
+ENV.MD

@@ -1441,23 +1441,31 @@
       .poster { position: static; }
     }
 
-    @media (max-width: 760px) {
-      .shell { width: min(100% - 24px, 1480px); margin-top: 18px; }
-      .topbar { align-items: flex-start; flex-direction: column; }
-      .top-actions { justify-content: flex-start; flex-wrap: wrap; }
-      .employee-badge,
-      .button.small { min-height: 46px; }
-      .access-gate-form { grid-template-columns: 1fr; }
+    @media (max-width: 960px) {
+      .shell {
+        width: min(100% - 24px, 1480px);
+        margin-top: 18px;
+      }
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 24px 24px;
+        border-radius: 28px;
+      }
+      .top-actions {
+        width: 100%;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+      }
       .control-row { grid-template-columns: 1fr; }
       .control-card-head {
         grid-template-columns: 1fr;
         align-items: flex-start;
       }
       .control-actions { justify-content: flex-start; }
-      .metrics,
-      .flow { grid-template-columns: 1fr 1fr; }
+      .metrics { grid-template-columns: 1fr; }
       .metric {
-        min-height: 156px;
+        min-height: 150px;
         padding: 22px 24px;
         gap: 18px;
       }
@@ -1474,7 +1482,7 @@
         font-size: 18px;
       }
       .metric strong {
-        font-size: 56px;
+        font-size: 50px;
       }
       .filters { grid-template-columns: 1fr; }
       .list-title-tools {
@@ -1486,8 +1494,98 @@
       .agency-search-wrap {
         width: 100%;
       }
+      .poster .section-title {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .poster .title-actions {
+        width: 100%;
+        justify-content: flex-start;
+      }
       table { min-width: 720px; }
       .table-wrap { overflow-x: auto; }
+    }
+
+    @media (max-width: 760px) {
+      .employee-badge,
+      .button.small { min-height: 46px; }
+      .access-gate-form { grid-template-columns: 1fr; }
+      .flow { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .shell {
+        width: min(100% - 16px, 1480px);
+        margin: 14px auto 28px;
+      }
+      .topbar {
+        padding: 20px 18px;
+        gap: 18px;
+        border-radius: 24px;
+      }
+      h1 {
+        gap: 10px;
+        font-size: clamp(30px, 10.5vw, 44px);
+      }
+      .top-actions {
+        gap: 10px;
+      }
+      .employee-badge,
+      .button.small {
+        min-height: 44px;
+      }
+      .access-gate {
+        padding: 16px;
+      }
+      .access-gate-card {
+        width: 100%;
+        border-radius: 20px;
+        padding: 22px 18px 18px;
+      }
+      .access-gate-title {
+        margin-bottom: 12px;
+        font-size: 24px;
+      }
+      .panel.pad,
+      .control-card {
+        padding: 18px;
+      }
+      .control-label,
+      .control-card-head strong {
+        font-size: 18px;
+      }
+      .month-switcher,
+      .month-select {
+        width: 100%;
+        min-width: 0;
+      }
+      .control-actions {
+        width: 100%;
+      }
+      .control-actions .button.small,
+      .poster .title-actions .button.small,
+      .poster .title-actions .tag {
+        width: 100%;
+      }
+      .poster .title-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .reference-note {
+        font-size: 12px;
+        line-height: 1.45;
+      }
+      .poster {
+        padding: 14px 12px 12px;
+        overflow-x: auto;
+      }
+      .poster-frame {
+        min-width: 720px;
+        max-width: none;
+      }
+      .flow {
+        grid-template-columns: 1fr;
+      }
     }
 
     @media (max-width: 520px) {
@@ -1722,8 +1820,8 @@
               <select class="filter" id="regionSelect" aria-label="지역단 선택"></select>
               <select class="filter" id="branchSelect" aria-label="지점 선택"></select>
               <select class="filter" id="statusSelect" aria-label="상태 선택">
-                <option value="all">전체</option>
-                <option value="confirmed" selected>확정</option>
+                <option value="all" selected>전체</option>
+                <option value="confirmed">확정</option>
                 <option value="pending">협의중</option>
               </select>
             </div>
@@ -2930,6 +3028,13 @@
       return Object.keys(branchStats)[0] || inputValue || "금천";
     }
 
+    function syncActiveFilter(nextFilter = "all") {
+      const allowedFilters = new Set(["all", "confirmed", "pending"]);
+      activeFilter = allowedFilters.has(nextFilter) ? nextFilter : "all";
+      if (statusSelect) statusSelect.value = activeFilter;
+      metricButtons.forEach((item) => item.classList.toggle("active", item.dataset.filter === activeFilter));
+    }
+
     function updateMonthNavigation(month) {
       monthlyPromoSelect.value = month;
       pptTemplateSelect.value = month;
@@ -3139,6 +3244,8 @@
       if (!file) return;
       const requestId = ++monthSelectionRequestId;
       selectedMonthKey = month;
+      clearAgencySearch();
+      syncActiveFilter("all");
       listMonthSelect.value = monthDisplay(month);
       previewMonthLabel.textContent = `26.${month}월`;
       updateMonthNavigation(month);
@@ -3168,8 +3275,8 @@
       updateMonthBundleSummary(month);
       const restoredPreferredBranch = parsedWorkbookCache[month]?.selectedBranchName || branchInput.value;
       populateBranchOptions(restoredPreferredBranch, regionSelect.value);
-      branchInput.value = restoredPreferredBranch;
-      branchSelect.value = restoredPreferredBranch;
+      branchInput.value = getCurrentBranchName();
+      branchSelect.value = getCurrentBranchName();
       updateBranchStats();
     }
 
@@ -3265,10 +3372,12 @@
         fallbackConfirmed = false
       } = options;
       const finalText = compactText(finalFlagValue);
+      const hasContent = hasPromotionContent(rateValues);
       if (isConfirmedStatusFlag(finalFlagValue)) return "confirmed";
+      if (fallbackConfirmed && hasContent) return "confirmed";
+      if (hasContent) return "confirmed";
       if (finalText) return "pending";
-      if (fallbackConfirmed && hasPromotionContent(rateValues)) return "confirmed";
-      return hasPromotionContent(rateValues) ? "pending" : "pending";
+      return "pending";
     }
 
     function pickBestPromotionMatch(matches = []) {
@@ -3918,16 +4027,13 @@
     });
 
     statusSelect.addEventListener("change", () => {
-      activeFilter = statusSelect.value;
-      metricButtons.forEach((item) => item.classList.toggle("active", item.dataset.filter === activeFilter));
+      syncActiveFilter(statusSelect.value);
       updateBranchStats();
     });
 
     metricButtons.forEach((button) => {
       button.addEventListener("click", () => {
-        activeFilter = button.dataset.filter;
-        metricButtons.forEach((item) => item.classList.toggle("active", item === button));
-        statusSelect.value = activeFilter;
+        syncActiveFilter(button.dataset.filter);
         updateBranchStats();
       });
     });
@@ -4035,9 +4141,7 @@
         await saveMonthFile("workbook", selectedMonthKey, file);
         applyPromotionRowsForCurrentMap(parsedWorkbookCache[selectedMonthKey].promotionRows);
         safeLocalStorageSetItem(storageKey("branchDataSource"), file.name);
-        activeFilter = "all";
-        statusSelect.value = "all";
-        metricButtons.forEach((item) => item.classList.toggle("active", item.dataset.filter === "all"));
+        syncActiveFilter("all");
         const preferredBranch = parsed.selectedBranchName || branchInput.value;
         populateBranchOptions(preferredBranch);
         branchInput.value = preferredBranch;
@@ -4382,9 +4486,15 @@
       const link = document.createElement("a");
       link.href = downloadUrl;
       link.download = filename;
+      link.target = "_self";
+      link.rel = "noopener";
       link.style.display = "none";
       document.body.appendChild(link);
-      link.click();
+      link.dispatchEvent(new MouseEvent("click", {
+        bubbles: true,
+        cancelable: true,
+        view: window
+      }));
       setTimeout(() => {
         URL.revokeObjectURL(downloadUrl);
         link.remove();
@@ -5126,6 +5236,7 @@
     });
 
     (async () => {
+      syncActiveFilter(statusSelect?.value || "all");
       updateBranchStats();
       initializeAccessGate();
       await setSelectedMonth(selectedMonthKey);
